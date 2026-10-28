@@ -12,6 +12,7 @@ use crate::objects::{AceRef, AuthorityRef};
 use crate::preconfig::core::shared::table_id;
 use crate::types::{AceOperand, BooleanOp};
 
+/// Do not use this macro directly. See [ace_expr!].
 #[macro_export]
 macro_rules! ace_operand {
     (||) => {
@@ -28,6 +29,17 @@ macro_rules! ace_operand {
     };
 }
 
+/// Constructs an ACE boolean expression using a natural reverse Polish notation
+/// syntax.
+///
+/// Example:
+/// ```
+/// # use sed_spec::preconfig::core::shared::authority::ADMINS;
+/// # use sed_spec::preconfig::core::shared::authority::SID;
+/// # use sed_spec::objects::ace_expr;
+/// # use sed_spec::objects::AceExpr;
+/// let expr = ace_expr!(SID ADMINS ||);
+/// assert_eq!(expr.eval([SID]), Some(true));
 #[macro_export]
 macro_rules! ace_expr {
     ($($operand:tt)*) => {
@@ -58,11 +70,57 @@ impl ObjectUid for Ace {
     }
 }
 
+/// An ACE boolean expression written using the reverse Polish notation.
+///
+/// For example `User1 User2 &&` is true when both the `User1` and `User2`
+/// authorities are authenticated, and false otherwise.
 pub trait AceExpr {
+    /// Evaluate the ACE boolean expression, substituting `true` for the
+    /// `authenticated` authorities, and `false` for all others.
+    ///
+    /// # Errors
+    ///
+    /// If the expression is not valid and therefore cannot be evaluated,
+    /// [`None`] is returned.
     fn eval(&self, authenticated: impl IntoIterator<Item = AuthorityRef>) -> Option<bool>;
+
+    /// Modifies the ACE boolean expression such that `authority` alone
+    /// satisfies it.
+    ///
+    /// If the `authority` alone already satisfies the expression, it is
+    /// returned without modification.
+    ///
+    /// # Errors
+    ///
+    /// If the original expression is not valid, [`None`] is returned.
     fn allow_authority(&self, authority: AuthorityRef) -> Option<Vec<AceOperand>>;
+
+    /// Modifies the ACE boolean expression such that `authority` alone
+    /// does not satisfy it.
+    ///
+    /// If the `authority` alone already does not satisfy the expression, it is
+    /// returned without modification.
+    ///
+    /// # Errors
+    ///
+    /// If the original expression is not valid, [`None`] is returned.
     fn deny_authority(&self, authority: AuthorityRef) -> Option<Vec<AceOperand>>;
+
+    /// Replaces trivial expressions with a simpler form, like `X && X` with `X`.
+    ///
+    /// # Errors
+    ///
+    /// If the original expression is not valid, [`None`] is returned.
     fn normalize(&self) -> Option<Vec<AceOperand>>;
+
+    /// Checks if the expression is valid according to the reverse Polish
+    /// notation.
+    ///
+    /// For example, `User1 User2 || ! !` is valid, but `User1 || !` is
+    /// unbalanced and therefore invalid.
+    fn is_valid(&self) -> bool {
+        self.eval([]).is_some()
+    }
 }
 
 impl<Sequence> AceExpr for Sequence
@@ -163,7 +221,7 @@ where
         // Applies the following normalization patterns:
         // - X NOT NOT => X
         // - X X OR => X
-        // - X AND X => X
+        // - X X AND => X
         let mut stack = Vec::<Vec<AceOperand>>::new();
         for item in self.into_iter() {
             match item {
