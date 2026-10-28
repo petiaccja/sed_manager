@@ -16,5 +16,8 @@ pub use device_spec::DeviceSpec;
 pub use error::Error;
 pub use geometry::{Alignment, Geometry};
 pub use host::Host;
-pub use locking_config::{AuthorityPlanError, LockingConfigSession, LockingRangePlanError};
+pub use locking_config::{
+    AccessControl, AuthorityPlanError, LockingConfigSession, LockingRangeAccess, LockingRangePermission,
+    LockingRangePlanError, MbrAccess,
+};
 pub use setup_session::SetupSession;
