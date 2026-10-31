@@ -16,7 +16,7 @@ pub enum LockingRangePermission {
     SetAll,
     SetReadLocked,
     SetWriteLocked,
-    GenKey,
+    Erase,
 }
 
 /// The most important access control elements for configuring the device.
@@ -32,7 +32,7 @@ pub struct LockingRangeAccess {
     pub set_all: Vec<AceOperand>,
     pub set_read_locked: Vec<AceOperand>,
     pub set_write_locked: Vec<AceOperand>,
-    pub gen_key: Vec<AceOperand>,
+    pub erase: Vec<AceOperand>,
 }
 
 impl LockingRangeAccess {
@@ -72,7 +72,7 @@ impl LockingRangeAccess {
             SetAll => &self.set_all,
             SetReadLocked => &self.set_read_locked,
             SetWriteLocked => &self.set_write_locked,
-            GenKey => &self.gen_key,
+            Erase => &self.erase,
         };
         ace.eval(authorities).unwrap_or(false)
     }
@@ -128,7 +128,7 @@ mod tests {
             set_all: ace.clone(),
             set_read_locked: ace.clone(),
             set_write_locked: ace.clone(),
-            gen_key: ace,
+            erase: ace,
         }
     }
 
@@ -137,7 +137,7 @@ mod tests {
             set_all: ace_expr!(ALICE),
             set_read_locked: ace_expr!(BOB),
             set_write_locked: ace_expr!(CHARLIE),
-            gen_key: ace_expr!(DAVE),
+            erase: ace_expr!(DAVE),
         }
     }
 
@@ -149,7 +149,7 @@ mod tests {
     #[case::set_all(LockingRangePermission::SetAll, ALICE)]
     #[case::set_read_locked(LockingRangePermission::SetReadLocked, BOB)]
     #[case::set_write_locked(LockingRangePermission::SetWriteLocked, CHARLIE)]
-    #[case::gen_key(LockingRangePermission::GenKey, DAVE)]
+    #[case::erase(LockingRangePermission::Erase, DAVE)]
     fn locking_range_has_permission_alone_selects_ace(
         #[case] permission: LockingRangePermission,
         #[case] allowed: AuthorityRef,
@@ -163,7 +163,7 @@ mod tests {
     #[case::set_all(LockingRangePermission::SetAll, ALICE)]
     #[case::set_read_locked(LockingRangePermission::SetReadLocked, BOB)]
     #[case::set_write_locked(LockingRangePermission::SetWriteLocked, CHARLIE)]
-    #[case::gen_key(LockingRangePermission::GenKey, DAVE)]
+    #[case::erase(LockingRangePermission::Erase, DAVE)]
     fn locking_range_has_permission_effective_selects_ace(
         #[case] permission: LockingRangePermission,
         #[case] allowed: AuthorityRef,

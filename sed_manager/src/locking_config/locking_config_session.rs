@@ -4,25 +4,31 @@
 //L-----------------------------------------------------------------------------
 
 use std::cmp::min;
+use std::collections::{HashMap, HashSet};
+use std::ops::RangeInclusive;
 
-use sed_packet::MaxBytes;
 use sed_packet::discovery::SscFeatureDescriptor;
 use sed_packet::token_stream::token::{Atom, LongAtom};
+use sed_packet::{MaxBytes, Uid};
+use sed_spec::ace_expr;
 use sed_spec::methods::{MethodStatus, SetBytes};
 use sed_spec::objects::{
-    Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange, LockingRangeRef,
-    LockingRangeRefExt, MbrControl, TableDescRefExt,
+    Ace, AceRefExt, Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange,
+    LockingRangeRef, LockingRangeRefExt, MbrControl, MethodRef, TableDescRefExt,
 };
+use sed_spec::preconfig::core::shared::method_id::{GEN_KEY, SET};
 use sed_spec::preconfig::core::shared::{locking_info, mbr_control, table, table_id};
+use sed_spec::preconfig::enterprise;
+use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 
-use crate::DeviceSpec;
-use crate::Error;
 use crate::locking_config::authority_plan::{AuthorityPlanError, AuthorityPlanner};
 use crate::locking_config::locking_range_plan::{LockingRangePlanner, LockingRangeStep};
 use crate::locking_config::plan::check_matching_current_all;
+use crate::{AccessControl, DeviceSpec, MbrAccess};
 use crate::{Alignment, LockingRangePlanError};
+use crate::{Error, LockingRangeAccess};
 
 /// Configures the locking SP of the TPer, like locking ranges and authorities.
 ///
@@ -88,7 +94,7 @@ impl LockingConfigSession {
     /// in this session.
     #[instrument(level = "info", skip(self), ret, err)]
     pub async fn get_locking_ranges(&self) -> Result<Vec<LockingRange>, Error> {
-        let range_refs = self.session.next::<{ table_id::LOCKING.to_u64() }>(None, None).await?;
+        let range_refs = self.session.next(None, None).await?;
         let mut ranges = Vec::new();
         for range_ref in range_refs {
             ranges.push(self.session.get_object(range_ref, ..).await?);
@@ -258,6 +264,39 @@ impl LockingConfigSession {
         }
     }
 
+    /// Get the most important access control elements from the device.
+    ///
+    /// If you're authenticated as an authority that doesn't have permissions to
+    /// read the `Locking` and `ACE` tables, this method will fail.
+    #[instrument(skip(self), ret, err)]
+    pub async fn get_access_control(&self) -> Result<AccessControl, Error> {
+        let locking_ranges = self.session.next::<{ table_id::LOCKING.to_u64() }>(None, None).await?;
+        let mut locking_ranges_accesses = HashMap::new();
+        for locking_range in locking_ranges {
+            let locking_range_access = if matches!(self.spec.ssc_desc, SscFeatureDescriptor::Enterprise(_)) {
+                let owner = get_enterprise_range_owner(locking_range);
+                LockingRangeAccess {
+                    set_all: ace_expr!((owner)),
+                    set_read_locked: ace_expr!((owner)),
+                    set_write_locked: ace_expr!((owner)),
+                    erase: ace_expr!((enterprise::locking::authority::ERASE_MASTER)),
+                }
+            } else {
+                LockingRangeAccess {
+                    set_all: self.get_ace_set_all(locking_range).await?.unwrap_or_default(),
+                    set_read_locked: self.get_ace_set_read_locked(locking_range).await?.unwrap_or_default(),
+                    set_write_locked: self.get_ace_set_write_locked(locking_range).await?.unwrap_or_default(),
+                    erase: self.get_ace_gen_key(locking_range).await?.unwrap_or_default(),
+                }
+            };
+            locking_ranges_accesses.insert(locking_range, locking_range_access);
+        }
+
+        let mbr_set_done = self.get_ace_mbr_set_done().await?.unwrap_or_default();
+
+        Ok(AccessControl { locking_ranges: locking_ranges_accesses, mbr: MbrAccess { set_done: mbr_set_done } })
+    }
+
     /// Set the new values for the MBR control object.
     #[instrument(skip(self), err)]
     pub async fn set_mbr_control(&self, mbr_control: MbrControl) -> Result<(), Error> {
@@ -290,6 +329,81 @@ impl LockingConfigSession {
         Ok(())
     }
 
+    #[instrument(skip(self), ret, err)]
+    async fn get_ace_gen_key(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
+        let active_key = self.session.get_field(locking_range.active_key()).await?;
+        // Pyrite may not support encryption, but sets the active key to NULL.
+        if Uid::from(active_key).is_null() {
+            return Ok(None);
+        }
+        let gen_key_acl = self.session.get_acl(active_key.into(), GEN_KEY).await?;
+        // All SSCs define a single ACE entry for GenKey, so we can take the first.
+        let Some(ace) = gen_key_acl.first().cloned() else {
+            return Ok(None);
+        };
+        let expr = self.session.get_field(ace.boolean_expr()).await?;
+        Ok(Some(expr))
+    }
+
+    #[instrument(skip(self), ret, err)]
+    async fn get_ace_set_all(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
+        let columns = LockingRange::READ_LOCK_ENABLED..=LockingRange::LOCK_ON_RESET;
+        let maybe_ace = self.get_narrowest_ace(locking_range.into(), SET, columns).await?;
+        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
+    }
+
+    #[instrument(skip(self), ret, err)]
+    async fn get_ace_set_read_locked(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
+        let columns = LockingRange::READ_LOCKED..=LockingRange::READ_LOCKED;
+        let maybe_ace = self.get_narrowest_ace(locking_range.into(), SET, columns).await?;
+        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
+    }
+
+    #[instrument(skip(self), ret, err)]
+    async fn get_ace_set_write_locked(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
+        let columns = LockingRange::WRITE_LOCKED..=LockingRange::WRITE_LOCKED;
+        let maybe_ace = self.get_narrowest_ace(locking_range.into(), SET, columns).await?;
+        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
+    }
+
+    #[instrument(skip(self), ret, err)]
+    async fn get_narrowest_ace(
+        &self,
+        object: Uid,
+        method: MethodRef,
+        columns: RangeInclusive<u16>,
+    ) -> Result<Option<Ace>, Error> {
+        // Get the ACL for the `Set` method to the queried locking range.
+        let acl = self.session.get_acl(object, method).await?;
+
+        // Get all ACEs in the ACL. There shouldn't be too many, so getting them
+        // all won't take too long.
+        let mut aces = Vec::new();
+        for ace_ref in acl {
+            let mut ace = self.session.get_object::<Ace>(ace_ref, Ace::BOOLEAN_EXPR..=Ace::COLUMNS).await?;
+            ace.uid = Some(ace_ref);
+            aces.push(ace);
+        }
+
+        // Sort the ACEs by the number of columns they refer to. This way we can
+        // return the narrowest ACE that matches the queried columns.
+        aces.sort_by_key(|ace| ace.columns.as_ref().map(HashSet::len).unwrap_or(0));
+
+        // Get the first ACE (if any) that contains all the queried columns.
+        Ok(aces.into_iter().find(|ace| {
+            ace.columns
+                .as_ref()
+                .is_some_and(|ace_columns| columns.clone().all(|column| ace_columns.contains(&column)))
+        }))
+    }
+
+    #[instrument(skip(self), ret, err)]
+    async fn get_ace_mbr_set_done(&self) -> Result<Option<Vec<AceOperand>>, Error> {
+        let columns = MbrControl::DONE..=MbrControl::DONE;
+        let maybe_ace = self.get_narrowest_ace(mbr_control::MBR_CONTROL.into(), SET, columns).await?;
+        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
+    }
+
     #[instrument(skip(self), err)]
     async fn collapse_locking_range(&self, uid: LockingRangeRef) -> Result<(), TperError> {
         let changes = LockingRange { range_length: Some(0), ..Default::default() };
@@ -301,4 +415,15 @@ impl LockingConfigSession {
         let changes = LockingRange { uid: None, ..changes };
         self.session.set_object(uid, changes).await
     }
+}
+
+fn get_enterprise_range_owner(locking_range: LockingRangeRef) -> AuthorityRef {
+    use enterprise::locking::authority::BAND_MASTER;
+    use enterprise::locking::locking::{BAND, GLOBAL_RANGE};
+
+    let band_master_idx = match locking_range {
+        GLOBAL_RANGE => 0,
+        band => 1 + (band - BAND.get(0).unwrap()) as usize,
+    };
+    BAND_MASTER.get(band_master_idx).expect("the max number of band master is the same as bands")
 }
