@@ -18,8 +18,8 @@ use sed_spec::methods::{
     SetResult, extract_method,
 };
 use sed_spec::objects::{
-    AccessControlRef, Ace, AceExpr, Authority, AuthorityRef, CPin, KAes256, KAes256Ref, LockingInfoExt, LockingRange,
-    MbrControl, MethodRef, SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
+    AccessControlRef, Ace, Authority, AuthorityRef, CPin, EvalAceExpr, KAes256, KAes256Ref, LockingInfoExt,
+    LockingRange, MbrControl, MethodRef, SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
 };
 use sed_spec::preconfig::core::shared::authority::ANYBODY;
 use sed_spec::preconfig::core::shared::invoking_id::THIS_SP;
