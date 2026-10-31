@@ -10,7 +10,6 @@ use std::ops::RangeInclusive;
 use sed_packet::discovery::SscFeatureDescriptor;
 use sed_packet::token_stream::token::{Atom, LongAtom};
 use sed_packet::{MaxBytes, Uid};
-use sed_spec::ace_expr;
 use sed_spec::methods::{MethodStatus, SetBytes};
 use sed_spec::objects::{
     Ace, AceRefExt, Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange,
@@ -18,7 +17,6 @@ use sed_spec::objects::{
 };
 use sed_spec::preconfig::core::shared::method_id::{GEN_KEY, SET};
 use sed_spec::preconfig::core::shared::{locking_info, mbr_control, table, table_id};
-use sed_spec::preconfig::enterprise;
 use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
@@ -268,26 +266,23 @@ impl LockingConfigSession {
     ///
     /// If you're authenticated as an authority that doesn't have permissions to
     /// read the `Locking` and `ACE` tables, this method will fail.
+    ///
+    /// # Notes
+    ///
+    /// Currently, Enterprise is not implemented and an error is always returned.
     #[instrument(skip(self), ret, err)]
     pub async fn get_access_control(&self) -> Result<AccessControl, Error> {
+        if matches!(self.spec.ssc_desc, SscFeatureDescriptor::Enterprise(_)) {
+            return Err(Error::NotImplemented);
+        }
         let locking_ranges = self.session.next::<{ table_id::LOCKING.to_u64() }>(None, None).await?;
         let mut locking_ranges_accesses = HashMap::new();
         for locking_range in locking_ranges {
-            let locking_range_access = if matches!(self.spec.ssc_desc, SscFeatureDescriptor::Enterprise(_)) {
-                let owner = get_enterprise_range_owner(locking_range);
-                LockingRangeAccess {
-                    set_all: ace_expr!((owner)),
-                    set_read_locked: ace_expr!((owner)),
-                    set_write_locked: ace_expr!((owner)),
-                    erase: ace_expr!((enterprise::locking::authority::ERASE_MASTER)),
-                }
-            } else {
-                LockingRangeAccess {
-                    set_all: self.get_ace_set_all(locking_range).await?.unwrap_or_default(),
-                    set_read_locked: self.get_ace_set_read_locked(locking_range).await?.unwrap_or_default(),
-                    set_write_locked: self.get_ace_set_write_locked(locking_range).await?.unwrap_or_default(),
-                    erase: self.get_ace_gen_key(locking_range).await?.unwrap_or_default(),
-                }
+            let locking_range_access = LockingRangeAccess {
+                set_all: self.get_ace_set_all(locking_range).await?.unwrap_or_default(),
+                set_read_locked: self.get_ace_set_read_locked(locking_range).await?.unwrap_or_default(),
+                set_write_locked: self.get_ace_set_write_locked(locking_range).await?.unwrap_or_default(),
+                erase: self.get_ace_gen_key(locking_range).await?.unwrap_or_default(),
             };
             locking_ranges_accesses.insert(locking_range, locking_range_access);
         }
@@ -415,15 +410,4 @@ impl LockingConfigSession {
         let changes = LockingRange { uid: None, ..changes };
         self.session.set_object(uid, changes).await
     }
-}
-
-fn get_enterprise_range_owner(locking_range: LockingRangeRef) -> AuthorityRef {
-    use enterprise::locking::authority::BAND_MASTER;
-    use enterprise::locking::locking::{BAND, GLOBAL_RANGE};
-
-    let band_master_idx = match locking_range {
-        GLOBAL_RANGE => 0,
-        band => 1 + (band - BAND.get(0).unwrap()) as usize,
-    };
-    BAND_MASTER.get(band_master_idx).expect("the max number of band master is the same as bands")
 }
