@@ -5,13 +5,13 @@
 
 mod access_control;
 mod authority_plan;
-mod gates;
 mod locking_config_session;
 mod locking_range_plan;
+mod permissions;
 mod plan;
 
-pub use access_control::{AccessControl, GlobalAces, LockingRangeAces, UserAces};
+pub use access_control::{AccessControl, AuthorityAces, GlobalAces, LockingRangeAces, MbrAces};
 pub use authority_plan::AuthorityPlanError;
-pub use gates::{AuthorityGates, Gates, GlobalGates, LockingRangeGates};
 pub use locking_config_session::LockingConfigSession;
 pub use locking_range_plan::LockingRangePlanError;
+pub use permissions::{AuthorityPermissions, GlobalPermissions, LockingRangePermissions, MbrPermissions, Permissions};
