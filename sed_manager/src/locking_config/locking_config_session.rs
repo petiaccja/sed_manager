@@ -4,7 +4,7 @@
 //L-----------------------------------------------------------------------------
 
 use std::cmp::min;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::ops::RangeInclusive;
 
 use sed_packet::discovery::SscFeatureDescriptor;
@@ -21,12 +21,12 @@ use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 
+use crate::Error;
 use crate::locking_config::authority_plan::{AuthorityPlanError, AuthorityPlanner};
 use crate::locking_config::locking_range_plan::{LockingRangePlanner, LockingRangeStep};
 use crate::locking_config::plan::check_matching_current_all;
-use crate::{AccessControl, DeviceSpec, MbrAccess};
+use crate::{AccessControl, DeviceSpec};
 use crate::{Alignment, LockingRangePlanError};
-use crate::{Error, LockingRangeAccess};
 
 /// Configures the locking SP of the TPer, like locking ranges and authorities.
 ///
@@ -275,21 +275,7 @@ impl LockingConfigSession {
         if matches!(self.spec.ssc_desc, SscFeatureDescriptor::Enterprise(_)) {
             return Err(Error::NotImplemented);
         }
-        let locking_ranges = self.session.next::<{ table_id::LOCKING.to_u64() }>(None, None).await?;
-        let mut locking_ranges_accesses = HashMap::new();
-        for locking_range in locking_ranges {
-            let locking_range_access = LockingRangeAccess {
-                set_all: self.get_ace_set_all(locking_range).await?.unwrap_or_default(),
-                set_read_locked: self.get_ace_set_read_locked(locking_range).await?.unwrap_or_default(),
-                set_write_locked: self.get_ace_set_write_locked(locking_range).await?.unwrap_or_default(),
-                erase: self.get_ace_gen_key(locking_range).await?.unwrap_or_default(),
-            };
-            locking_ranges_accesses.insert(locking_range, locking_range_access);
-        }
-
-        let mbr_set_done = self.get_ace_mbr_set_done().await?.unwrap_or_default();
-
-        Ok(AccessControl { locking_ranges: locking_ranges_accesses, mbr: MbrAccess { set_done: mbr_set_done } })
+        todo!()
     }
 
     /// Set the new values for the MBR control object.
