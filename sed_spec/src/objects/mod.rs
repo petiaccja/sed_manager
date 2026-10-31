@@ -17,7 +17,7 @@ mod security_provider;
 mod table_desc;
 
 pub use access_control::AccessControl;
-pub use ace::{Ace, AceExpr, ace_expr, ace_operand};
+pub use ace::{Ace, AceExpr, AceRefExt, ace_expr, ace_operand};
 pub use authority::{Authority, AuthorityRefExt};
 pub use c_pin::{CPin, CPinRefExt};
 pub use k_aes_256::{KAes256, KAes256RefExt};
