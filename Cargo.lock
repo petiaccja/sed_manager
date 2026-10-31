@@ -4364,6 +4364,7 @@ dependencies = [
  "sed_telemetry",
  "sed_tper",
  "sed_virtual_device",
+ "smallvec",
  "thiserror 2.0.18",
  "tokio",
  "tracing",

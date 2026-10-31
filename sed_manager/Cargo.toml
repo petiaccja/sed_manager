@@ -20,6 +20,7 @@ sed_virtual_device = { workspace = true, optional = true }
 async-broadcast.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+smallvec.workspace = true
 
 [dev-dependencies]
 sed_telemetry = { workspace = true, features = ["test-utils"] }

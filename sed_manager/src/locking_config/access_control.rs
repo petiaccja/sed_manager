@@ -6,12 +6,13 @@
 use std::collections::BTreeMap;
 
 use sed_spec::{
-    objects::{AuthorityRef, LockingRangeRef},
+    objects::{AuthorityRef, EvalAceExpr, LockingRangeRef},
     types::AceOperand,
 };
 use sed_tper::Session;
+use smallvec::{SmallVec, smallvec};
 
-use crate::{Error, Permissions};
+use crate::{Error, GlobalPermissions, Permissions};
 
 /// The access control settings of the device.
 ///
@@ -56,7 +57,12 @@ impl AccessControl {
     }
 
     pub fn evaluate(&self, authority: AuthorityRef) -> Permissions {
-        todo!()
+        Permissions {
+            global: self.global.evaluate(authority),
+            mbr: todo!(),
+            locking_ranges: todo!(),
+            authorities: todo!(),
+        }
     }
 }
 
@@ -78,6 +84,17 @@ impl GlobalAces {
             read_data_store: todo!(),
             write_data_store: todo!(),
         })
+    }
+
+    pub fn evaluate(&self, authority: AuthorityRef) -> GlobalPermissions {
+        let authenticated = authenticated_set(authority);
+        GlobalPermissions {
+            read_ace_table: self.read_ace_table.eval(authenticated.iter().cloned()).unwrap_or(false),
+            set_ace_expressions: self.set_ace_expressions.eval(authenticated.iter().cloned()).unwrap_or(false),
+            read_authority_table: self.read_authority_table.eval(authenticated.iter().cloned()).unwrap_or(false),
+            read_data_store: self.read_data_store.eval(authenticated.iter().cloned()).unwrap_or(false),
+            write_data_store: self.write_data_store.eval(authenticated.iter().cloned()).unwrap_or(false),
+        }
     }
 }
 
@@ -133,4 +150,51 @@ pub enum AceExpr {
     Loaded(Vec<AceOperand>),
     Assumed(Vec<AceOperand>),
     Fixed(Vec<AceOperand>),
+}
+
+impl<'a> IntoIterator for &'a AceExpr {
+    type Item = &'a AceOperand;
+
+    type IntoIter = std::slice::Iter<'a, AceOperand>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        use AceExpr::*;
+        match self {
+            Loaded(inner) | Assumed(inner) | Fixed(inner) => inner.iter(),
+        }
+    }
+}
+
+impl IntoIterator for AceExpr {
+    type Item = AceOperand;
+
+    type IntoIter = std::vec::IntoIter<AceOperand>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        use AceExpr::*;
+        match self {
+            Loaded(inner) | Assumed(inner) | Fixed(inner) => inner.into_iter(),
+        }
+    }
+}
+
+fn authenticated_set(authority: AuthorityRef) -> SmallVec<[AuthorityRef; 3]> {
+    use core::shared::authority::ANYBODY;
+    use enterprise::locking::authority::{BAND_MASTER, BAND_MASTERS};
+    use opal_2::locking::authority::{ADMIN, ADMINS, USER, USERS};
+    use sed_spec::preconfig::{core, enterprise, opal_2};
+
+    let mut authenticated = smallvec![authority];
+
+    if USER.contains(authority) {
+        authenticated.push(USERS);
+    } else if ADMIN.contains(authority) {
+        authenticated.push(ADMINS);
+    } else if BAND_MASTER.contains(authority) {
+        authenticated.push(BAND_MASTERS);
+    } else if authority != ANYBODY {
+        authenticated.push(ANYBODY);
+    }
+
+    authenticated
 }
