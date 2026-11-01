@@ -10,6 +10,7 @@ mod geometry;
 mod host;
 mod locking_config;
 mod setup_session;
+mod ssc;
 
 pub use device::Device;
 pub use device_spec::DeviceSpec;
