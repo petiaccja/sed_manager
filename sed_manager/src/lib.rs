@@ -17,8 +17,7 @@ pub use error::Error;
 pub use geometry::{Alignment, Geometry};
 pub use host::Host;
 pub use locking_config::{
-    AccessControl, AuthorityAces, AuthorityPermissions, AuthorityPlanError, GlobalAces, GlobalPermissions,
-    LockingConfigSession, LockingRangeAces, LockingRangePermissions, LockingRangePlanError, MbrAces, MbrPermissions,
-    Permissions,
+    Aces, AuthorityAces, AuthorityPermissions, AuthorityPlanError, GlobalAces, GlobalPermissions, LockingConfigSession,
+    LockingRangeAces, LockingRangePermissions, LockingRangePlanError, MbrAces, MbrPermissions, Permissions,
 };
 pub use setup_session::SetupSession;

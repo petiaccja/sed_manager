@@ -7,11 +7,9 @@ mod access_control;
 mod authority_plan;
 mod locking_config_session;
 mod locking_range_plan;
-mod permissions;
 mod plan;
 
-pub use access_control::{AccessControl, AuthorityAces, GlobalAces, LockingRangeAces, MbrAces};
+pub use access_control::*;
 pub use authority_plan::AuthorityPlanError;
 pub use locking_config_session::LockingConfigSession;
 pub use locking_range_plan::LockingRangePlanError;
-pub use permissions::{AuthorityPermissions, GlobalPermissions, LockingRangePermissions, MbrPermissions, Permissions};

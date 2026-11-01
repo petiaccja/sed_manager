@@ -25,7 +25,7 @@ use crate::Error;
 use crate::locking_config::authority_plan::{AuthorityPlanError, AuthorityPlanner};
 use crate::locking_config::locking_range_plan::{LockingRangePlanner, LockingRangeStep};
 use crate::locking_config::plan::check_matching_current_all;
-use crate::{AccessControl, DeviceSpec};
+use crate::{Aces, DeviceSpec};
 use crate::{Alignment, LockingRangePlanError};
 
 /// Configures the locking SP of the TPer, like locking ranges and authorities.
@@ -271,7 +271,7 @@ impl LockingConfigSession {
     ///
     /// Currently, Enterprise is not implemented and an error is always returned.
     #[instrument(skip(self), ret, err)]
-    pub async fn get_access_control(&self) -> Result<AccessControl, Error> {
+    pub async fn get_access_control(&self) -> Result<Aces, Error> {
         if matches!(self.spec.ssc_desc, SscFeatureDescriptor::Enterprise(_)) {
             return Err(Error::NotImplemented);
         }
