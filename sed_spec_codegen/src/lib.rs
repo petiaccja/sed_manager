@@ -4,6 +4,7 @@
 //L-----------------------------------------------------------------------------
 
 use std::collections::HashMap;
+use std::ops::Range;
 use std::str::FromStr as _;
 
 use quote::{format_ident, quote};
@@ -155,6 +156,7 @@ struct Table(HashMap<String, Object>);
 
 impl Table {
     pub fn generate(&self, name: &str) -> Result<ItemMod, Error> {
+        self.check_overlap()?;
         let mod_name = to_mod_ident(name);
         if name == "TableID" {
             self.generate_table_id(&mod_name)
@@ -163,6 +165,28 @@ impl Table {
         } else {
             self.generate_object_table(mod_name, name)
         }
+    }
+
+    /// Returns an error if two UID ranges/UIDs overlap.
+    ///
+    /// This is an approximation to catch obvious problems, not an exhaustive
+    /// approach. Some overlaps may slip through.
+    fn check_overlap(&self) -> Result<(), Error> {
+        use Object::*;
+
+        let mut items: Vec<_> = self.0.iter().collect();
+        items.sort_by_key(|(_name, value)| match value {
+            Unique(uid) => uid,
+            Range { base, .. } => base,
+        });
+        for [(first_name, first), (second_name, second)] in items.array_windows::<2>() {
+            if is_overlapping(first, second) {
+                return Err(
+                    MessageError(format!("the UID / UID ranges `{first_name}` and `{second_name}` overlap")).into()
+                );
+            }
+        }
+        Ok(())
     }
 
     fn generate_table_id(&self, mod_name: &Ident) -> Result<ItemMod, Error> {
@@ -345,6 +369,29 @@ impl Table {
             .collect();
         ranges.sort_by_key(|(_, object)| object.base());
         ranges.iter().map(|(name, object)| object.generate_range_entry(name, ctor)).collect()
+    }
+}
+
+/// Check if two object UID / UID ranges are overlapping.
+///
+/// This is an approximation, and some non-overlapping ranges are still flagged
+/// as overlapped.
+fn is_overlapping(first: &Object, second: &Object) -> bool {
+    fn to_range(object: &Object) -> (Range<u64>, u64) {
+        match object {
+            Object::Unique(single) => (*single..(single + 1), 1),
+            Object::Range { base, count, step, .. } => (*base..(base + count * step - step + 1), *step),
+        }
+    }
+
+    let mut ranges = [to_range(first), to_range(second)];
+    ranges.sort_by_key(|range| range.0.start);
+    let [(first_range, first_step), (second_range, second_step)] = ranges;
+    if first_range.end <= second_range.start {
+        false
+    } else {
+        let shift = second_range.start - first_range.start;
+        shift.is_multiple_of(num_integer::gcd(first_step, second_step))
     }
 }
 
@@ -581,5 +628,43 @@ mod tests {
     #[test]
     fn generate_example() {
         let _spec = generate_spec(TEST_SPEC).unwrap();
+    }
+
+    #[test]
+    fn check_overlap_disjoint() {
+        let table = Table(
+            [
+                ("A".to_owned(), Object::Unique(1)),
+                ("B".to_owned(), Object::Unique(6)),
+                ("C".to_owned(), Object::Range { base: 2, count: 2, step: 2, display_base: 0 }),
+                ("D".to_owned(), Object::Range { base: 3, count: 2, step: 2, display_base: 0 }),
+            ]
+            .into(),
+        );
+        table.check_overlap().unwrap();
+    }
+
+    #[test]
+    fn check_overlap_overlapping_uids() {
+        let table = Table(
+            [
+                ("A".to_owned(), Object::Unique(1)),
+                ("B".to_owned(), Object::Unique(1)),
+            ]
+            .into(),
+        );
+        assert!(table.check_overlap().is_err());
+    }
+
+    #[test]
+    fn check_overlap_overlapping_ranges() {
+        let table = Table(
+            [
+                ("C".to_owned(), Object::Range { base: 2, count: 10, step: 8, display_base: 0 }),
+                ("D".to_owned(), Object::Range { base: 66, count: 10, step: 8, display_base: 0 }),
+            ]
+            .into(),
+        );
+        assert!(table.check_overlap().is_err());
     }
 }
