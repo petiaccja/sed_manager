@@ -7,9 +7,11 @@ use std::collections::BTreeMap;
 
 use sed_spec::ace_expr;
 use sed_spec::methods::MethodStatus;
-use sed_spec::objects::{AceRef, AceRefExt, AuthorityRef, LockingRangeRef};
+use sed_spec::objects::{AceRef, AceRefExt, AuthorityKind, AuthorityRef, LockingRangeRef};
 use sed_spec::preconfig::{enterprise, opal_2};
+use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session};
+use smallvec::SmallVec;
 
 use crate::Error;
 use crate::locking_config::access_control::ace_expr::AceExpr;
@@ -127,144 +129,79 @@ pub struct AuthorityAces {
 
 impl AuthorityAces {
     pub async fn load(session: &Session, uid: AuthorityRef, ssc: Ssc) -> Result<Self, Error> {
-        let set_enabled = Self::set_enabled_default(uid, ssc);
-        let set_common_name =
-            load_ace_or_else(session, Self::set_common_name_ref(uid, ssc), || Self::set_common_name_default(uid, ssc))
-                .await?;
-        let set_pin =
-            load_ace_or_else(session, Self::set_pin_ref(uid, ssc), || Self::set_pin_default(uid, ssc)).await?;
+        let set_enabled = Self::set_enabled_source(uid, ssc).load(session).await?;
+        let set_common_name = Self::set_common_name_source(uid, ssc).load(session).await?;
+        let set_pin = Self::set_pin_source(uid, ssc).load(session).await?;
         Ok(Self { set_enabled, set_common_name, set_pin })
     }
 
-    fn set_common_name_ref(uid: AuthorityRef, ssc: Ssc) -> Option<AceRef> {
-        use Ssc::*;
-        use opal_2::locking::ace::{ADMINS_SET_COMMON_NAME, USER_SET_COMMON_NAME};
-        use opal_2::locking::authority::{ADMIN, USER};
+    fn set_enabled_source(uid: AuthorityRef, ssc: Ssc) -> AceSource {
+        use AuthorityKind::{AdminSec, User};
+        use opal_2::locking::authority::ADMINS;
 
-        match ssc {
-            OpalV2 | Ruby => {
-                if ADMIN.contains(uid) {
-                    Some(ADMINS_SET_COMMON_NAME)
-                } else if let Some(index) = USER.index_of(uid) {
-                    USER_SET_COMMON_NAME.get(index)
-                } else {
-                    None
-                }
-            }
-            OpalV1 | Opalite | PyriteV1 | PyriteV2 => {
-                if ADMIN.contains(uid) {
-                    None
-                } else if let Some(index) = USER.index_of(uid) {
-                    USER_SET_COMMON_NAME.get(index)
-                } else {
-                    None
-                }
-            }
-            _ => None,
+        let kind = AuthorityKind::from(uid);
+
+        match (ssc, kind) {
+            (_, AdminSec(0)) => AceSource::Fixed(ace_expr!()),
+            (_, AdminSec(_) | User(_)) => AceSource::Fixed(ace_expr!(ADMINS)),
+            _ => AceSource::Fixed(ace_expr!()),
         }
     }
 
-    fn set_pin_ref(uid: AuthorityRef, ssc: Ssc) -> Option<AceRef> {
+    fn set_common_name_source(uid: AuthorityRef, ssc: Ssc) -> AceSource {
+        use AuthorityKind::{AdminSec, User};
         use Ssc::*;
-        use opal_2::locking::ace::{C_PIN_ADMINS_SET_PIN, C_PIN_USER_SET_PIN};
-        use opal_2::locking::authority::{ADMIN, USER};
+        use opal_2::locking::ace::USER_SET_COMMON_NAME;
+        use opal_2::locking::authority::ADMINS;
 
-        match ssc {
-            Enterprise => None,
-            OpalV1 | OpalV2 | Opalite | PyriteV1 | PyriteV2 | Ruby => {
-                if ADMIN.contains(uid) {
-                    Some(C_PIN_ADMINS_SET_PIN)
-                } else if let Some(index) = USER.index_of(uid) {
-                    C_PIN_USER_SET_PIN.get(index)
-                } else {
-                    None
-                }
+        let kind = AuthorityKind::from(uid);
+
+        match (ssc, kind) {
+            (OpalV2 | Ruby | KeyPerIO, AdminSec(_)) => AceSource::Fixed(ace_expr!(ADMINS)),
+            (OpalV1 | Opalite | PyriteV1 | PyriteV2, AdminSec(_)) => AceSource::Fixed(ace_expr!()),
+            (OpalV2 | Ruby, User(index)) if let Some(ace) = USER_SET_COMMON_NAME.get(index) => {
+                AceSource::Editable { ace, default: ace_expr!(ADMINS) }
             }
-            KeyPerIO => None,
+            _ => AceSource::Fixed(ace_expr!()),
         }
     }
 
-    fn set_enabled_default(uid: AuthorityRef, ssc: Ssc) -> AceExpr {
+    fn set_pin_source(uid: AuthorityRef, ssc: Ssc) -> AceSource {
+        use AuthorityKind::{AdminSec, BandMaster, EraseMaster, User};
         use Ssc::*;
-        use opal_2::locking::authority::{ADMIN, ADMINS};
+        use opal_2::locking::ace::C_PIN_USER_SET_PIN;
+        use opal_2::locking::authority::ADMINS;
 
-        match ssc {
-            OpalV2 | Ruby | OpalV1 | Opalite | PyriteV1 | PyriteV2 => {
-                if uid == ADMIN.get(0).unwrap() {
-                    AceExpr::Fixed(ace_expr!(ADMINS))
-                } else {
-                    AceExpr::Fixed(ace_expr!())
-                }
-            }
-            Enterprise => AceExpr::Fixed(ace_expr!()),
-            _ => AceExpr::Fixed(ace_expr!()),
-        }
-    }
+        let kind = AuthorityKind::from(uid);
 
-    fn set_common_name_default(uid: AuthorityRef, ssc: Ssc) -> AceExpr {
-        use Ssc::*;
-        use opal_2::locking::authority::{ADMIN, ADMINS, USER};
-
-        match ssc {
-            OpalV2 | Ruby => {
-                if ADMIN.contains(uid) {
-                    AceExpr::Fixed(ace_expr!(ADMINS))
-                } else if USER.contains(uid) {
-                    AceExpr::Assumed(ace_expr!(ADMINS))
-                } else {
-                    AceExpr::Fixed(ace_expr!())
-                }
+        match (ssc, kind) {
+            (Enterprise, BandMaster(_) | EraseMaster) => AceSource::Fixed(ace_expr!(uid)),
+            (_, AdminSec(_)) => AceSource::Fixed(ace_expr!(ADMINS)),
+            (_, User(index)) if let Some(ace) = C_PIN_USER_SET_PIN.get(index) => {
+                AceSource::Editable { ace, default: ace_expr!(ADMINS uid ||) }
             }
-            OpalV1 | Opalite | PyriteV1 | PyriteV2 => {
-                if USER.contains(uid) {
-                    AceExpr::Assumed(ace_expr!(ADMINS))
-                } else {
-                    AceExpr::Fixed(ace_expr!())
-                }
-            }
-            _ => AceExpr::Fixed(ace_expr!()),
-        }
-    }
-
-    fn set_pin_default(uid: AuthorityRef, ssc: Ssc) -> AceExpr {
-        use Ssc::*;
-        use enterprise::locking::authority::{BAND_MASTER, ERASE_MASTER};
-        use opal_2::locking::authority::{ADMIN, ADMINS, USER};
-
-        match ssc {
-            OpalV2 | Ruby | OpalV1 | Opalite | PyriteV1 | PyriteV2 => {
-                if ADMIN.contains(uid) {
-                    AceExpr::Fixed(ace_expr!(ADMINS))
-                } else if USER.contains(uid) {
-                    AceExpr::Assumed(ace_expr!(ADMINS))
-                } else {
-                    AceExpr::Fixed(ace_expr!())
-                }
-            }
-            Enterprise => {
-                if uid == ERASE_MASTER || BAND_MASTER.contains(uid) {
-                    AceExpr::Fixed(ace_expr!(uid))
-                } else {
-                    AceExpr::Fixed(ace_expr!())
-                }
-            }
-            _ => AceExpr::Fixed(ace_expr!()),
+            _ => AceSource::Fixed(ace_expr!()),
         }
     }
 }
 
-async fn load_ace_or_else(
-    session: &Session,
-    ace: Option<AceRef>,
-    default: impl FnOnce() -> AceExpr,
-) -> Result<AceExpr, Error> {
-    let Some(ace) = ace else {
-        return Ok(default());
-    };
-    match session.get_field(ace.boolean_expr()).await {
-        Ok(expr) => Ok(AceExpr::Loaded(expr)),
-        Err(TperError::MethodCallFailed(MethodStatus::NotAuthorized)) => Ok(default()),
-        Err(err) => Err(err.into()),
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum AceSource {
+    Fixed(Vec<AceOperand>),
+    Editable { ace: AceRef, default: Vec<AceOperand> },
+}
+
+impl AceSource {
+    pub async fn load(self, session: &Session) -> Result<AceExpr, Error> {
+        match self {
+            AceSource::Fixed(expr) => Ok(AceExpr::Fixed(expr)),
+            AceSource::Editable { ace, default } => match session.get_field(ace.boolean_expr()).await {
+                Ok(expr) => Ok(AceExpr::Loaded(expr)),
+                Err(TperError::MethodCallFailed(MethodStatus::NotAuthorized)) => Ok(AceExpr::Assumed(default)),
+                Err(TperError::FieldNotReturned { .. }) => Ok(AceExpr::Assumed(default)),
+                Err(err) => Err(err.into()),
+            },
+        }
     }
 }
 
@@ -272,8 +209,14 @@ async fn load_ace_or_else(
 mod tests {
     use super::*;
 
+    use Ssc::*;
+
     use rstest::rstest;
     use sed_spec::preconfig::core as core_preconfig;
+
+    const OPAL2_RUBY: [Ssc; 2] = [OpalV2, Ruby];
+    const O1_OL_P1_P2: [Ssc; 4] = [OpalV1, Opalite, PyriteV1, PyriteV2];
+    const OPAL_FAMILY: [Ssc; 6] = [OpalV1, OpalV2, Opalite, PyriteV1, PyriteV2, Ruby];
 
     //--------------------------------------------------------------------------
     // Authority aces
@@ -282,49 +225,71 @@ mod tests {
     mod authority_aces {
         use super::*;
 
-        use Ssc::*;
         use core_preconfig::shared::authority::ANYBODY;
         use enterprise::locking::authority::{BAND_MASTER, ERASE_MASTER};
-        use opal_2::locking::ace::{ADMINS_SET_COMMON_NAME, USER_SET_COMMON_NAME};
-        use opal_2::locking::authority::{ADMIN, USER};
+        use opal_2::locking::ace::{C_PIN_USER_SET_PIN, USER_SET_COMMON_NAME};
+        use opal_2::locking::authority::{ADMIN, ADMINS, USER};
 
         #[rstest]
-        #[case::opal_anybody(OpalV2, ANYBODY, None)]
-        #[case::opal_admin1(OpalV2, ADMIN.get(0).unwrap(), Some(ADMINS_SET_COMMON_NAME))]
-        #[case::opal_admin2(OpalV2, ADMIN.get(1).unwrap(), Some(ADMINS_SET_COMMON_NAME))]
-        #[case::opal_user1(OpalV2, USER.get(0).unwrap(), Some(USER_SET_COMMON_NAME.get(0).unwrap()))]
-        #[case::opal_user2(OpalV2, USER.get(1).unwrap(), Some(USER_SET_COMMON_NAME.get(1).unwrap()))]
-        #[case::pyrite_anybody(PyriteV2, ANYBODY, None)]
-        #[case::pyrite_admin1(PyriteV2, ADMIN.get(0).unwrap(), None)]
-        #[case::pyrite_admin2(PyriteV2, ADMIN.get(1).unwrap(), None)]
-        #[case::pyrite_user1(PyriteV2, USER.get(0).unwrap(), Some(USER_SET_COMMON_NAME.get(0).unwrap()))]
-        #[case::pyrite_user2(PyriteV2, USER.get(1).unwrap(), Some(USER_SET_COMMON_NAME.get(1).unwrap()))]
-        #[case::enterprise_anybody(Enterprise, ANYBODY, None)]
-        #[case::enterprise_em(Enterprise, ERASE_MASTER, None)]
-        #[case::enterprise_bm0(Enterprise, BAND_MASTER.get(0).unwrap(), None)]
-        #[case::enterprise_bm1(Enterprise, BAND_MASTER.get(1).unwrap(), None)]
-        fn set_common_name_ref(#[case] ssc: Ssc, #[case] authority: AuthorityRef, #[case] ace: Option<AceRef>) {
-            assert_eq!(AuthorityAces::set_common_name_ref(authority, ssc), ace);
+        #[case::opal_anybody(&OPAL_FAMILY, ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::opal_admins(&OPAL_FAMILY, ADMINS, AceSource::Fixed(ace_expr!()))]
+        #[case::opal_admin1(&OPAL_FAMILY, ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::opal_admin2(&OPAL_FAMILY, ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::opal_user1(&OPAL_FAMILY, USER.get(0).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::opal_user2(&OPAL_FAMILY, USER.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::kpio_admin1(&[KeyPerIO], ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::kpio_admin2(&[KeyPerIO], ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::enterprise_anybody(&[Enterprise], ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_em(&[Enterprise], ERASE_MASTER, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_bm0(&[Enterprise], BAND_MASTER.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_bm1(&[Enterprise], BAND_MASTER.get(1).unwrap(), AceSource::Fixed(ace_expr!()))]
+        fn set_enabled_source(#[case] sscs: &[Ssc], #[case] authority: AuthorityRef, #[case] source: AceSource) {
+            for ssc in sscs {
+                assert_eq!(AuthorityAces::set_enabled_source(authority, *ssc), source, "{ssc:?}");
+            }
         }
 
         #[rstest]
-        fn set_pin_ref() {
-            todo!()
+        #[case::opal_anybody(&OPAL2_RUBY, ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::opal_admin1(&OPAL2_RUBY, ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::opal_admin2(&OPAL2_RUBY, ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::opal_user1(&OPAL2_RUBY, USER.get(0).unwrap(), AceSource::Editable{ ace: USER_SET_COMMON_NAME.get(0).unwrap(), default: ace_expr!(ADMINS) })]
+        #[case::opal_user2(&OPAL2_RUBY, USER.get(1).unwrap(), AceSource::Editable{ ace: USER_SET_COMMON_NAME.get(1).unwrap(), default: ace_expr!(ADMINS) })]
+        #[case::pyrite_anybody(&O1_OL_P1_P2, ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::pyrite_admin1(&O1_OL_P1_P2, ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::pyrite_admin2(&O1_OL_P1_P2, ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::pyrite_user1(&O1_OL_P1_P2, USER.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::pyrite_user2(&O1_OL_P1_P2, USER.get(1).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::kpio_admin1(&[KeyPerIO], ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::kpio_admin2(&[KeyPerIO], ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::enterprise_anybody(&[Enterprise], ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_em(&[Enterprise], ERASE_MASTER, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_bm0(&[Enterprise], BAND_MASTER.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_bm1(&[Enterprise], BAND_MASTER.get(1).unwrap(), AceSource::Fixed(ace_expr!()))]
+        fn set_common_name_source(#[case] sscs: &[Ssc], #[case] authority: AuthorityRef, #[case] source: AceSource) {
+            for ssc in sscs {
+                assert_eq!(AuthorityAces::set_common_name_source(authority, *ssc), source);
+            }
         }
 
         #[rstest]
-        fn set_enabled_default() {
-            todo!()
-        }
-
-        #[rstest]
-        fn set_common_name_default() {
-            todo!()
-        }
-
-        #[rstest]
-        fn set_pin_default() {
-            todo!()
+        #[case::opal_anybody(&OPAL_FAMILY, ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::opal_admins(&OPAL_FAMILY, ADMINS, AceSource::Fixed(ace_expr!()))]
+        #[case::opal_admin1(&OPAL_FAMILY, ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::opal_admin2(&OPAL_FAMILY, ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::opal_user1(&OPAL_FAMILY, USER.get(0).unwrap(), AceSource::Editable{ ace: C_PIN_USER_SET_PIN.get(0).unwrap(), default: ace_expr!(ADMINS (USER.get(0).unwrap()) ||) })]
+        #[case::opal_user2(&OPAL_FAMILY, USER.get(1).unwrap(), AceSource::Editable{ ace: C_PIN_USER_SET_PIN.get(1).unwrap(), default: ace_expr!(ADMINS (USER.get(1).unwrap()) ||) })]
+        #[case::opal_user_without_ace(&OPAL_FAMILY, USER.get(C_PIN_USER_SET_PIN.len()).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::kpio_admin1(&[KeyPerIO], ADMIN.get(0).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::kpio_admin2(&[KeyPerIO], ADMIN.get(1).unwrap(), AceSource::Fixed(ace_expr!(ADMINS)))]
+        #[case::enterprise_anybody(&[Enterprise], ANYBODY, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_em(&[Enterprise], ERASE_MASTER, AceSource::Fixed(ace_expr!(ERASE_MASTER)))]
+        #[case::enterprise_bm0(&[Enterprise], BAND_MASTER.get(0).unwrap(), AceSource::Fixed(ace_expr!((BAND_MASTER.get(0).unwrap()))))]
+        #[case::enterprise_bm1(&[Enterprise], BAND_MASTER.get(1).unwrap(), AceSource::Fixed(ace_expr!((BAND_MASTER.get(1).unwrap()))))]
+        fn set_pin_source(#[case] sscs: &[Ssc], #[case] authority: AuthorityRef, #[case] source: AceSource) {
+            for ssc in sscs {
+                assert_eq!(AuthorityAces::set_pin_source(authority, *ssc), source, "{ssc:?}");
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
-use sed_spec::objects::{AuthorityRef, EvalAceExpr};
+use sed_spec::objects::{AuthorityRef, EvalAceExpr, get_authority_class};
 use smallvec::{SmallVec, smallvec};
 
 /// The authorities that are considered authenticated in a session.
@@ -18,23 +18,15 @@ impl AuthenticatedSet {
     /// The class is derived from the preconfiguration rather than read from the
     /// device, because authorities may not have permission to read their own class.
     pub fn of(authority: AuthorityRef) -> Self {
-        use core::shared::authority::ANYBODY;
-        use enterprise::locking::authority::{BAND_MASTER, BAND_MASTERS};
-        use opal_2::locking::authority::{ADMIN, ADMINS, USER, USERS};
-        use sed_spec::preconfig::{core, enterprise, opal_2};
+        use sed_spec::preconfig::core::shared::authority::ANYBODY;
 
         let mut authenticated = smallvec![authority];
 
-        if USER.contains(authority) {
-            authenticated.push(USERS);
-        } else if ADMIN.contains(authority) {
-            authenticated.push(ADMINS);
-        } else if BAND_MASTER.contains(authority) {
-            authenticated.push(BAND_MASTERS);
-        }
-
         if authority != ANYBODY {
             authenticated.push(ANYBODY);
+        }
+        if let Some(class) = get_authority_class(authority) {
+            authenticated.push(class);
         }
 
         Self(authenticated)
