@@ -9,9 +9,9 @@ use sed_packet::Uid;
 use sed_spec::ace_expr;
 use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{
-    AceRef, AceRefExt, AuthorityKind, AuthorityRef, LockingRangeRef, LockingRangeRefExt, MediaKeyRef, TableDescRefExt,
+    AceRef, AceRefExt, AuthorityKind, AuthorityRef, LockingRangeRef, LockingRangeRefExt, MediaKeyRef,
 };
-use sed_spec::preconfig::core::shared::table;
+use sed_spec::preconfig::core::shared::table_id;
 use sed_spec::preconfig::{core, enterprise, opal_2};
 use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session};
@@ -90,7 +90,6 @@ impl GlobalAces {
         use opal_2::locking::authority::ADMINS;
 
         match ssc {
-            // There is no `Get` row for the ACE objects in the AccessControl table.
             Ssc::Enterprise => AceSource::Fixed(ace_expr!()),
             _ => AceSource::Editable { ace: ACE_GET_ALL, default: ace_expr!(ADMINS) },
         }
@@ -100,7 +99,6 @@ impl GlobalAces {
         use opal_2::locking::authority::ADMINS;
 
         match ssc {
-            // There is no `Set` row for the ACE objects in the AccessControl table.
             Ssc::Enterprise => AceSource::Fixed(ace_expr!()),
             _ => AceSource::Fixed(ace_expr!(ADMINS)),
         }
@@ -154,14 +152,15 @@ impl MbrAces {
     /// Load the MBR ACEs, or [`None`] if the device does not support shadow
     /// MBR.
     pub async fn load(session: &Session, ssc: Ssc) -> Result<Option<Self>, Error> {
-        if !Self::is_supported_by_ssc(ssc) {
-            return Ok(None);
-        }
-        // The MBR is optional for some SSCs (e.g. Pyrite). The Table table is
-        // readable by `Anybody`, so this works regardless of the authority.
-        match session.get_field(table::MBR_CONTROL.rows()).await {
+        // The MBR is optional for some SSCs (e.g. Pyrite, Enterprise). The MBR
+        // table is readable by `Anybody`, so this works regardless of the authority.
+        // A missing table may be reported as an invalid object, or as a missing
+        // row in the AccessControl table.
+        match session.get_bytes(table_id::MBR, 0..1).await {
             Ok(_) => (),
-            Err(TperError::MethodCallFailed(MethodStatus::InvalidParameter)) => return Ok(None),
+            Err(TperError::MethodCallFailed(MethodStatus::InvalidParameter | MethodStatus::NotAuthorized)) => {
+                return Ok(None);
+            }
             Err(err) => return Err(err.into()),
         }
         Ok(Some(Self {
@@ -171,25 +170,25 @@ impl MbrAces {
         }))
     }
 
-    fn is_supported_by_ssc(ssc: Ssc) -> bool {
-        !matches!(ssc, Ssc::Enterprise | Ssc::KeyPerIO)
-    }
-
     fn set_enable_to_dor_source(ssc: Ssc) -> AceSource {
+        use enterprise::locking::authority::{BAND_MASTERS, ERASE_MASTER};
         use opal_2::locking::authority::ADMINS;
 
         match ssc {
-            Ssc::Enterprise | Ssc::KeyPerIO => AceSource::Fixed(ace_expr!()),
+            Ssc::KeyPerIO => AceSource::Fixed(ace_expr!()),
+            Ssc::Enterprise => AceSource::Fixed(ace_expr!(BAND_MASTERS ERASE_MASTER ||)),
             _ => AceSource::Fixed(ace_expr!(ADMINS)),
         }
     }
 
     fn set_done_source(ssc: Ssc) -> AceSource {
+        use enterprise::locking::authority::{BAND_MASTERS, ERASE_MASTER};
         use opal_2::locking::ace::MBR_CONTROL_SET_DONE_TO_DOR;
         use opal_2::locking::authority::ADMINS;
 
         match ssc {
-            Ssc::Enterprise | Ssc::KeyPerIO => AceSource::Fixed(ace_expr!()),
+            Ssc::KeyPerIO => AceSource::Fixed(ace_expr!()),
+            Ssc::Enterprise => AceSource::Fixed(ace_expr!(BAND_MASTERS ERASE_MASTER ||)),
             // Opal 1.0 calls it `ACE_MBRControl_Set_Done`, and it covers only
             // `Done`, but it has the same UID.
             _ => AceSource::Editable { ace: MBR_CONTROL_SET_DONE_TO_DOR, default: ace_expr!(ADMINS) },
@@ -197,10 +196,12 @@ impl MbrAces {
     }
 
     fn upload_source(ssc: Ssc) -> AceSource {
+        use enterprise::locking::authority::{BAND_MASTERS, ERASE_MASTER};
         use opal_2::locking::authority::ADMINS;
 
         match ssc {
-            Ssc::Enterprise | Ssc::KeyPerIO => AceSource::Fixed(ace_expr!()),
+            Ssc::KeyPerIO => AceSource::Fixed(ace_expr!()),
+            Ssc::Enterprise => AceSource::Fixed(ace_expr!(BAND_MASTERS ERASE_MASTER ||)),
             // `ACE_Admin`, which is not editable.
             _ => AceSource::Fixed(ace_expr!(ADMINS)),
         }
@@ -247,7 +248,7 @@ impl LockingRangeAces {
 
         match ssc {
             // `Anybody_GetBand` covers `UID` to `ActiveKey`.
-            Enterprise if enterprise_band_master(uid).is_some() => AceSource::Fixed(ace_expr!(ANYBODY)),
+            Enterprise if enterprise_range_owner(uid).is_some() => AceSource::Fixed(ace_expr!(ANYBODY)),
             Enterprise | KeyPerIO => AceSource::Fixed(ace_expr!()),
             _ if uid == GLOBAL_RANGE => AceSource::Editable {
                 ace: LOCKING_GLOBAL_RANGE_GET_RANGE_START_TO_ACTIVE_KEY,
@@ -280,7 +281,7 @@ impl LockingRangeAces {
         match ssc {
             // `BandMaster{n}_SetBand` (`ReadLockEnabled` to `LockOnReset` for
             // the global range, `RangeStart` to `LockOnReset` for the others).
-            Enterprise if let Some(owner) = enterprise_band_master(uid) => AceSource::Fixed(ace_expr!(owner)),
+            Enterprise if let Some(owner) = enterprise_range_owner(uid) => AceSource::Fixed(ace_expr!(owner)),
             Enterprise | KeyPerIO => AceSource::Fixed(ace_expr!()),
             // `ACE_Locking_GlblRng_Admins_Set` and `ACE_Locking_Admins_RangeStartToLOR`.
             _ if uid == GLOBAL_RANGE || RANGE.contains(uid) => AceSource::Fixed(ace_expr!(ADMINS)),
@@ -354,7 +355,7 @@ fn set_locked_source(
 
     match ssc {
         // `BandMaster{n}_SetBand` covers both `ReadLocked` and `WriteLocked`.
-        Enterprise if let Some(owner) = enterprise_band_master(uid) => AceSource::Fixed(ace_expr!(owner)),
+        Enterprise if let Some(owner) = enterprise_range_owner(uid) => AceSource::Fixed(ace_expr!(owner)),
         Enterprise | KeyPerIO => AceSource::Fixed(ace_expr!()),
         _ if uid == GLOBAL_RANGE => AceSource::Editable { ace: global_range_ace, default: ace_expr!(ADMINS) },
         _ if let Some(ace) = RANGE.index_of(uid).and_then(range_ace) => {
@@ -365,7 +366,7 @@ fn set_locked_source(
 }
 
 /// The `BandMaster` authority that owns an Enterprise locking range.
-fn enterprise_band_master(uid: LockingRangeRef) -> Option<AuthorityRef> {
+fn enterprise_range_owner(uid: LockingRangeRef) -> Option<AuthorityRef> {
     use enterprise::locking::authority::BAND_MASTER;
     use enterprise::locking::locking::{BAND, GLOBAL_RANGE};
 
@@ -644,20 +645,12 @@ mod tests {
 
         use opal_2::locking::ace::MBR_CONTROL_SET_DONE_TO_DOR;
         use opal_2::locking::authority::ADMINS;
-
-        #[rstest]
-        #[case::opal(&OPAL_FAMILY, true)]
-        #[case::enterprise(&[Enterprise], false)]
-        #[case::kpio(&[KeyPerIO], false)]
-        fn is_supported_by_ssc(#[case] sscs: &[Ssc], #[case] supported: bool) {
-            for ssc in sscs {
-                assert_eq!(MbrAces::is_supported_by_ssc(*ssc), supported, "{ssc:?}");
-            }
-        }
+        use sed_spec::preconfig::enterprise::locking::authority::{BAND_MASTERS, ERASE_MASTER};
 
         #[rstest]
         #[case::opal(&OPAL_FAMILY, AceSource::Fixed(ace_expr!(ADMINS)))]
-        #[case::unsupported(&[Enterprise, KeyPerIO], AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise(&[Enterprise], AceSource::Fixed(ace_expr!(BAND_MASTERS ERASE_MASTER ||)))]
+        #[case::unsupported(&[KeyPerIO], AceSource::Fixed(ace_expr!()))]
         fn set_enable_to_dor_source(#[case] sscs: &[Ssc], #[case] source: AceSource) {
             for ssc in sscs {
                 assert_eq!(MbrAces::set_enable_to_dor_source(*ssc), source, "{ssc:?}");
@@ -666,7 +659,8 @@ mod tests {
 
         #[rstest]
         #[case::opal(&OPAL_FAMILY, AceSource::Editable { ace: MBR_CONTROL_SET_DONE_TO_DOR, default: ace_expr!(ADMINS) })]
-        #[case::unsupported(&[Enterprise, KeyPerIO], AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise(&[Enterprise], AceSource::Fixed(ace_expr!(BAND_MASTERS ERASE_MASTER ||)))]
+        #[case::unsupported(&[KeyPerIO], AceSource::Fixed(ace_expr!()))]
         fn set_done_source(#[case] sscs: &[Ssc], #[case] source: AceSource) {
             for ssc in sscs {
                 assert_eq!(MbrAces::set_done_source(*ssc), source, "{ssc:?}");
@@ -675,7 +669,8 @@ mod tests {
 
         #[rstest]
         #[case::opal(&OPAL_FAMILY, AceSource::Fixed(ace_expr!(ADMINS)))]
-        #[case::unsupported(&[Enterprise, KeyPerIO], AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise(&[Enterprise], AceSource::Fixed(ace_expr!(BAND_MASTERS ERASE_MASTER ||)))]
+        #[case::unsupported(&[KeyPerIO], AceSource::Fixed(ace_expr!()))]
         fn upload_source(#[case] sscs: &[Ssc], #[case] source: AceSource) {
             for ssc in sscs {
                 assert_eq!(MbrAces::upload_source(*ssc), source, "{ssc:?}");
