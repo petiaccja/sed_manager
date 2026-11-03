@@ -3,5 +3,5 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
-mod locking_config_session;
+mod locking_config;
 mod setup_session;
