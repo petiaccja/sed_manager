@@ -16,6 +16,7 @@ use sed_spec::preconfig::core::shared::table_id;
 use sed_spec::preconfig::{core, enterprise, opal_2};
 use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session};
+use tracing::instrument;
 
 use crate::Error;
 use crate::locking_config::access_control::ace_expr::AceExpr;
@@ -42,6 +43,7 @@ pub struct Aces {
 }
 
 impl Aces {
+    #[instrument(skip(session), ret, err)]
     pub async fn load(session: &Session, ssc: Ssc) -> Result<Self, Error> {
         let key_table_support = KeyTableSupport::query(session, ssc).await?;
         let locking_ranges_refs = session.next(None, None).await?;
@@ -77,6 +79,7 @@ pub struct GlobalAces {
 }
 
 impl GlobalAces {
+    #[instrument(skip(session), ret, err)]
     pub async fn load(session: &Session, ssc: Ssc) -> Result<Self, Error> {
         Ok(Self {
             read_ace_table: Self::read_ace_table_source(ssc).load(session).await?,
@@ -153,6 +156,7 @@ pub struct MbrAces {
 impl MbrAces {
     /// Load the MBR ACEs, or [`None`] if the device does not support shadow
     /// MBR.
+    #[instrument(skip(session), ret, err)]
     pub async fn load(session: &Session, ssc: Ssc) -> Result<Option<Self>, Error> {
         // The MBR is optional for some SSCs (e.g. Pyrite, Enterprise). The MBR
         // table is readable by `Anybody`, so this works regardless of the authority.
@@ -226,6 +230,7 @@ pub struct LockingRangeAces {
 }
 
 impl LockingRangeAces {
+    #[instrument(skip(session), ret, err)]
     pub async fn load(
         session: &Session,
         uid: LockingRangeRef,
@@ -378,6 +383,7 @@ pub struct KeyTableSupport {
 impl KeyTableSupport {
     /// Determine which of the `K_AES_128` and `K_AES_256` tables the device
     /// supports.
+    #[instrument(skip(session), ret, err)]
     pub async fn query(session: &Session, ssc: Ssc) -> Result<Self, Error> {
         // The `GlobalRange` exists on all devices, and the `K_AES_*` tables'
         // `Mode` column is readable by `Anybody`, so that's a good probe.
@@ -424,6 +430,7 @@ pub struct AuthorityAces {
 }
 
 impl AuthorityAces {
+    #[instrument(skip(session), ret, err)]
     pub async fn load(session: &Session, uid: AuthorityRef, ssc: Ssc) -> Result<Self, Error> {
         let set_enabled = Self::set_enabled_source(uid, ssc).load(session).await?;
         let set_common_name = Self::set_common_name_source(uid, ssc).load(session).await?;
@@ -488,6 +495,7 @@ enum AceSource {
 }
 
 impl AceSource {
+    #[instrument(skip(session), ret, err)]
     pub async fn load(self, session: &Session) -> Result<AceExpr, Error> {
         match self {
             AceSource::Fixed(expr) => Ok(AceExpr::Fixed(expr)),
