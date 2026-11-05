@@ -4,20 +4,16 @@
 //L-----------------------------------------------------------------------------
 
 use std::cmp::min;
-use std::collections::HashSet;
-use std::ops::RangeInclusive;
 
+use sed_packet::MaxBytes;
 use sed_packet::discovery::SscFeatureDescriptor;
 use sed_packet::token_stream::token::{Atom, LongAtom};
-use sed_packet::{MaxBytes, Uid};
 use sed_spec::methods::{MethodStatus, SetBytes};
 use sed_spec::objects::{
-    Ace, AceRefExt, Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange,
-    LockingRangeRef, LockingRangeRefExt, MbrControl, MethodRef, TableDescRefExt,
+    Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange, LockingRangeRef,
+    LockingRangeRefExt, MbrControl, TableDescRefExt,
 };
-use sed_spec::preconfig::core::shared::method_id::{GEN_KEY, SET};
 use sed_spec::preconfig::core::shared::{locking_info, mbr_control, table, table_id};
-use sed_spec::types::AceOperand;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 
@@ -308,81 +304,6 @@ impl LockingConfigSession {
             offset += chunk.len() as u64;
         }
         Ok(())
-    }
-
-    #[instrument(skip(self), ret, err)]
-    async fn get_ace_gen_key(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
-        let active_key = self.session.get_field(locking_range.active_key()).await?;
-        // Pyrite may not support encryption, but sets the active key to NULL.
-        if Uid::from(active_key).is_null() {
-            return Ok(None);
-        }
-        let gen_key_acl = self.session.get_acl(active_key.into(), GEN_KEY).await?;
-        // All SSCs define a single ACE entry for GenKey, so we can take the first.
-        let Some(ace) = gen_key_acl.first().cloned() else {
-            return Ok(None);
-        };
-        let expr = self.session.get_field(ace.boolean_expr()).await?;
-        Ok(Some(expr))
-    }
-
-    #[instrument(skip(self), ret, err)]
-    async fn get_ace_set_all(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
-        let columns = LockingRange::READ_LOCK_ENABLED..=LockingRange::LOCK_ON_RESET;
-        let maybe_ace = self.get_narrowest_ace(locking_range.into(), SET, columns).await?;
-        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
-    }
-
-    #[instrument(skip(self), ret, err)]
-    async fn get_ace_set_read_locked(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
-        let columns = LockingRange::READ_LOCKED..=LockingRange::READ_LOCKED;
-        let maybe_ace = self.get_narrowest_ace(locking_range.into(), SET, columns).await?;
-        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
-    }
-
-    #[instrument(skip(self), ret, err)]
-    async fn get_ace_set_write_locked(&self, locking_range: LockingRangeRef) -> Result<Option<Vec<AceOperand>>, Error> {
-        let columns = LockingRange::WRITE_LOCKED..=LockingRange::WRITE_LOCKED;
-        let maybe_ace = self.get_narrowest_ace(locking_range.into(), SET, columns).await?;
-        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
-    }
-
-    #[instrument(skip(self), ret, err)]
-    async fn get_narrowest_ace(
-        &self,
-        object: Uid,
-        method: MethodRef,
-        columns: RangeInclusive<u16>,
-    ) -> Result<Option<Ace>, Error> {
-        // Get the ACL for the `Set` method to the queried locking range.
-        let acl = self.session.get_acl(object, method).await?;
-
-        // Get all ACEs in the ACL. There shouldn't be too many, so getting them
-        // all won't take too long.
-        let mut aces = Vec::new();
-        for ace_ref in acl {
-            let mut ace = self.session.get_object::<Ace>(ace_ref, Ace::BOOLEAN_EXPR..=Ace::COLUMNS).await?;
-            ace.uid = Some(ace_ref);
-            aces.push(ace);
-        }
-
-        // Sort the ACEs by the number of columns they refer to. This way we can
-        // return the narrowest ACE that matches the queried columns.
-        aces.sort_by_key(|ace| ace.columns.as_ref().map(HashSet::len).unwrap_or(0));
-
-        // Get the first ACE (if any) that contains all the queried columns.
-        Ok(aces.into_iter().find(|ace| {
-            ace.columns
-                .as_ref()
-                .is_some_and(|ace_columns| columns.clone().all(|column| ace_columns.contains(&column)))
-        }))
-    }
-
-    #[instrument(skip(self), ret, err)]
-    async fn get_ace_mbr_set_done(&self) -> Result<Option<Vec<AceOperand>>, Error> {
-        let columns = MbrControl::DONE..=MbrControl::DONE;
-        let maybe_ace = self.get_narrowest_ace(mbr_control::MBR_CONTROL.into(), SET, columns).await?;
-        Ok(maybe_ace.and_then(|ace| ace.boolean_expr))
     }
 
     #[instrument(skip(self), err)]
