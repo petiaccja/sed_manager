@@ -5,11 +5,12 @@
 
 use std::collections::BTreeMap;
 
-use sed_packet::Uid;
+use sed_packet::UidRange;
 use sed_spec::ace_expr;
 use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{
-    AceRef, AceRefExt, AuthorityKind, AuthorityRef, LockingRangeRef, LockingRangeRefExt, MediaKeyRef,
+    AceRef, AceRefExt, AuthorityKind, AuthorityRef, KAes128Ref, KAes128RefExt, KAes256Ref, KAes256RefExt,
+    LockingRangeRef,
 };
 use sed_spec::preconfig::core::shared::table_id;
 use sed_spec::preconfig::{core, enterprise, opal_2};
@@ -42,10 +43,11 @@ pub struct Aces {
 
 impl Aces {
     pub async fn load(session: &Session, ssc: Ssc) -> Result<Self, Error> {
+        let key_table_support = KeyTableSupport::query(session, ssc).await?;
         let locking_ranges_refs = session.next(None, None).await?;
         let mut locking_ranges = BTreeMap::new();
         for uid in locking_ranges_refs {
-            locking_ranges.insert(uid, LockingRangeAces::load(session, uid, ssc).await?);
+            locking_ranges.insert(uid, LockingRangeAces::load(session, uid, ssc, key_table_support).await?);
         }
 
         let authorities_refs = session.next(None, None).await?;
@@ -209,30 +211,41 @@ impl MbrAces {
 }
 
 /// ACE expressions that control access to a single locking range object.
+///
+/// Both the 128-bit and 256-bit key ACEs are tracked for devices that support
+/// both. Authorities that can't read the `ActiveKey` of the range can still
+/// work out permissions if both ACEs are known.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LockingRangeAces {
     pub read_start_to_active_key: AceExpr,
     pub set_read_locked: AceExpr,
     pub set_write_locked: AceExpr,
-    pub erase: Option<AceExpr>,
+    pub erase_128: Option<AceExpr>,
+    pub erase_256: Option<AceExpr>,
     pub set_start_to_lor: AceExpr,
 }
 
 impl LockingRangeAces {
-    pub async fn load(session: &Session, uid: LockingRangeRef, ssc: Ssc) -> Result<Self, Error> {
-        let erase = match Self::needs_active_key(ssc) {
-            true => Self::erase_source(ssc, ActiveKey::load(session, uid).await?),
-            false => Self::erase_source(ssc, ActiveKey::Unreadable),
+    pub async fn load(
+        session: &Session,
+        uid: LockingRangeRef,
+        ssc: Ssc,
+        key_table_support: KeyTableSupport,
+    ) -> Result<Self, Error> {
+        let erase_128 = match key_table_support.aes_128 {
+            true => Some(Self::erase_128_source(uid, ssc).load(session).await?),
+            false => None,
         };
-        let erase = match erase {
-            Some(source) => Some(source.load(session).await?),
-            None => None,
+        let erase_256 = match key_table_support.aes_256 {
+            true => Some(Self::erase_256_source(uid, ssc).load(session).await?),
+            false => None,
         };
         Ok(Self {
             read_start_to_active_key: Self::read_start_to_active_key_source(uid, ssc).load(session).await?,
             set_read_locked: Self::set_read_locked_source(uid, ssc).load(session).await?,
             set_write_locked: Self::set_write_locked_source(uid, ssc).load(session).await?,
-            erase,
+            erase_128,
+            erase_256,
             set_start_to_lor: Self::set_start_to_lor_source(uid, ssc).load(session).await?,
         })
     }
@@ -289,55 +302,33 @@ impl LockingRangeAces {
         }
     }
 
-    /// Whether [`Self::erase_source`] depends on the active key of the range.
-    fn needs_active_key(ssc: Ssc) -> bool {
-        use Ssc::*;
-        matches!(ssc, OpalV1 | OpalV2 | Opalite | Ruby)
+    fn erase_128_source(uid: LockingRangeRef, ssc: Ssc) -> AceSource {
+        use opal_2::locking::ace::{K_AES_128_GLOBAL_RANGE_GEN_KEY, K_AES_128_RANGE_GEN_KEY};
+        erase_source(uid, ssc, K_AES_128_GLOBAL_RANGE_GEN_KEY, K_AES_128_RANGE_GEN_KEY)
     }
 
-    /// The ACE for erasing the range, or [`None`] if the range has no media
-    /// encryption key to erase.
-    ///
-    /// In the Opal family, the `GenKey` ACE belongs to the range's active key,
-    /// which is either in the `K_AES_128` or the `K_AES_256` table.
-    fn erase_source(ssc: Ssc, active_key: ActiveKey) -> Option<AceSource> {
-        use Ssc::*;
-        use enterprise::locking::authority::ERASE_MASTER;
-        use opal_2::locking::ace::{
-            K_AES_128_GLOBAL_RANGE_GEN_KEY, K_AES_128_RANGE_GEN_KEY, K_AES_256_GLOBAL_RANGE_GEN_KEY,
-            K_AES_256_RANGE_GEN_KEY,
-        };
-        use opal_2::locking::authority::ADMINS;
-        use opal_2::locking::{k_aes_128, k_aes_256};
+    fn erase_256_source(uid: LockingRangeRef, ssc: Ssc) -> AceSource {
+        use opal_2::locking::ace::{K_AES_256_GLOBAL_RANGE_GEN_KEY, K_AES_256_RANGE_GEN_KEY};
+        erase_source(uid, ssc, K_AES_256_GLOBAL_RANGE_GEN_KEY, K_AES_256_RANGE_GEN_KEY)
+    }
+}
 
-        match (ssc, active_key) {
-            // `Erase` on the locking object, gated by `EraseMaster`.
-            (Enterprise, _) => Some(AceSource::Fixed(ace_expr!(ERASE_MASTER))),
-            // Pyrite has no media encryption, and KPIO has no locking ranges.
-            (PyriteV1 | PyriteV2 | KeyPerIO, _) => None,
-            (_, ActiveKey::Null) => None,
-            (_, ActiveKey::Key(MediaKeyRef::Aes128(key))) if key == k_aes_128::GLOBAL_RANGE_KEY => {
-                Some(AceSource::Editable { ace: K_AES_128_GLOBAL_RANGE_GEN_KEY, default: ace_expr!(ADMINS) })
-            }
-            (_, ActiveKey::Key(MediaKeyRef::Aes256(key))) if key == k_aes_256::GLOBAL_RANGE_KEY => {
-                Some(AceSource::Editable { ace: K_AES_256_GLOBAL_RANGE_GEN_KEY, default: ace_expr!(ADMINS) })
-            }
-            (_, ActiveKey::Key(MediaKeyRef::Aes128(key)))
-                if let Some(ace) =
-                    k_aes_128::RANGE_KEY.index_of(key).and_then(|index| K_AES_128_RANGE_GEN_KEY.get(index)) =>
-            {
-                Some(AceSource::Editable { ace, default: ace_expr!(ADMINS) })
-            }
-            (_, ActiveKey::Key(MediaKeyRef::Aes256(key)))
-                if let Some(ace) =
-                    k_aes_256::RANGE_KEY.index_of(key).and_then(|index| K_AES_256_RANGE_GEN_KEY.get(index)) =>
-            {
-                Some(AceSource::Editable { ace, default: ace_expr!(ADMINS) })
-            }
-            // The key couldn't be read or isn't a preconfigured key, so the
-            // `GenKey` ACE can't be located.
-            (_, ActiveKey::Key(_) | ActiveKey::Unreadable) => Some(AceSource::Assumed(ace_expr!(ADMINS))),
+/// Get the ACE source for erasing a locking range.
+fn erase_source(uid: LockingRangeRef, ssc: Ssc, global_range_ace: AceRef, range_ace: UidRange<AceRef>) -> AceSource {
+    use Ssc::*;
+    use enterprise::locking::authority::ERASE_MASTER;
+    use opal_2::locking::authority::ADMINS;
+    use opal_2::locking::locking::{GLOBAL_RANGE, RANGE};
+
+    match ssc {
+        Enterprise if enterprise_range_owner(uid).is_some() => AceSource::Fixed(ace_expr!(ERASE_MASTER)),
+        // Pyrite has no media encryption, and KPIO has no locking ranges.
+        Enterprise | PyriteV1 | PyriteV2 | KeyPerIO => AceSource::Fixed(ace_expr!()),
+        _ if uid == GLOBAL_RANGE => AceSource::Editable { ace: global_range_ace, default: ace_expr!(ADMINS) },
+        _ if let Some(ace) = RANGE.index_of(uid).and_then(|index| range_ace.get(index)) => {
+            AceSource::Editable { ace, default: ace_expr!(ADMINS) }
         }
+        _ => AceSource::Fixed(ace_expr!()),
     }
 }
 
@@ -377,21 +368,48 @@ fn enterprise_range_owner(uid: LockingRangeRef) -> Option<AuthorityRef> {
     }
 }
 
-/// The active key of a locking range, as read from the device.
+/// Which media encryption key tables the device has.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ActiveKey {
-    Unreadable,
-    Null,
-    Key(MediaKeyRef),
+pub struct KeyTableSupport {
+    pub aes_128: bool,
+    pub aes_256: bool,
 }
 
-impl ActiveKey {
-    async fn load(session: &Session, uid: LockingRangeRef) -> Result<Self, Error> {
-        match session.get_field(uid.active_key()).await {
-            Ok(key) if Uid::from(key).is_null() => Ok(Self::Null),
-            Ok(key) => Ok(Self::Key(key)),
-            Err(TperError::MethodCallFailed(MethodStatus::NotAuthorized)) => Ok(Self::Unreadable),
-            Err(TperError::FieldNotReturned { .. }) => Ok(Self::Unreadable),
+impl KeyTableSupport {
+    /// Determine which of the `K_AES_128` and `K_AES_256` tables the device
+    /// supports.
+    pub async fn query(session: &Session, ssc: Ssc) -> Result<Self, Error> {
+        // The `GlobalRange` exists on all devices, and the `K_AES_*` tables'
+        // `Mode` column is readable by `Anybody`, so that's a good probe.
+        let (key_128, key_256) = Self::global_range_keys(ssc);
+        Ok(Self {
+            aes_128: Self::evaluate_probe_result(session.get_field(key_128.mode()).await)?,
+            aes_256: Self::evaluate_probe_result(session.get_field(key_256.mode()).await)?,
+        })
+    }
+
+    fn global_range_keys(ssc: Ssc) -> (KAes128Ref, KAes256Ref) {
+        match ssc {
+            Ssc::Enterprise => {
+                use enterprise::locking::{k_aes_128, k_aes_256};
+                (k_aes_128::GLOBAL_RANGE_KEY, k_aes_256::GLOBAL_RANGE_KEY)
+            }
+            _ => {
+                use opal_2::locking::{k_aes_128, k_aes_256};
+                (k_aes_128::GLOBAL_RANGE_KEY, k_aes_256::GLOBAL_RANGE_KEY)
+            }
+        }
+    }
+
+    /// Interpret the result of reading the probed key's `Mode`.
+    fn evaluate_probe_result<T>(result: Result<T, TperError>) -> Result<bool, Error> {
+        match result {
+            Ok(_) => Ok(true),
+            // The object exists, but the column was not returned.
+            Err(TperError::FieldNotReturned { .. }) => Ok(true),
+            // A missing table may be reported as an invalid object, or as a
+            // missing row in the AccessControl table.
+            Err(TperError::MethodCallFailed(MethodStatus::InvalidParameter | MethodStatus::NotAuthorized)) => Ok(false),
             Err(err) => Err(err.into()),
         }
     }
@@ -466,19 +484,13 @@ impl AuthorityAces {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum AceSource {
     Fixed(Vec<AceOperand>),
-    Editable {
-        ace: AceRef,
-        default: Vec<AceOperand>,
-    },
-    /// The ACE is editable, but it can't be located, so it can't be loaded.
-    Assumed(Vec<AceOperand>),
+    Editable { ace: AceRef, default: Vec<AceOperand> },
 }
 
 impl AceSource {
     pub async fn load(self, session: &Session) -> Result<AceExpr, Error> {
         match self {
             AceSource::Fixed(expr) => Ok(AceExpr::Fixed(expr)),
-            AceSource::Assumed(expr) => Ok(AceExpr::Assumed(expr)),
             AceSource::Editable { ace, default } => match session.get_field(ace.boolean_expr()).await {
                 Ok(expr) => Ok(AceExpr::Loaded(expr)),
                 Err(TperError::MethodCallFailed(MethodStatus::NotAuthorized)) => Ok(AceExpr::Assumed(default)),
@@ -696,7 +708,6 @@ mod tests {
         };
         use opal_2::locking::authority::ADMINS;
         use opal_2::locking::locking::{GLOBAL_RANGE, RANGE};
-        use opal_2::locking::{k_aes_128, k_aes_256};
 
         fn editable(ace: AceRef) -> AceSource {
             AceSource::Editable { ace, default: ace_expr!(ADMINS) }
@@ -781,41 +792,70 @@ mod tests {
             }
         }
 
+        const OPAL_FAMILY_ENCRYPTED: [Ssc; 4] = [OpalV1, OpalV2, Opalite, Ruby];
+
         #[rstest]
-        #[case::opal(&[OpalV1, OpalV2, Opalite, Ruby], true)]
-        #[case::other(&[PyriteV1, PyriteV2, Enterprise, KeyPerIO], false)]
-        fn needs_active_key(#[case] sscs: &[Ssc], #[case] needs: bool) {
+        #[case::opal_global(&OPAL_FAMILY_ENCRYPTED, GLOBAL_RANGE, editable(K_AES_128_GLOBAL_RANGE_GEN_KEY))]
+        #[case::opal_range1(&OPAL_FAMILY_ENCRYPTED, RANGE.get(0).unwrap(), editable(K_AES_128_RANGE_GEN_KEY.get(0).unwrap()))]
+        #[case::opal_range2(&OPAL_FAMILY_ENCRYPTED, RANGE.get(1).unwrap(), editable(K_AES_128_RANGE_GEN_KEY.get(1).unwrap()))]
+        #[case::opal_range_without_ace(&OPAL_FAMILY_ENCRYPTED, RANGE.get(K_AES_128_RANGE_GEN_KEY.len()).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::opal_enterprise_band(&OPAL_FAMILY_ENCRYPTED, BAND.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::pyrite(&[PyriteV1, PyriteV2], GLOBAL_RANGE, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_global(&[Enterprise], GLOBAL_RANGE, AceSource::Fixed(ace_expr!(ERASE_MASTER)))]
+        #[case::enterprise_band1(&[Enterprise], BAND.get(0).unwrap(), AceSource::Fixed(ace_expr!(ERASE_MASTER)))]
+        #[case::enterprise_opal_range(&[Enterprise], RANGE.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::kpio(&[KeyPerIO], GLOBAL_RANGE, AceSource::Fixed(ace_expr!()))]
+        fn erase_128_source(#[case] sscs: &[Ssc], #[case] range: LockingRangeRef, #[case] source: AceSource) {
             for ssc in sscs {
-                assert_eq!(LockingRangeAces::needs_active_key(*ssc), needs, "{ssc:?}");
+                assert_eq!(LockingRangeAces::erase_128_source(range, *ssc), source, "{ssc:?}");
             }
         }
 
-        const ENCRYPTING_OPAL: [Ssc; 4] = [OpalV1, OpalV2, Opalite, Ruby];
-
-        fn aes_128(key: sed_spec::objects::KAes128Ref) -> ActiveKey {
-            ActiveKey::Key(MediaKeyRef::Aes128(key))
+        #[rstest]
+        #[case::opal_global(&OPAL_FAMILY_ENCRYPTED, GLOBAL_RANGE, editable(K_AES_256_GLOBAL_RANGE_GEN_KEY))]
+        #[case::opal_range1(&OPAL_FAMILY_ENCRYPTED, RANGE.get(0).unwrap(), editable(K_AES_256_RANGE_GEN_KEY.get(0).unwrap()))]
+        #[case::opal_range2(&OPAL_FAMILY_ENCRYPTED, RANGE.get(1).unwrap(), editable(K_AES_256_RANGE_GEN_KEY.get(1).unwrap()))]
+        #[case::opal_range_without_ace(&OPAL_FAMILY_ENCRYPTED, RANGE.get(K_AES_256_RANGE_GEN_KEY.len()).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::opal_enterprise_band(&OPAL_FAMILY_ENCRYPTED, BAND.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::pyrite(&[PyriteV1, PyriteV2], GLOBAL_RANGE, AceSource::Fixed(ace_expr!()))]
+        #[case::enterprise_global(&[Enterprise], GLOBAL_RANGE, AceSource::Fixed(ace_expr!(ERASE_MASTER)))]
+        #[case::enterprise_band1(&[Enterprise], BAND.get(0).unwrap(), AceSource::Fixed(ace_expr!(ERASE_MASTER)))]
+        #[case::enterprise_opal_range(&[Enterprise], RANGE.get(0).unwrap(), AceSource::Fixed(ace_expr!()))]
+        #[case::kpio(&[KeyPerIO], GLOBAL_RANGE, AceSource::Fixed(ace_expr!()))]
+        fn erase_256_source(#[case] sscs: &[Ssc], #[case] range: LockingRangeRef, #[case] source: AceSource) {
+            for ssc in sscs {
+                assert_eq!(LockingRangeAces::erase_256_source(range, *ssc), source, "{ssc:?}");
+            }
         }
+    }
 
-        fn aes_256(key: sed_spec::objects::KAes256Ref) -> ActiveKey {
-            ActiveKey::Key(MediaKeyRef::Aes256(key))
+    //--------------------------------------------------------------------------
+    // Key table support
+    //--------------------------------------------------------------------------
+
+    mod key_table_support {
+        use super::*;
+
+        use sed_packet::Uid;
+
+        #[rstest]
+        #[case::opal(&OPAL_FAMILY_KPIO, opal_2::locking::k_aes_128::GLOBAL_RANGE_KEY, opal_2::locking::k_aes_256::GLOBAL_RANGE_KEY)]
+        #[case::enterprise(&[Enterprise], enterprise::locking::k_aes_128::GLOBAL_RANGE_KEY, enterprise::locking::k_aes_256::GLOBAL_RANGE_KEY)]
+        fn global_range_keys(#[case] sscs: &[Ssc], #[case] key_128: KAes128Ref, #[case] key_256: KAes256Ref) {
+            for ssc in sscs {
+                assert_eq!(KeyTableSupport::global_range_keys(*ssc), (key_128, key_256), "{ssc:?}");
+            }
         }
 
         #[rstest]
-        #[case::opal_aes_128_global(&ENCRYPTING_OPAL, aes_128(k_aes_128::GLOBAL_RANGE_KEY), Some(editable(K_AES_128_GLOBAL_RANGE_GEN_KEY)))]
-        #[case::opal_aes_256_global(&ENCRYPTING_OPAL, aes_256(k_aes_256::GLOBAL_RANGE_KEY), Some(editable(K_AES_256_GLOBAL_RANGE_GEN_KEY)))]
-        #[case::opal_aes_128_range2(&ENCRYPTING_OPAL, aes_128(k_aes_128::RANGE_KEY.get(1).unwrap()), Some(editable(K_AES_128_RANGE_GEN_KEY.get(1).unwrap())))]
-        #[case::opal_aes_256_range2(&ENCRYPTING_OPAL, aes_256(k_aes_256::RANGE_KEY.get(1).unwrap()), Some(editable(K_AES_256_RANGE_GEN_KEY.get(1).unwrap())))]
-        #[case::opal_key_without_ace(&ENCRYPTING_OPAL, aes_128(k_aes_128::RANGE_KEY.get(K_AES_128_RANGE_GEN_KEY.len()).unwrap()), Some(AceSource::Assumed(ace_expr!(ADMINS))))]
-        #[case::opal_unreadable(&ENCRYPTING_OPAL, ActiveKey::Unreadable, Some(AceSource::Assumed(ace_expr!(ADMINS))))]
-        #[case::opal_null(&ENCRYPTING_OPAL, ActiveKey::Null, None)]
-        #[case::pyrite(&[PyriteV1, PyriteV2], ActiveKey::Null, None)]
-        #[case::pyrite_unreadable(&[PyriteV1, PyriteV2], ActiveKey::Unreadable, None)]
-        #[case::enterprise(&[Enterprise], ActiveKey::Unreadable, Some(AceSource::Fixed(ace_expr!(ERASE_MASTER))))]
-        #[case::kpio(&[KeyPerIO], ActiveKey::Unreadable, None)]
-        fn erase_source(#[case] sscs: &[Ssc], #[case] active_key: ActiveKey, #[case] source: Option<AceSource>) {
-            for ssc in sscs {
-                assert_eq!(LockingRangeAces::erase_source(*ssc, active_key), source, "{ssc:?}");
-            }
+        #[case::ok(Ok(()), Some(true))]
+        #[case::field_not_returned(Err(TperError::FieldNotReturned { object: Uid::null(), field: 4 }), Some(true))]
+        #[case::invalid_parameter(Err(TperError::MethodCallFailed(MethodStatus::InvalidParameter)), Some(false))]
+        #[case::not_authorized(Err(TperError::MethodCallFailed(MethodStatus::NotAuthorized)), Some(false))]
+        #[case::other_status(Err(TperError::MethodCallFailed(MethodStatus::Fail)), None)]
+        #[case::other_error(Err(TperError::Closed), None)]
+        fn exists(#[case] result: Result<(), TperError>, #[case] expected: Option<bool>) {
+            assert_eq!(KeyTableSupport::evaluate_probe_result(result).ok(), expected);
         }
     }
 }

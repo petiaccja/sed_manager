@@ -7,6 +7,7 @@ use std::collections::BTreeMap;
 
 use sed_spec::objects::{AuthorityRef, LockingRangeRef};
 
+use crate::locking_config::access_control::ace_expr::AceExpr;
 use crate::locking_config::access_control::aces::{Aces, AuthorityAces, GlobalAces, LockingRangeAces, MbrAces};
 use crate::locking_config::access_control::authenticated_set::AuthenticatedSet;
 
@@ -106,9 +107,26 @@ impl LockingRangePermissions {
             // `ReadLocked` and `WriteLocked` are also covered by `set_start_to_lor`.
             set_read_locked: set_start_to_lor || authenticated.allows(&aces.set_read_locked),
             set_write_locked: set_start_to_lor || authenticated.allows(&aces.set_write_locked),
-            erase: aces.erase.as_ref().map(|erase| authenticated.allows(erase)),
+            erase: evaluate_erase_permission(authenticated, aces.erase_128.as_ref(), aces.erase_256.as_ref()),
             set_start_to_lor,
         }
+    }
+}
+
+/// Erasing is permitted if all present key tables permit it.
+///
+/// When authorities cannot read the `ActiveKey`, but both the `K_AES_128`
+/// and the `K_AES_256` tables are present, we don't know which one is used
+/// for the range. Assume the authority has permission if both the 128- and
+/// 256-bit ACEs grant permission.
+fn evaluate_erase_permission(
+    authenticated: &AuthenticatedSet,
+    erase_128: Option<&AceExpr>,
+    erase_256: Option<&AceExpr>,
+) -> Option<bool> {
+    match [erase_128, erase_256] {
+        [None, None] => None,
+        permissions => Some(permissions.into_iter().flatten().all(|expr| authenticated.allows(expr))),
     }
 }
 
@@ -228,7 +246,8 @@ mod tests {
             read_start_to_active_key: only(user(1)),
             set_read_locked: only(user(2)),
             set_write_locked: only(user(3)),
-            erase: Some(only(user(4))),
+            erase_128: Some(only(user(4))),
+            erase_256: None,
             set_start_to_lor: only(user(5)),
         }
     }
@@ -261,10 +280,26 @@ mod tests {
         assert_that!(permissions, eq(&expected));
     }
 
-    #[test]
-    fn evaluate_locking_range_permissions_no_erase() {
-        let aces = LockingRangeAces { erase: None, ..locking_range_aces() };
-        assert_eq!(LockingRangePermissions::of(&authenticated(user(4)), &aces).erase, None);
+    #[rstest]
+    #[case::missing_128_missing_256(None, None, user(1), None)]
+    #[case::allow_128_missing_256(Some(only(user(1))), None, user(1), Some(true))]
+    #[case::deny_128_missing_256(Some(only(user(2))), None, user(1), Some(false))]
+    #[case::missing_128_allow_256(None, Some(only(user(1))), user(1), Some(true))]
+    #[case::missing_128_deny_256(None, Some(only(user(2))), user(1), Some(false))]
+    #[case::allow_128_allow_256(Some(only(user(1))), Some(only(user(1))), user(1), Some(true))]
+    #[case::allow_128_deny_256(Some(only(user(1))), Some(only(user(2))), user(1), Some(false))]
+    #[case::deny_128_allow_256(Some(only(user(2))), Some(only(user(1))), user(1), Some(false))]
+    #[case::deny_128_deny_256(Some(only(user(2))), Some(only(user(2))), user(1), Some(false))]
+    fn evaluate_erase_permission_(
+        #[case] erase_128: Option<AceExpr>,
+        #[case] erase_256: Option<AceExpr>,
+        #[case] authority: AuthorityRef,
+        #[case] expected: Option<bool>,
+    ) {
+        assert_eq!(
+            evaluate_erase_permission(&authenticated(authority), erase_128.as_ref(), erase_256.as_ref()),
+            expected
+        );
     }
 
     //--------------------------------------------------------------------------
