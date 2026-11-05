@@ -6,9 +6,10 @@
 mod reference;
 
 mod access_control;
-mod ace;
+pub mod ace;
 mod authority;
 mod c_pin;
+mod k_aes_128;
 mod k_aes_256;
 mod locking_info;
 mod locking_range;
@@ -17,9 +18,10 @@ mod security_provider;
 mod table_desc;
 
 pub use access_control::AccessControl;
-pub use ace::{Ace, AceExpr, ace_expr, ace_operand};
-pub use authority::{Authority, AuthorityRefExt};
+pub use ace::{Ace, AceRefExt, EvalAceExpr, ace_expr, ace_operand};
+pub use authority::{Authority, AuthorityClass, AuthorityKind, AuthorityRefExt, get_authority_class};
 pub use c_pin::{CPin, CPinRefExt};
+pub use k_aes_128::{KAes128, KAes128RefExt};
 pub use k_aes_256::{KAes256, KAes256RefExt};
 pub use locking_info::{LockingInfo, LockingInfoExt, LockingInfoExtRefExt, LockingInfoRefExt};
 pub use locking_range::{LockingRange, LockingRangeRefExt};

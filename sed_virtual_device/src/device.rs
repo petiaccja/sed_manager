@@ -86,14 +86,22 @@ impl VirtualDevice {
         self.tper.lock().unwrap().discover(&self.capabilities)
     }
 
-    /// Get information about the device's internal state, like the content of
-    /// the tables.
+    /// Read the device's internal state, like the content of the tables.
     ///
-    /// This function exposes everything without access control checks, and is
-    /// helpful to create checks in tests.
+    /// This bypassess access control checks and allows tests to verify
+    /// side-effects.
     pub fn inspect<Output>(&self, f: impl FnOnce(&Tper) -> Output) -> Output {
         let tper = self.tper.lock().expect("the virtual device panicked in another thread");
         f(&tper)
+    }
+
+    /// Modify the device's internal state, like the content of the tables.
+    ///
+    /// This bypassess access control checks and allows tests to inject
+    /// side-effects.
+    pub fn modify<Output>(&self, f: impl FnOnce(&mut Tper) -> Output) -> Output {
+        let mut tper = self.tper.lock().expect("the virtual device panicked in another thread");
+        f(&mut tper)
     }
 }
 

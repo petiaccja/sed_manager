@@ -5,7 +5,7 @@
 
 use std::ops::{Add, Sub};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct UidRange<U> {
     pub start: U,
     pub end: U,

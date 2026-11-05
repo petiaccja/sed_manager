@@ -99,6 +99,7 @@ rfd = { version = "0.17.2", features = ["xdg-portal"] }
 
 # -- Other
 chrono = "0.4.44"
+num-integer = "0.1.47"
 
 [workspace.lints.clippy]
 correctness = { priority = -1, level = "deny" }
