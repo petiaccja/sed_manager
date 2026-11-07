@@ -1,3 +1,8 @@
+//L-----------------------------------------------------------------------------
+//L Copyright (C) Péter Kardos
+//L Please refer to the full license distributed with this software.
+//L-----------------------------------------------------------------------------
+
 const GENERATED_MARKER: () = ();
 pub mod opalite {
     use crate::lookup::SpRef;
