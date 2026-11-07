@@ -3,14 +3,20 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
+mod codegen_ast;
+mod schema_ast;
+mod semantic_ast;
+
 use std::collections::HashMap;
 use std::ops::Range;
 use std::str::FromStr as _;
 
-use quote::{format_ident, quote};
+use quote::{ToTokens, format_ident, quote};
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer};
 use syn::{Expr, File, Ident, ItemConst, ItemMod, parse_quote};
+
+use crate::semantic_ast::SemanticError;
 
 type Error = Box<dyn std::error::Error>;
 
@@ -560,6 +566,22 @@ fn generate_file(spec: &Spec) -> Result<File, Error> {
 pub fn generate_spec(spec: &str) -> Result<String, Error> {
     let spec: Spec = serde_json::from_str(spec)?;
     let file = generate_file(&spec)?;
+    Ok(prettyplease::unparse(&file))
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error2 {
+    #[error(transparent)]
+    Parsing(#[from] serde_json::Error),
+    #[error(transparent)]
+    Semantic(#[from] SemanticError),
+}
+
+pub fn generate_database_module(database_json: &str) -> Result<String, Error2> {
+    let database: schema_ast::Database = serde_json::from_str(database_json)?;
+    let database = semantic_ast::Database::try_from(database)?;
+    let database = codegen_ast::Database::from(database);
+    let file = syn::parse2(database.to_token_stream()).expect("must generate syntactically correct code");
     Ok(prettyplease::unparse(&file))
 }
 

@@ -1,0 +1,15 @@
+{
+    "FeatureX": {
+        "SPY": {
+            "TableZ": {
+                "ObjectA": "0000000900000001",
+                "ObjectB": {
+                    "base": "0000000900000002",
+                    "count": 100,
+                    "step": 2,
+                    "display_base": 0
+                }
+            }
+        }
+    }
+}

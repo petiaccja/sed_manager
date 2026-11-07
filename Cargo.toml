@@ -67,9 +67,10 @@ windows = { version = "0.62.2" }
 rustix = "1.1.4"
 
 # -- Testing
-rstest = { version = "0.26.1" }
-googletest = { version = "0.14.2" }
-tempfile = { version = "3.27.0" }
+rstest = "0.26.1"
+googletest = "0.14.2"
+tempfile = "3.27.0"
+insta = "1.49.0"
 
 # -- Tracing
 # The opentelemetry dependencies have to be pinned to the same version.
@@ -100,6 +101,7 @@ rfd = { version = "0.17.2", features = ["xdg-portal"] }
 # -- Other
 chrono = "0.4.44"
 num-integer = "0.1.47"
+heck = { version = "0.5.0" }
 
 [workspace.lints.clippy]
 correctness = { priority = -1, level = "deny" }
