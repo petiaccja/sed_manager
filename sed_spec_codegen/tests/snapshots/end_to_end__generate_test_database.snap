@@ -3,6 +3,85 @@ source: sed_spec_codegen/tests/end_to_end.rs
 expression: generated
 ---
 const GENERATED_MARKER: () = ();
+pub mod core {
+    use ::sed_packet::TableRef;
+    use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap};
+    pub mod shared {
+        use ::sed_packet::TableRef;
+        use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
+        pub mod table_id {
+            use ::sed_packet::{TableRef, UidRange};
+            use crate::lookup::{UidRangeEntry, SortedMap, TableIdLookup};
+            pub const INVOKING_ID: TableRef = TableRef::new(0xfffffffe00000000_u64);
+            pub const TABLE_Z: TableRef = TableRef::new(0x0000000900000000_u64);
+            pub const DATA_STORE: UidRange<TableRef> = UidRange {
+                start: TableRef::new(0x0000100100000000_u64),
+                end: TableRef::new(0x0000100900000000_u64),
+                step: 2u32,
+            };
+            const BY_NAME: [(&str, TableRef); 2usize] = [
+                ("InvokingID", INVOKING_ID),
+                ("TableZ", TABLE_Z),
+            ];
+            const BY_VALUE: [(TableRef, &str); 2usize] = [
+                (TABLE_Z, "TableZ"),
+                (INVOKING_ID, "InvokingID"),
+            ];
+            const RANGES: [UidRangeEntry<TableRef>; 1usize] = [
+                UidRangeEntry {
+                    range: UidRange {
+                        start: TableRef::new(0x0000100100000000_u64),
+                        end: TableRef::new(0x0000100900000000_u64),
+                        step: 2u32,
+                    },
+                    prefix: "DataStore",
+                    suffix: "",
+                    display_base: 0u64,
+                },
+            ];
+            pub const LOOKUP: TableIdLookup<'static> = TableIdLookup {
+                by_name: SortedMap { items: &BY_NAME },
+                by_uid: SortedMap { items: &BY_VALUE },
+                ranges: &RANGES,
+            };
+        }
+        pub mod invoking_id {
+            use ::sed_packet::{TableRef, Uid, UidRange};
+            use crate::lookup::{UidRangeEntry, SortedMap, MetaTableLookup};
+            const THIS_TABLE: TableRef = super::super::super::core::shared::table_id::INVOKING_ID;
+            pub const SESSION_MANAGER: Uid = Uid::new(0x00000000000000ff_u64);
+            pub const THIS_SP: Uid = Uid::new(0x0000000000000001_u64);
+            const BY_NAME: [(&str, Uid); 2usize] = [
+                ("SessionManager", SESSION_MANAGER),
+                ("ThisSP", THIS_SP),
+            ];
+            const BY_VALUE: [(Uid, &str); 2usize] = [
+                (THIS_SP, "ThisSP"),
+                (SESSION_MANAGER, "SessionManager"),
+            ];
+            const RANGES: [UidRangeEntry<Uid>; 0usize] = [];
+            pub const LOOKUP: MetaTableLookup<'static> = MetaTableLookup {
+                name: "InvokingID",
+                by_name: SortedMap { items: &BY_NAME },
+                by_uid: SortedMap { items: &BY_VALUE },
+            };
+        }
+        const TABLE_LOOKUPS: [(TableRef, &dyn TableLookup); 1usize] = [
+            (super::super::core::shared::table_id::INVOKING_ID, &invoking_id::LOOKUP),
+        ];
+        pub const LOOKUP: SecurityProviderLookup<'static> = SecurityProviderLookup {
+            name: "Shared",
+            table_ids: &super::super::core::shared::table_id::LOOKUP,
+            table_lookups: SortedMap { items: &TABLE_LOOKUPS },
+        };
+    }
+    const SP_LOOKUPS: [(Option<SpRef>, &SecurityProviderLookup); 1usize] = [
+        (admin::sp::shared, &shared::LOOKUP),
+    ];
+    pub const LOOKUP: FeatureLookup<'static> = FeatureLookup {
+        sp_lookups: SortedMap { items: &SP_LOOKUPS },
+    };
+}
 pub mod feature_x {
     use ::sed_packet::TableRef;
     use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap};

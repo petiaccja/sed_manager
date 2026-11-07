@@ -1,4 +1,22 @@
 {
+    "Core": {
+        "Shared": {
+            "TableID": {
+                "InvokingID": "FFFFFFFE00000000",
+                "TableZ": "0000000900000000",
+                "DataStore{n}": {
+                    "base": "0000100100000000",
+                    "count": 4,
+                    "step": 2,
+                    "display_base": 0
+                }
+            },
+            "InvokingID": {
+                "ThisSP": "0000000000000001",
+                "SessionManager": "00000000000000FF"
+            }
+        }
+    },
     "FeatureX": {
         "SPY": {
             "TableZ": {

@@ -3,7 +3,8 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
-use std::{collections::HashMap, ops::Range};
+use std::collections::HashMap;
+use std::ops::Range;
 
 use crate::schema_ast;
 
@@ -29,8 +30,11 @@ pub struct UidRangeObject {
     pub suffix: String,
     pub start: u64,
     pub count: u64,
+    /// The distance between consecutive UIDs, in the units of the table (see [`OBJECT_STEP_UNIT`] and [`TABLE_STEP_UNIT`]).
     pub step: u64,
     pub start_display: u64,
+    /// The distance between consecutive UIDs as raw 64-bit values.
+    pub stride: u64,
 }
 
 impl UidRangeObject {
@@ -40,7 +44,7 @@ impl UidRangeObject {
 
     pub fn check_contains(&self, uid_object: &UidObject) -> Result<(), SemanticError> {
         let range = self.to_range();
-        if range.contains(&uid_object.value) && (uid_object.value - range.start).is_multiple_of(self.step) {
+        if range.contains(&uid_object.value) && (uid_object.value - range.start).is_multiple_of(self.stride) {
             Err(SemanticError::Overlap { first: self.name(), second: uid_object.name.clone() })
         } else {
             Ok(())
@@ -56,11 +60,11 @@ impl UidRangeObject {
         let [first_range, second_range] = ranges;
 
         let shift = second_range.start - first_range.start;
-        let step_gcd = num_integer::gcd(self.step, other.step);
+        let stride_gcd = num_integer::gcd(self.stride, other.stride);
 
         if first_range.end <= second_range.start {
             Ok(())
-        } else if shift.is_multiple_of(step_gcd) {
+        } else if shift.is_multiple_of(stride_gcd) {
             Err(SemanticError::Overlap { first: self.name(), second: other.name() })
         } else {
             Ok(())
@@ -71,11 +75,20 @@ impl UidRangeObject {
         let end = if self.count == 0 {
             self.start
         } else {
-            self.start + self.count * self.step + 1 - self.step
+            self.start + self.count * self.stride + 1 - self.stride
         };
         self.start..end
     }
 }
+
+/// The raw 64-bit distance corresponding to a `step` of 1 in tables whose rows
+/// are objects or special-purpose UIDs.
+pub const OBJECT_STEP_UNIT: u64 = 1;
+
+/// The raw 64-bit distance corresponding to a `step` of 1 in the `TableID` table.
+///
+/// Table UIDs differ in their upper half, so a step of 1 means the next table.
+pub const TABLE_STEP_UNIT: u64 = 1 << 32;
 
 pub struct Table {
     pub name: String,
@@ -84,8 +97,10 @@ pub struct Table {
 }
 
 impl Table {
-    pub fn try_from(name: String, source: schema_ast::Table) -> Result<Self, SemanticError> {
-        let (uid_objects, uid_range_objects) = convert_objects(source)?;
+    /// The `step_unit` is the raw distance between UIDs for a `step` of 1 in the
+    /// table's UID ranges, either [`OBJECT_STEP_UNIT`] or [`TABLE_STEP_UNIT`].
+    pub fn try_from(name: String, source: schema_ast::Table, step_unit: u64) -> Result<Self, SemanticError> {
+        let (uid_objects, uid_range_objects) = convert_objects(source, step_unit)?;
         check_uniqueness(&uid_objects)?;
         for (index, uid_range_object) in uid_range_objects.iter().enumerate() {
             for uid_object in &uid_objects {
@@ -99,20 +114,23 @@ impl Table {
     }
 }
 
-fn convert_objects(source: schema_ast::Table) -> Result<(Vec<UidObject>, Vec<UidRangeObject>), SemanticError> {
+fn convert_objects(
+    source: schema_ast::Table,
+    step_unit: u64,
+) -> Result<(Vec<UidObject>, Vec<UidRangeObject>), SemanticError> {
     let mut uid_objects = Vec::new();
     let mut uid_range_objects = Vec::new();
     for (name, object) in source.objects {
         match object {
-            schema_ast::Object::Uid(value) => uid_objects.push(UidObject { name, value }),
-            schema_ast::Object::UidRange { start, count, step, start_display } => {
+            schema_ast::Entry::Uid(value) => uid_objects.push(UidObject { name, value }),
+            schema_ast::Entry::UidRange(schema_ast::UidRange { start, count, step, start_display }) => {
                 let parts: Vec<_> = name.split(|ch| ch == '{' || ch == '}').collect();
                 let (prefix, suffix) = match parts.as_slice() {
                     [prefix, _index, suffix] => ((*prefix).to_owned(), (*suffix).to_owned()),
                     _ => return Err(SemanticError::InvalidRangeName(name)),
                 };
-
-                uid_range_objects.push(UidRangeObject { prefix, suffix, start, count, step, start_display })
+                let stride = step * step_unit;
+                uid_range_objects.push(UidRangeObject { prefix, suffix, start, count, step, start_display, stride })
             }
         }
     }
@@ -135,17 +153,37 @@ fn check_uniqueness(uid_objects: &[UidObject]) -> Result<(), SemanticError> {
 
 pub struct SecurityProvider {
     pub name: String,
-    pub tables: Vec<Table>,
+    /// The `TableID` table, whose rows are the UIDs of tables.
+    pub table_id: Option<Table>,
+    /// Tables of special-purpose UIDs, which are not objects.
+    pub special_tables: Vec<Table>,
+    /// Regular tables, whose rows are objects.
+    pub object_tables: Vec<Table>,
 }
 
 impl SecurityProvider {
     pub fn try_from(name: String, source: schema_ast::SecurityProvider) -> Result<Self, SemanticError> {
+        let schema_ast::SecurityProvider { table_id, general, invoking_id, sm_method_id, tables } = source;
+        // These names must match the `rename` attributes of `schema_ast::SecurityProvider`.
+        let special_tables = [
+            ("General", general),
+            ("InvokingID", invoking_id),
+            ("SMMethodID", sm_method_id),
+        ];
         Ok(Self {
             name,
-            tables: source
-                .tables
+            table_id: table_id
+                .map(|table| Table::try_from("TableID".to_owned(), table, TABLE_STEP_UNIT))
+                .transpose()?,
+            special_tables: special_tables
                 .into_iter()
-                .map(|(name, table)| Table::try_from(name, table))
+                .filter_map(|(name, table)| {
+                    table.map(|table| Table::try_from(name.to_owned(), table, OBJECT_STEP_UNIT))
+                })
+                .collect::<Result<_, _>>()?,
+            object_tables: tables
+                .into_iter()
+                .map(|(name, table)| Table::try_from(name, table, OBJECT_STEP_UNIT))
                 .collect::<Result<_, _>>()?,
         })
     }
@@ -197,7 +235,15 @@ mod tests {
     }
 
     fn range(prefix: &str, start: u64, count: u64, step: u64) -> UidRangeObject {
-        UidRangeObject { prefix: prefix.to_owned(), suffix: String::new(), start, count, step, start_display: 1 }
+        UidRangeObject {
+            prefix: prefix.to_owned(),
+            suffix: String::new(),
+            start,
+            count,
+            step,
+            start_display: 1,
+            stride: step,
+        }
     }
 
     // The range used for `check_contains` contains 0x10, 0x12, 0x14, 0x16.
@@ -270,6 +316,27 @@ mod tests {
         assert_that!(
             check_uniqueness(&objects),
             err(matches_pattern!(SemanticError::ValueCollision { name: eq("C"), value: eq(&1) }))
+        );
+    }
+
+    #[test]
+    fn table_id_ranges_step_by_tables() {
+        // Contains tables 0x1001, 0x1003, 0x1005, and 0x1007.
+        let range = schema_ast::UidRange { start: 0x0000100100000000, count: 4, step: 2, start_display: 0 };
+        let table = |uid: u64| schema_ast::Table {
+            objects: [
+                ("DataStore{n}".to_owned(), schema_ast::Entry::UidRange(range.clone())),
+                ("Table".to_owned(), schema_ast::Entry::Uid(uid)),
+            ]
+            .into(),
+        };
+        assert_that!(
+            Table::try_from("TableID".to_owned(), table(0x0000100400000000), TABLE_STEP_UNIT).map(|_| ()),
+            ok(anything())
+        );
+        assert_that!(
+            Table::try_from("TableID".to_owned(), table(0x0000100300000000), TABLE_STEP_UNIT).map(|_| ()),
+            err(matches_pattern!(SemanticError::Overlap { first: eq("DataStore{n}"), second: eq("Table") }))
         );
     }
 }
