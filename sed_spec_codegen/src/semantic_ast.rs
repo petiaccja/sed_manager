@@ -12,8 +12,6 @@ use crate::schema_ast;
 pub enum SemanticError {
     #[error("the value {value:016x} (name: `{name}`) is defined for multiple UIDs or UID ranges")]
     ValueCollision { value: u64, name: String },
-    #[error("the name `{name}` (value: {value:016x}) is defined for multiple UIDs or UID ranges")]
-    NameCollision { name: String, value: u64 },
     #[error("the UID range `{first}` overlaps with `{second}`")]
     Overlap { first: String, second: String },
     #[error("the UID range `{0}` has an invalid name; names must be `<prefix>{{<index>}}<suffix>")]
@@ -120,11 +118,11 @@ fn convert_objects(
 ) -> Result<(Vec<UidObject>, Vec<UidRangeObject>), SemanticError> {
     let mut uid_objects = Vec::new();
     let mut uid_range_objects = Vec::new();
-    for (name, object) in source.objects {
-        match object {
+    for (name, entry) in source.entries {
+        match entry {
             schema_ast::Entry::Uid(value) => uid_objects.push(UidObject { name, value }),
             schema_ast::Entry::UidRange(schema_ast::UidRange { start, count, step, start_display }) => {
-                let parts: Vec<_> = name.split(|ch| ch == '{' || ch == '}').collect();
+                let parts: Vec<_> = name.split(['{', '}']).collect();
                 let (prefix, suffix) = match parts.as_slice() {
                     [prefix, _index, suffix] => ((*prefix).to_owned(), (*suffix).to_owned()),
                     _ => return Err(SemanticError::InvalidRangeName(name)),
@@ -138,12 +136,8 @@ fn convert_objects(
 }
 
 fn check_uniqueness(uid_objects: &[UidObject]) -> Result<(), SemanticError> {
-    let mut by_name = HashMap::new();
     let mut by_value = HashMap::new();
     for UidObject { name, value } in uid_objects {
-        if by_name.insert(name, value).is_some() {
-            return Err(SemanticError::NameCollision { value: *value, name: name.clone() });
-        }
         if by_value.insert(value, name).is_some() {
             return Err(SemanticError::ValueCollision { value: *value, name: name.clone() });
         }
@@ -302,15 +296,6 @@ mod tests {
     }
 
     #[test]
-    fn check_uniqueness_name_collision() {
-        let objects = [uid("A", 1), uid("B", 2), uid("A", 3)];
-        assert_that!(
-            check_uniqueness(&objects),
-            err(matches_pattern!(SemanticError::NameCollision { name: eq("A"), value: eq(&3) }))
-        );
-    }
-
-    #[test]
     fn check_uniqueness_value_collision() {
         let objects = [uid("A", 1), uid("B", 2), uid("C", 1)];
         assert_that!(
@@ -324,7 +309,7 @@ mod tests {
         // Contains tables 0x1001, 0x1003, 0x1005, and 0x1007.
         let range = schema_ast::UidRange { start: 0x0000100100000000, count: 4, step: 2, start_display: 0 };
         let table = |uid: u64| schema_ast::Table {
-            objects: [
+            entries: [
                 ("DataStore{n}".to_owned(), schema_ast::Entry::UidRange(range.clone())),
                 ("Table".to_owned(), schema_ast::Entry::Uid(uid)),
             ]

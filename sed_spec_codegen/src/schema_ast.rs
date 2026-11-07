@@ -33,7 +33,7 @@ pub enum Entry {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Table {
     #[serde(flatten)]
-    pub objects: BTreeMap<String, Entry>,
+    pub entries: BTreeMap<String, Entry>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize)]
@@ -91,7 +91,7 @@ mod tests {
 
         let shared = SecurityProvider {
             table_id: Some(Table {
-                objects: [
+                entries: [
                     ("InvokingID".to_owned(), Entry::Uid(0xFFFFFFFE00000000)),
                     ("TableZ".to_owned(), Entry::Uid(0x0000000900000000)),
                     (
@@ -102,7 +102,7 @@ mod tests {
                 .into(),
             }),
             invoking_id: Some(Table {
-                objects: [
+                entries: [
                     ("ThisSP".to_owned(), Entry::Uid(0x0000000000000001)),
                     ("SessionManager".to_owned(), Entry::Uid(0x00000000000000FF)),
                 ]
@@ -114,7 +114,7 @@ mod tests {
             tables: [(
                 "TableZ".to_owned(),
                 Table {
-                    objects: [
+                    entries: [
                         ("ObjectA".to_owned(), Entry::Uid(0x0000000900000001)),
                         (
                             "ObjectB{n}".to_owned(),

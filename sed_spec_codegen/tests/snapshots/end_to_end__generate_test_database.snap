@@ -46,9 +46,8 @@ pub mod core {
             };
         }
         pub mod invoking_id {
-            use ::sed_packet::{TableRef, Uid, UidRange};
+            use ::sed_packet::{Uid, UidRange};
             use crate::lookup::{UidRangeEntry, SortedMap, MetaTableLookup};
-            const THIS_TABLE: TableRef = super::super::super::core::shared::table_id::INVOKING_ID;
             pub const SESSION_MANAGER: Uid = Uid::new(0x00000000000000ff_u64);
             pub const THIS_SP: Uid = Uid::new(0x0000000000000001_u64);
             const BY_NAME: [(&str, Uid); 2usize] = [

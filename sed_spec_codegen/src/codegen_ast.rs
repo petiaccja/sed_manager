@@ -4,25 +4,22 @@
 //L-----------------------------------------------------------------------------
 
 use std::collections::BTreeMap;
-use std::str::FromStr as _;
 
 use heck::{ToShoutySnakeCase, ToSnakeCase};
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::{ToTokens, format_ident, quote};
-use syn::{Ident, PathArguments, Type, parse_quote};
+use syn::{Ident, LitInt, PathArguments, Type, parse_quote};
 
 use crate::semantic_ast;
 
-pub struct Hex {
-    pub value: u64,
+/// The identifier for a module, e.g. `table_id` for `TableID`.
+fn module_ident(name: &str) -> Ident {
+    format_ident!("{}", name.to_snake_case())
 }
 
-impl ToTokens for Hex {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let value = proc_macro2::Literal::from_str(&format!("0x{:016x}_u64", self.value))
-            .expect("hex literal valid by construction");
-        value.to_tokens(tokens);
-    }
+/// The identifier for a constant, e.g. `TABLE_ID` for `TableID`.
+fn const_ident(name: &str) -> Ident {
+    format_ident!("{}", name.to_shouty_snake_case())
 }
 
 /// Returns the type without generic arguments, e.g. `ObjectRef` for `ObjectRef<{ THIS_TABLE.to_u64() }>`.
@@ -50,7 +47,7 @@ impl ToTokens for Uid {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { value_type, value } = self;
         let value_type = strip_generic_arguments(value_type);
-        let hex = Hex { value: *value };
+        let hex = LitInt::new(&format!("0x{value:016x}_u64"), Span::call_site());
         tokens.extend(quote! {
             #value_type::new(#hex)
         });
@@ -69,12 +66,12 @@ pub struct UidRange {
 }
 
 impl UidRange {
-    pub fn new(value_type: Type, start: u64, count: u64, step: u64, stride: u64) -> Self {
+    pub fn new(value_type: Type, range: &semantic_ast::UidRangeObject) -> Self {
         Self {
             value_type,
-            start,
-            end: start + count * stride,
-            step: u32::try_from(step).expect("UID range step must fit into a u32"),
+            start: range.start,
+            end: range.start + range.count * range.stride,
+            step: u32::try_from(range.step).expect("UID range step must fit into a u32"),
         }
     }
 }
@@ -283,7 +280,7 @@ pub struct Table {
 impl Table {
     /// A regular table, whose rows are objects.
     pub fn object(source: semantic_ast::Table) -> Self {
-        let this_table = ThisTable { table: ident_upper(&source.name) };
+        let this_table = ThisTable { table: const_ident(&source.name) };
         let lookup = LookupConst {
             lookup_type: parse_quote! { ObjectTableLookup<'static, { THIS_TABLE.to_u64() }> },
             name: Some(source.name.clone()),
@@ -330,7 +327,6 @@ impl Table {
 
     /// A table of special-purpose UIDs, which are not objects.
     pub fn special(source: semantic_ast::Table) -> Self {
-        let this_table = ThisTable { table: ident_upper(&source.name) };
         let lookup = LookupConst {
             lookup_type: parse_quote! { MetaTableLookup<'static> },
             name: Some(source.name.clone()),
@@ -340,18 +336,14 @@ impl Table {
             source,
             parse_quote! { Uid },
             Imports {
-                sed_packet: vec![
-                    parse_quote!(TableRef),
-                    parse_quote!(Uid),
-                    parse_quote!(UidRange),
-                ],
+                sed_packet: vec![parse_quote!(Uid), parse_quote!(UidRange)],
                 lookup: vec![
                     parse_quote!(UidRangeEntry),
                     parse_quote!(SortedMap),
                     parse_quote!(MetaTableLookup),
                 ],
             },
-            Some(this_table),
+            None,
             lookup,
         )
     }
@@ -369,7 +361,7 @@ impl Table {
         let mut lookup_by_name = LookupByName { value_type: value_type.clone(), lookup: BTreeMap::new() };
         let mut lookup_by_value = LookupByValue { value_type: value_type.clone(), lookup: BTreeMap::new() };
         for semantic_ast::UidObject { name, value } in source.uid_objects {
-            let ident = ident_upper(&name);
+            let ident = const_ident(&name);
             let uid = Uid { value_type: value_type.clone(), value };
             uids.push(UidConst { ident: ident.clone(), uid });
             lookup_by_name.lookup.insert(name.clone(), ident.clone());
@@ -378,11 +370,10 @@ impl Table {
 
         let mut uid_ranges = Vec::new();
         let mut lookup_ranges = LookupRanges { value_type: value_type.clone(), lookup: Vec::new() };
-        for semantic_ast::UidRangeObject { prefix, suffix, start, count, step, start_display, stride } in
-            source.uid_range_objects
-        {
-            let ident = ident_upper(&format!("{prefix}_{suffix}"));
-            let uid_range = UidRange::new(value_type.clone(), start, count, step, stride);
+        for range in source.uid_range_objects {
+            let uid_range = UidRange::new(value_type.clone(), &range);
+            let semantic_ast::UidRangeObject { prefix, suffix, start_display, .. } = range;
+            let ident = const_ident(&format!("{prefix}_{suffix}"));
             uid_ranges.push(UidRangeConst { ident, uid_range: uid_range.clone() });
             lookup_ranges.lookup.push(RangeLookupEntry { uid_range, prefix, suffix, start_display });
         }
@@ -399,24 +390,12 @@ impl Table {
             lookup,
         }
     }
-
-    pub fn ident_lower(&self) -> Ident {
-        format_ident!("{}", self.name.to_snake_case())
-    }
-
-    pub fn ident_upper(&self) -> Ident {
-        ident_upper(&self.name)
-    }
-}
-
-fn ident_upper(name: &str) -> Ident {
-    format_ident!("{}", name.to_shouty_snake_case())
 }
 
 impl ToTokens for Table {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self {
-            name: _,
+            name,
             imports,
             this_table,
             uids,
@@ -426,7 +405,7 @@ impl ToTokens for Table {
             lookup_ranges,
             lookup,
         } = self;
-        let ident_lower = self.ident_lower();
+        let ident_lower = module_ident(name);
         tokens.extend(quote! {
             pub mod #ident_lower {
                 #imports
@@ -467,12 +446,12 @@ impl From<semantic_ast::SecurityProvider> for SecurityProvider {
 impl ToTokens for SecurityProvider {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { name, table_id, special_tables, object_tables } = self;
-        let ident_lower = format_ident!("{}", name.to_snake_case());
+        let ident_lower = module_ident(name);
 
         // The `TableID` table is referenced directly through `table_ids`, it's not a lookup table.
         fn lookup_item(table: &Table) -> TokenStream {
-            let ident_lower = table.ident_lower();
-            let ident_upper = table.ident_upper();
+            let ident_lower = module_ident(&table.name);
+            let ident_upper = const_ident(&table.name);
             quote! { (super::super::core::shared::table_id::#ident_upper, &#ident_lower::LOOKUP) }
         }
         let lookup_items: Vec<_> =
@@ -516,12 +495,12 @@ impl From<semantic_ast::Feature> for Feature {
 impl ToTokens for Feature {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { name, security_providers } = self;
-        let ident_lower = format_ident!("{}", name.to_snake_case());
+        let ident_lower = module_ident(name);
         let num_security_providers = security_providers.len();
         let lookup_items = security_providers.iter().map(|security_provider| {
-            let ident_lower = format_ident!("{}", security_provider.name.to_snake_case());
-            let ident_upper = format_ident!("{}", security_provider.name.to_snake_case());
-            quote! { (admin::sp::#ident_upper, &#ident_lower::LOOKUP) }
+            let ident_lower = module_ident(&security_provider.name);
+            // FIXME: the SP constant should be `Some(admin::sp::<IDENT_UPPER>)`, or `None` for the shared SP.
+            quote! { (admin::sp::#ident_lower, &#ident_lower::LOOKUP) }
         });
 
         tokens.extend(quote! {
