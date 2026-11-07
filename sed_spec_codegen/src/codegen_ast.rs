@@ -198,26 +198,23 @@ impl ToTokens for LookupRanges {
 /// The public `LOOKUP` constant of a table.
 #[derive(Debug)]
 pub struct LookupConst {
-    /// The type of the constant, e.g. `ObjectTableLookup<'static, { THIS_TABLE.to_u64() }>`.
+    /// The type of the constant, e.g. `RefTableLookup<'static, ObjectRef<{ THIS_TABLE.to_u64() }>>`.
     pub lookup_type: Type,
     /// The value of the `name` field, if the lookup has one.
     pub name: Option<String>,
-    /// Whether the lookup has a `ranges` field.
-    pub has_ranges: bool,
 }
 
 impl ToTokens for LookupConst {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Self { lookup_type, name, has_ranges } = self;
+        let Self { lookup_type, name } = self;
         let constructor = strip_generic_arguments(lookup_type);
         let name = name.as_ref().map(|name| quote! { name: #name, });
-        let ranges = has_ranges.then(|| quote! { ranges: &RANGES, });
         tokens.extend(quote! {
             pub const LOOKUP: #lookup_type = #constructor {
                 #name
                 by_name: SortedMap { items: &BY_NAME },
                 by_uid: SortedMap { items: &BY_VALUE },
-                #ranges
+                ranges: &RANGES,
             };
         });
     }
@@ -240,28 +237,27 @@ pub struct Table {
 impl Table {
     /// A regular table, whose rows are objects.
     pub fn object(source: semantic_ast::Table) -> Self {
-        let lookup = LookupConst {
-            lookup_type: parse_quote! { ObjectTableLookup<'static, { THIS_TABLE.to_u64() }> },
-            name: Some(source.name.clone()),
-            has_ranges: true,
-        };
-        Self::new(source, parse_quote! { ObjectRef<{ THIS_TABLE.to_u64() }> }, lookup)
+        Self::ref_table(source, parse_quote! { ObjectRef<{ THIS_TABLE.to_u64() }> })
     }
 
     /// The `TableID` table, whose rows are the UIDs of tables.
     pub fn table_id(source: semantic_ast::Table) -> Self {
-        let lookup = LookupConst { lookup_type: parse_quote! { TableIdLookup<'static> }, name: None, has_ranges: true };
+        let lookup = LookupConst { lookup_type: parse_quote! { TableIdLookup<'static> }, name: None };
         Self::new(source, parse_quote! { TableRef }, lookup)
     }
 
     /// A table of special-purpose UIDs, which are not objects.
     pub fn special(source: semantic_ast::Table) -> Self {
+        Self::ref_table(source, parse_quote! { Uid })
+    }
+
+    /// A table whose rows are referenced by `value_type`, with a `RefTableLookup`.
+    fn ref_table(source: semantic_ast::Table, value_type: Type) -> Self {
         let lookup = LookupConst {
-            lookup_type: parse_quote! { MetaTableLookup<'static> },
+            lookup_type: parse_quote! { RefTableLookup<'static, #value_type> },
             name: Some(source.name.clone()),
-            has_ranges: false,
         };
-        Self::new(source, parse_quote! { Uid }, lookup)
+        Self::new(source, value_type, lookup)
     }
 
     /// Builds the UID constants and lookups, which are the same for all kinds of tables
@@ -305,7 +301,7 @@ impl ToTokens for Table {
         tokens.extend(quote! {
             pub mod #module {
                 use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
-                use crate::lookup::{UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup, MetaTableLookup};
+                use crate::lookup::{UidRangeEntry, SortedMap, RefTableLookup, TableIdLookup};
 
                 #uid
 
@@ -456,7 +452,7 @@ mod tests {
 
     #[rstest]
     #[case::const_generic(parse_quote! { ObjectRef<{ THIS_TABLE.to_u64() }> }, parse_quote! { ObjectRef })]
-    #[case::lifetime_and_const(parse_quote! { ObjectTableLookup<'static, 9> }, parse_quote! { ObjectTableLookup })]
+    #[case::lifetime_and_type(parse_quote! { RefTableLookup<'static, Uid> }, parse_quote! { RefTableLookup })]
     #[case::nested_path(parse_quote! { a::B<u8>::C<u16> }, parse_quote! { a::B::C })]
     #[case::not_generic(parse_quote! { TableRef }, parse_quote! { TableRef })]
     #[case::not_a_path(parse_quote! { &'static Uid }, parse_quote! { &'static Uid })]

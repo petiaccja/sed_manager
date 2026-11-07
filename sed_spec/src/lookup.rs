@@ -85,14 +85,19 @@ pub trait TableLookup {
     fn by_uid(&self, uid: Uid) -> Option<String>;
 }
 
-pub struct ObjectTableLookup<'a, const TABLE: u64> {
+/// The lookup of a table whose rows are referenced by `Ref`, e.g. objects
+/// (`ObjectRef`) or special-purpose UIDs (`Uid`).
+pub struct RefTableLookup<'a, Ref> {
     pub name: &'a str,
-    pub by_name: SortedMap<'a, &'a str, ObjectRef<TABLE>>,
-    pub by_uid: SortedMap<'a, ObjectRef<TABLE>, &'a str>,
-    pub ranges: &'a [UidRangeEntry<ObjectRef<TABLE>>],
+    pub by_name: SortedMap<'a, &'a str, Ref>,
+    pub by_uid: SortedMap<'a, Ref, &'a str>,
+    pub ranges: &'a [UidRangeEntry<Ref>],
 }
 
-impl<'a, const TABLE: u64> TableLookup for ObjectTableLookup<'a, TABLE> {
+impl<'a, Ref> TableLookup for RefTableLookup<'a, Ref>
+where
+    Ref: Copy + Ord + Into<Uid> + TryFrom<Uid> + Add<u32, Output = Ref> + Sub<Ref, Output = i64>,
+{
     fn name(&self) -> &str {
         self.name
     }
@@ -109,47 +114,17 @@ impl<'a, const TABLE: u64> TableLookup for ObjectTableLookup<'a, TABLE> {
     fn by_name(&self, name: &str) -> Option<Uid> {
         self.by_name
             .get(&name)
-            .map(|x| x.to_uid())
-            .or_else(|| self.ranges.iter().find_map(|range| range.by_name(name)).map(|x| x.to_uid()))
+            .copied()
+            .or_else(|| self.ranges.iter().find_map(|range| range.by_name(name)))
+            .map(Into::into)
     }
 
     fn by_uid(&self, uid: Uid) -> Option<String> {
-        let Ok(uid) = ObjectRef::<TABLE>::try_from(uid) else {
-            return None;
-        };
+        let uid = Ref::try_from(uid).ok()?;
         self.by_uid
             .get(&uid)
             .map(|name| (*name).to_owned())
             .or_else(|| self.ranges.iter().find_map(|range| range.by_uid(uid)))
-    }
-}
-
-pub struct MetaTableLookup<'a> {
-    pub name: &'a str,
-    pub by_name: SortedMap<'a, &'a str, Uid>,
-    pub by_uid: SortedMap<'a, Uid, &'a str>,
-}
-
-impl<'a> TableLookup for MetaTableLookup<'a> {
-    fn name(&self) -> &str {
-        self.name
-    }
-
-    fn by_path(&self, path: &Path) -> Option<Uid> {
-        if let Some(table_name) = path.table()
-            && table_name != self.name
-        {
-            return None;
-        }
-        self.by_name(path.object())
-    }
-
-    fn by_name(&self, name: &str) -> Option<Uid> {
-        self.by_name.get(&name).cloned()
-    }
-
-    fn by_uid(&self, uid: Uid) -> Option<String> {
-        self.by_uid.get(&uid).map(|name| (*name).to_owned())
     }
 }
 
