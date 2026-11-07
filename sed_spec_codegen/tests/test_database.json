@@ -3,7 +3,7 @@
         "SPY": {
             "TableZ": {
                 "ObjectA": "0000000900000001",
-                "ObjectB": {
+                "ObjectB{n}": {
                     "base": "0000000900000002",
                     "count": 100,
                     "step": 2,

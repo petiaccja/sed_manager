@@ -74,11 +74,11 @@ impl Table {
     pub fn try_from(name: String, source: schema_ast::Table) -> Result<Self, SemanticError> {
         let (uid_objects, uid_range_objects) = convert_objects(source)?;
         check_uniqueness(&uid_objects)?;
-        for uid_range_object in &uid_range_objects {
+        for (index, uid_range_object) in uid_range_objects.iter().enumerate() {
             for uid_object in &uid_objects {
                 uid_range_object.check_contains(uid_object)?;
             }
-            for other_range in &uid_range_objects {
+            for other_range in &uid_range_objects[index + 1..] {
                 uid_range_object.check_overlaps(other_range)?;
             }
         }

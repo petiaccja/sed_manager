@@ -75,7 +75,7 @@ mod tests {
                                     objects: [
                                         ("ObjectA".to_owned(), Object::Uid(0x0000000900000001)),
                                         (
-                                            "ObjectB".to_owned(),
+                                            "ObjectB{n}".to_owned(),
                                             Object::UidRange {
                                                 start: 0x0000000900000002,
                                                 count: 100,

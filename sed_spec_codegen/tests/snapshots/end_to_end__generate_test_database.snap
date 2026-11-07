@@ -1,0 +1,64 @@
+---
+source: sed_spec_codegen/tests/end_to_end.rs
+expression: generated
+---
+const GENERATED_MARKER: () = ();
+pub mod feature_x {
+    use ::sed_packet::TableRef;
+    use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap};
+    pub mod spy {
+        use ::sed_packet::TableRef;
+        use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
+        pub mod table_z {
+            use ::sed_packet::{ObjectRef, TableRef, UidRange};
+            use crate::lookup::{UidRangeEntry, SortedMap, ObjectTableLookup};
+            const THIS_TABLE: TableRef = super::super::super::core::shared::table_id::TABLE_Z;
+            pub const OBJECT_A: ObjectRef<{ THIS_TABLE.to_u64() }> = ObjectRef::new(
+                0x0000000900000001_u64,
+            );
+            pub const OBJECT_B: UidRange<ObjectRef<{ THIS_TABLE.to_u64() }>> = UidRange {
+                start: ObjectRef::new(0x0000000900000002_u64),
+                end: ObjectRef::new(0x00000009000000ca_u64),
+                step: 2u32,
+            };
+            const BY_NAME: [(&str, ObjectRef<{ THIS_TABLE.to_u64() }>); 1usize] = [
+                ("ObjectA", OBJECT_A),
+            ];
+            const BY_VALUE: [(ObjectRef<{ THIS_TABLE.to_u64() }>, &str); 1usize] = [
+                (OBJECT_A, "ObjectA"),
+            ];
+            const RANGES: [UidRangeEntry<ObjectRef<{ THIS_TABLE.to_u64() }>>; 1usize] = [
+                UidRangeEntry {
+                    range: UidRange {
+                        start: ObjectRef::new(0x0000000900000002_u64),
+                        end: ObjectRef::new(0x00000009000000ca_u64),
+                        step: 2u32,
+                    },
+                    prefix: "ObjectB",
+                    suffix: "",
+                    display_base: 0u64,
+                },
+            ];
+            pub const LOOKUP: ObjectTableLookup<'static, { THIS_TABLE.to_u64() }> = ObjectTableLookup {
+                name: "TableZ",
+                by_name: SortedMap { items: &BY_NAME },
+                by_uid: SortedMap { items: &BY_VALUE },
+                ranges: &RANGES,
+            };
+        }
+        const TABLE_LOOKUPS: [(TableRef, &dyn TableLookup); 1usize] = [
+            (super::super::core::shared::table_id::TABLE_Z, &table_z::LOOKUP),
+        ];
+        pub const LOOKUP: SecurityProviderLookup<'static> = SecurityProviderLookup {
+            name: "SPY",
+            table_ids: &super::super::core::shared::table_id::LOOKUP,
+            table_lookups: SortedMap { items: &TABLE_LOOKUPS },
+        };
+    }
+    const SP_LOOKUPS: [(Option<SpRef>, &SecurityProviderLookup); 1usize] = [
+        (admin::sp::spy, &spy::LOOKUP),
+    ];
+    pub const LOOKUP: FeatureLookup<'static> = FeatureLookup {
+        sp_lookups: SortedMap { items: &SP_LOOKUPS },
+    };
+}
