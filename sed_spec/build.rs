@@ -13,7 +13,7 @@ fn main() -> Result<(), ()> {
     let mut spec_content = String::new();
     spec_file.read_to_string(&mut spec_content).unwrap();
 
-    let generated_spec = sed_spec_codegen::generate_spec(&spec_content).unwrap();
+    let generated_spec = sed_spec_codegen::generate_database_module(&spec_content).unwrap();
 
     let mut out_path = PathBuf::from(std::env::var("OUT_DIR").unwrap());
     out_path.push("spec.rs");
