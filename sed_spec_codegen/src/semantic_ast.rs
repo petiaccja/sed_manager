@@ -3,7 +3,7 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::ops::Range;
 
 use crate::schema_ast;
@@ -16,7 +16,21 @@ pub enum SemanticError {
     Overlap { first: String, second: String },
     #[error("the UID range `{0}` has an invalid name; names must be `<prefix>{{<index>}}<suffix>")]
     InvalidRangeName(String),
+    #[error("the table `{0}` has no entry in the `TableID` table")]
+    UnknownTable(String),
+    #[error("the security provider `{security_provider}` of feature `{feature}` has no entry in the `Admin::SP` table")]
+    UnknownSecurityProvider { feature: String, security_provider: String },
 }
+
+/// The name of the table that lists the UIDs of tables.
+const TABLE_ID_TABLE: &str = "TableID";
+/// The security provider whose tables are shared among all SPs, and which has no UID.
+const SHARED_SECURITY_PROVIDER: &str = "Shared";
+/// The security provider and table that list the UIDs of the SPs within a feature.
+const SP_TABLE: (&str, &str) = ("Admin", "SP");
+
+/// Maps the names of tables to their UIDs, as listed in the `TableID` tables.
+pub type TableIds = BTreeMap<String, u64>;
 
 pub struct UidObject {
     pub name: String,
@@ -90,6 +104,8 @@ pub const TABLE_STEP_UNIT: u64 = 1 << 32;
 
 pub struct Table {
     pub name: String,
+    /// The UID of the table, or `None` for the `TableID` table, which has no UID.
+    pub uid: Option<u64>,
     pub uid_objects: Vec<UidObject>,
     pub uid_range_objects: Vec<UidRangeObject>,
 }
@@ -97,7 +113,12 @@ pub struct Table {
 impl Table {
     /// The `step_unit` is the raw distance between UIDs for a `step` of 1 in the
     /// table's UID ranges, either [`OBJECT_STEP_UNIT`] or [`TABLE_STEP_UNIT`].
-    pub fn try_from(name: String, source: schema_ast::Table, step_unit: u64) -> Result<Self, SemanticError> {
+    pub fn try_from(
+        name: String,
+        uid: Option<u64>,
+        source: schema_ast::Table,
+        step_unit: u64,
+    ) -> Result<Self, SemanticError> {
         let (uid_objects, uid_range_objects) = convert_objects(source, step_unit)?;
         check_uniqueness(&uid_objects)?;
         for (index, uid_range_object) in uid_range_objects.iter().enumerate() {
@@ -108,7 +129,7 @@ impl Table {
                 uid_range_object.check_overlaps(other_range)?;
             }
         }
-        Ok(Self { name, uid_objects, uid_range_objects })
+        Ok(Self { name, uid, uid_objects, uid_range_objects })
     }
 }
 
@@ -147,6 +168,8 @@ fn check_uniqueness(uid_objects: &[UidObject]) -> Result<(), SemanticError> {
 
 pub struct SecurityProvider {
     pub name: String,
+    /// The UID of the SP, or `None` for the shared SP, which has no UID.
+    pub uid: Option<u64>,
     /// The `TableID` table, whose rows are the UIDs of tables.
     pub table_id: Option<Table>,
     /// Tables of special-purpose UIDs, which are not objects.
@@ -156,7 +179,12 @@ pub struct SecurityProvider {
 }
 
 impl SecurityProvider {
-    pub fn try_from(name: String, source: schema_ast::SecurityProvider) -> Result<Self, SemanticError> {
+    pub fn try_from(
+        name: String,
+        uid: Option<u64>,
+        source: schema_ast::SecurityProvider,
+        table_ids: &TableIds,
+    ) -> Result<Self, SemanticError> {
         let schema_ast::SecurityProvider { table_id, general, invoking_id, sm_method_id, tables } = source;
         // These names must match the `rename` attributes of `schema_ast::SecurityProvider`.
         let special_tables = [
@@ -164,20 +192,25 @@ impl SecurityProvider {
             ("InvokingID", invoking_id),
             ("SMMethodID", sm_method_id),
         ];
+        let table_uid =
+            |name: &str| table_ids.get(name).copied().ok_or_else(|| SemanticError::UnknownTable(name.to_owned()));
         Ok(Self {
             name,
+            uid,
             table_id: table_id
-                .map(|table| Table::try_from("TableID".to_owned(), table, TABLE_STEP_UNIT))
+                .map(|table| Table::try_from(TABLE_ID_TABLE.to_owned(), None, table, TABLE_STEP_UNIT))
                 .transpose()?,
             special_tables: special_tables
                 .into_iter()
-                .filter_map(|(name, table)| {
-                    table.map(|table| Table::try_from(name.to_owned(), table, OBJECT_STEP_UNIT))
-                })
+                .filter_map(|(name, table)| table.map(|table| (name, table)))
+                .map(|(name, table)| Table::try_from(name.to_owned(), Some(table_uid(name)?), table, OBJECT_STEP_UNIT))
                 .collect::<Result<_, _>>()?,
             object_tables: tables
                 .into_iter()
-                .map(|(name, table)| Table::try_from(name, table, OBJECT_STEP_UNIT))
+                .map(|(name, table)| {
+                    let uid = table_uid(&name)?;
+                    Table::try_from(name, Some(uid), table, OBJECT_STEP_UNIT)
+                })
                 .collect::<Result<_, _>>()?,
         })
     }
@@ -189,15 +222,30 @@ pub struct Feature {
 }
 
 impl Feature {
-    pub fn try_from(name: String, source: schema_ast::Feature) -> Result<Self, SemanticError> {
-        Ok(Self {
-            name,
-            security_providers: source
-                .security_providers
-                .into_iter()
-                .map(|(name, security_provider)| SecurityProvider::try_from(name, security_provider))
-                .collect::<Result<_, _>>()?,
-        })
+    pub fn try_from(name: String, source: schema_ast::Feature, table_ids: &TableIds) -> Result<Self, SemanticError> {
+        let sp_uids = source
+            .security_providers
+            .get(SP_TABLE.0)
+            .and_then(|security_provider| security_provider.tables.get(SP_TABLE.1))
+            .map(single_uids)
+            .unwrap_or_default();
+        let security_providers = source
+            .security_providers
+            .into_iter()
+            .map(|(sp_name, security_provider)| {
+                let uid = if sp_name == SHARED_SECURITY_PROVIDER {
+                    None
+                } else {
+                    let uid = sp_uids.get(&sp_name).ok_or_else(|| SemanticError::UnknownSecurityProvider {
+                        feature: name.clone(),
+                        security_provider: sp_name.clone(),
+                    })?;
+                    Some(*uid)
+                };
+                SecurityProvider::try_from(sp_name, uid, security_provider, table_ids)
+            })
+            .collect::<Result<_, _>>()?;
+        Ok(Self { name, security_providers })
     }
 }
 
@@ -207,14 +255,33 @@ pub struct Database {
 
 impl Database {
     pub fn try_from(source: schema_ast::Database) -> Result<Self, SemanticError> {
+        let table_ids: TableIds = source
+            .features
+            .values()
+            .flat_map(|feature| feature.security_providers.values())
+            .filter_map(|security_provider| security_provider.table_id.as_ref())
+            .flat_map(single_uids)
+            .collect();
         Ok(Self {
             features: source
                 .features
                 .into_iter()
-                .map(|(name, feature)| Feature::try_from(name, feature))
+                .map(|(name, feature)| Feature::try_from(name, feature, &table_ids))
                 .collect::<Result<_, _>>()?,
         })
     }
+}
+
+/// Returns the names and values of the single UIDs (not UID ranges) of a table.
+fn single_uids(table: &schema_ast::Table) -> BTreeMap<String, u64> {
+    table
+        .entries
+        .iter()
+        .filter_map(|(name, entry)| match entry {
+            schema_ast::Entry::Uid(value) => Some((name.clone(), *value)),
+            schema_ast::Entry::UidRange(_) => None,
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -316,12 +383,39 @@ mod tests {
             .into(),
         };
         assert_that!(
-            Table::try_from("TableID".to_owned(), table(0x0000100400000000), TABLE_STEP_UNIT).map(|_| ()),
+            Table::try_from("TableID".to_owned(), None, table(0x0000100400000000), TABLE_STEP_UNIT).map(|_| ()),
             ok(anything())
         );
         assert_that!(
-            Table::try_from("TableID".to_owned(), table(0x0000100300000000), TABLE_STEP_UNIT).map(|_| ()),
+            Table::try_from("TableID".to_owned(), None, table(0x0000100300000000), TABLE_STEP_UNIT).map(|_| ()),
             err(matches_pattern!(SemanticError::Overlap { first: eq("DataStore{n}"), second: eq("Table") }))
+        );
+    }
+
+    fn convert(database_json: &str) -> Option<SemanticError> {
+        let database: schema_ast::Database = serde_json::from_str(database_json).unwrap();
+        Database::try_from(database).err()
+    }
+
+    #[test]
+    fn unknown_table() {
+        let json = r#"{ "F": { "Shared": { "TableID": {}, "Unlisted": {} } } }"#;
+        assert_that!(convert(json), some(matches_pattern!(SemanticError::UnknownTable(eq("Unlisted")))));
+    }
+
+    #[test]
+    fn unknown_security_provider() {
+        let json = r#"{ "F": {
+            "Shared": { "TableID": { "SP": "0000020500000000" } },
+            "Admin": { "SP": { "Admin": "0000020500000001" } },
+            "Unlisted": {}
+        } }"#;
+        assert_that!(
+            convert(json),
+            some(matches_pattern!(SemanticError::UnknownSecurityProvider {
+                feature: eq("F"),
+                security_provider: eq("Unlisted"),
+            }))
         );
     }
 }

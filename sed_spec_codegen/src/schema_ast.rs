@@ -14,6 +14,7 @@ pub struct UidRange {
     #[serde(deserialize_with = "deserialize_uid", rename = "base")]
     pub start: u64,
     pub count: u64,
+    #[serde(default = "default_value_one")]
     pub step: u64,
     #[serde(default = "default_value_one", rename = "display_base")]
     pub start_display: u64,
@@ -93,6 +94,8 @@ mod tests {
             table_id: Some(Table {
                 entries: [
                     ("InvokingID".to_owned(), Entry::Uid(0xFFFFFFFE00000000)),
+                    ("SP".to_owned(), Entry::Uid(0x0000020500000000)),
+                    ("TableW".to_owned(), Entry::Uid(0x0000000A00000000)),
                     ("TableZ".to_owned(), Entry::Uid(0x0000000900000000)),
                     (
                         "DataStore{n}".to_owned(),
@@ -110,21 +113,13 @@ mod tests {
             }),
             ..Default::default()
         };
-        let spy = SecurityProvider {
+        let admin = SecurityProvider {
             tables: [(
-                "TableZ".to_owned(),
+                "SP".to_owned(),
                 Table {
                     entries: [
-                        ("ObjectA".to_owned(), Entry::Uid(0x0000000900000001)),
-                        (
-                            "ObjectB{n}".to_owned(),
-                            Entry::UidRange(UidRange {
-                                start: 0x0000000900000002,
-                                count: 100,
-                                step: 2,
-                                start_display: 0,
-                            }),
-                        ),
+                        ("Admin".to_owned(), Entry::Uid(0x0000020500000002)),
+                        ("SPY".to_owned(), Entry::Uid(0x0000020500000001)),
                     ]
                     .into(),
                 },
@@ -132,10 +127,51 @@ mod tests {
             .into(),
             ..Default::default()
         };
+        let spy = SecurityProvider {
+            tables: [
+                (
+                    "TableW".to_owned(),
+                    Table { entries: [("ObjectD".to_owned(), Entry::Uid(0x0000000A00000001))].into() },
+                ),
+                (
+                    "TableZ".to_owned(),
+                    Table {
+                        entries: [
+                            ("ObjectA".to_owned(), Entry::Uid(0x0000000900000001)),
+                            (
+                                "ObjectB{n}".to_owned(),
+                                Entry::UidRange(UidRange {
+                                    start: 0x0000000900000002,
+                                    count: 100,
+                                    step: 2,
+                                    start_display: 0,
+                                }),
+                            ),
+                            // `step` and `display_base` are omitted in the JSON.
+                            (
+                                "ObjectC{n}_Suffix".to_owned(),
+                                Entry::UidRange(UidRange {
+                                    start: 0x0000000900001000,
+                                    count: 8,
+                                    step: 1,
+                                    start_display: 1,
+                                }),
+                            ),
+                        ]
+                        .into(),
+                    },
+                ),
+            ]
+            .into(),
+            ..Default::default()
+        };
         let expected = Database {
             features: [
                 ("Core".to_owned(), Feature { security_providers: [("Shared".to_owned(), shared)].into() }),
-                ("FeatureX".to_owned(), Feature { security_providers: [("SPY".to_owned(), spy)].into() }),
+                (
+                    "FeatureX".to_owned(),
+                    Feature { security_providers: [("Admin".to_owned(), admin), ("SPY".to_owned(), spy)].into() },
+                ),
             ]
             .into(),
         };

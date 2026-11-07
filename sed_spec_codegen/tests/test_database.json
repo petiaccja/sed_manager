@@ -3,6 +3,8 @@
         "Shared": {
             "TableID": {
                 "InvokingID": "FFFFFFFE00000000",
+                "SP": "0000020500000000",
+                "TableW": "0000000A00000000",
                 "TableZ": "0000000900000000",
                 "DataStore{n}": {
                     "base": "0000100100000000",
@@ -18,7 +20,16 @@
         }
     },
     "FeatureX": {
+        "Admin": {
+            "SP": {
+                "Admin": "0000020500000002",
+                "SPY": "0000020500000001"
+            }
+        },
         "SPY": {
+            "TableW": {
+                "ObjectD": "0000000A00000001"
+            },
             "TableZ": {
                 "ObjectA": "0000000900000001",
                 "ObjectB{n}": {
@@ -26,6 +37,10 @@
                     "count": 100,
                     "step": 2,
                     "display_base": 0
+                },
+                "ObjectC{n}_Suffix": {
+                    "base": "0000000900001000",
+                    "count": 8
                 }
             }
         }
