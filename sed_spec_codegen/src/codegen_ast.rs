@@ -67,12 +67,7 @@ pub struct UidRange {
 
 impl UidRange {
     pub fn new(value_type: Type, range: &semantic_ast::UidRangeObject) -> Self {
-        Self {
-            value_type,
-            start: range.start,
-            end: range.start + range.count * range.stride,
-            step: u32::try_from(range.step).expect("UID range step must fit into a u32"),
-        }
+        Self { value_type, start: range.start, end: range.start + range.count * range.stride, step: range.step }
     }
 }
 
@@ -143,14 +138,14 @@ impl ToTokens for LookupByName {
 #[derive(Debug)]
 pub struct LookupByValue {
     pub value_type: Type,
-    pub lookup: BTreeMap<(u64, Ident), String>,
+    pub lookup: BTreeMap<u64, (Ident, String)>,
 }
 
 impl ToTokens for LookupByValue {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let value_type = &self.value_type;
         let len = self.lookup.len();
-        let items = self.lookup.iter().map(|((_, ident), name)| quote! { (#ident, #name) });
+        let items = self.lookup.values().map(|(ident, name)| quote! { (#ident, #name) });
         tokens.extend(quote! {
             const BY_VALUE: [(#value_type, &str); #len] = [
                 #(#items,)*
@@ -200,25 +195,6 @@ impl ToTokens for LookupRanges {
     }
 }
 
-/// The `use` declarations at the top of a table's module.
-#[derive(Debug)]
-pub struct Imports {
-    /// Items imported from `::sed_packet`.
-    pub sed_packet: Vec<Ident>,
-    /// Items imported from `crate::lookup`.
-    pub lookup: Vec<Ident>,
-}
-
-impl ToTokens for Imports {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Self { sed_packet, lookup } = self;
-        tokens.extend(quote! {
-            use ::sed_packet::{#(#sed_packet),*};
-            use crate::lookup::{#(#lookup),*};
-        });
-    }
-}
-
 /// The public `LOOKUP` constant of a table.
 #[derive(Debug)]
 pub struct LookupConst {
@@ -253,7 +229,6 @@ pub struct Table {
     pub name: String,
     /// The `THIS_TABLE` constant with the UID of the table, or `None` for the `TableID` table.
     pub uid: Option<UidConst>,
-    pub imports: Imports,
     pub uids: Vec<UidConst>,
     pub uid_ranges: Vec<UidRangeConst>,
     pub lookup_by_name: LookupByName,
@@ -270,41 +245,13 @@ impl Table {
             name: Some(source.name.clone()),
             has_ranges: true,
         };
-        Self::new(
-            source,
-            parse_quote! { ObjectRef<{ THIS_TABLE.to_u64() }> },
-            Imports {
-                sed_packet: vec![
-                    parse_quote!(ObjectRef),
-                    parse_quote!(TableRef),
-                    parse_quote!(UidRange),
-                ],
-                lookup: vec![
-                    parse_quote!(UidRangeEntry),
-                    parse_quote!(SortedMap),
-                    parse_quote!(ObjectTableLookup),
-                ],
-            },
-            lookup,
-        )
+        Self::new(source, parse_quote! { ObjectRef<{ THIS_TABLE.to_u64() }> }, lookup)
     }
 
     /// The `TableID` table, whose rows are the UIDs of tables.
     pub fn table_id(source: semantic_ast::Table) -> Self {
         let lookup = LookupConst { lookup_type: parse_quote! { TableIdLookup<'static> }, name: None, has_ranges: true };
-        Self::new(
-            source,
-            parse_quote! { TableRef },
-            Imports {
-                sed_packet: vec![parse_quote!(TableRef), parse_quote!(UidRange)],
-                lookup: vec![
-                    parse_quote!(UidRangeEntry),
-                    parse_quote!(SortedMap),
-                    parse_quote!(TableIdLookup),
-                ],
-            },
-            lookup,
-        )
+        Self::new(source, parse_quote! { TableRef }, lookup)
     }
 
     /// A table of special-purpose UIDs, which are not objects.
@@ -314,28 +261,12 @@ impl Table {
             name: Some(source.name.clone()),
             has_ranges: false,
         };
-        Self::new(
-            source,
-            parse_quote! { Uid },
-            Imports {
-                sed_packet: vec![
-                    parse_quote!(Uid),
-                    parse_quote!(TableRef),
-                    parse_quote!(UidRange),
-                ],
-                lookup: vec![
-                    parse_quote!(UidRangeEntry),
-                    parse_quote!(SortedMap),
-                    parse_quote!(MetaTableLookup),
-                ],
-            },
-            lookup,
-        )
+        Self::new(source, parse_quote! { Uid }, lookup)
     }
 
     /// Builds the UID constants and lookups, which are the same for all kinds of tables
     /// except for the types of the UIDs.
-    fn new(source: semantic_ast::Table, value_type: Type, imports: Imports, lookup: LookupConst) -> Self {
+    fn new(source: semantic_ast::Table, value_type: Type, lookup: LookupConst) -> Self {
         let uid = source.uid.map(|value| UidConst {
             ident: format_ident!("THIS_TABLE"),
             uid: Uid { value_type: parse_quote! { TableRef }, value },
@@ -349,7 +280,7 @@ impl Table {
             let uid = Uid { value_type: value_type.clone(), value };
             uids.push(UidConst { ident: ident.clone(), uid });
             lookup_by_name.lookup.insert(name.clone(), ident.clone());
-            lookup_by_value.lookup.insert((value, ident), name);
+            lookup_by_value.lookup.insert(value, (ident, name));
         }
 
         let mut uid_ranges = Vec::new();
@@ -362,28 +293,19 @@ impl Table {
             lookup_ranges.lookup.push(RangeLookupEntry { uid_range, prefix, suffix, start_display });
         }
 
-        Self {
-            name: source.name,
-            uid,
-            imports,
-            uids,
-            uid_ranges,
-            lookup_by_name,
-            lookup_by_value,
-            lookup_ranges,
-            lookup,
-        }
+        Self { name: source.name, uid, uids, uid_ranges, lookup_by_name, lookup_by_value, lookup_ranges, lookup }
     }
 }
 
 impl ToTokens for Table {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Self { name, uid, imports, uids, uid_ranges, lookup_by_name, lookup_by_value, lookup_ranges, lookup } =
-            self;
-        let ident_lower = module_ident(name);
+        let Self { name, uid, uids, uid_ranges, lookup_by_name, lookup_by_value, lookup_ranges, lookup } = self;
+        let module = module_ident(name);
+        // The same imports for all kinds of tables, unused ones are allowed in the generated code.
         tokens.extend(quote! {
-            pub mod #ident_lower {
-                #imports
+            pub mod #module {
+                use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
+                use crate::lookup::{UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup, MetaTableLookup};
 
                 #uid
 
@@ -403,7 +325,7 @@ impl ToTokens for Table {
 pub struct SecurityProvider {
     pub name: String,
     /// The UID of the SP, or `None` for the shared SP.
-    pub uid: Option<u64>,
+    pub uid: Option<Uid>,
     pub table_id: Option<Table>,
     pub special_tables: Vec<Table>,
     pub object_tables: Vec<Table>,
@@ -413,7 +335,7 @@ impl From<semantic_ast::SecurityProvider> for SecurityProvider {
     fn from(value: semantic_ast::SecurityProvider) -> Self {
         Self {
             name: value.name,
-            uid: value.uid,
+            uid: value.uid.map(|value| Uid { value_type: parse_quote! { SpRef }, value }),
             table_id: value.table_id.map(Table::table_id),
             special_tables: value.special_tables.into_iter().map(Table::special).collect(),
             object_tables: value.object_tables.into_iter().map(Table::object).collect(),
@@ -424,12 +346,12 @@ impl From<semantic_ast::SecurityProvider> for SecurityProvider {
 impl ToTokens for SecurityProvider {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { name, uid: _, table_id, special_tables, object_tables } = self;
-        let ident_lower = module_ident(name);
+        let module = module_ident(name);
 
         // The `TableID` table is referenced directly through `table_ids`, it's not a lookup table.
         fn lookup_item(table: &Table) -> TokenStream {
-            let ident_lower = module_ident(&table.name);
-            quote! { (#ident_lower::THIS_TABLE, &#ident_lower::LOOKUP) }
+            let module = module_ident(&table.name);
+            quote! { (#module::THIS_TABLE, &#module::LOOKUP) }
         }
         // `SortedMap` uses binary search, so the lookups must be sorted by table UID.
         let mut lookup_tables: Vec<_> = special_tables.iter().chain(object_tables).collect();
@@ -438,7 +360,7 @@ impl ToTokens for SecurityProvider {
         let num_tables = lookup_items.len();
 
         tokens.extend(quote! {
-            pub mod #ident_lower {
+            pub mod #module {
                 use ::sed_packet::{TableRef};
                 use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
 
@@ -474,25 +396,22 @@ impl From<semantic_ast::Feature> for Feature {
 impl ToTokens for Feature {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { name, security_providers } = self;
-        let ident_lower = module_ident(name);
+        let module = module_ident(name);
         // `SortedMap` uses binary search, so the lookups must be sorted by SP UID.
         // The shared SP (`None`) comes first, the same as in the ordering of `Option<SpRef>`.
         let mut lookup_security_providers: Vec<_> = security_providers.iter().collect();
-        lookup_security_providers.sort_by_key(|security_provider| security_provider.uid);
+        lookup_security_providers.sort_by_key(|security_provider| security_provider.uid.as_ref().map(|uid| uid.value));
         let num_security_providers = lookup_security_providers.len();
         let lookup_items = lookup_security_providers.into_iter().map(|security_provider| {
-            let ident_lower = module_ident(&security_provider.name);
-            match security_provider.uid {
-                Some(_) => {
-                    let ident_upper = const_ident(&security_provider.name);
-                    quote! { (Some(admin::sp::#ident_upper), &#ident_lower::LOOKUP) }
-                }
-                None => quote! { (None, &#ident_lower::LOOKUP) },
+            let sp_module = module_ident(&security_provider.name);
+            match &security_provider.uid {
+                Some(uid) => quote! { (Some(#uid), &#sp_module::LOOKUP) },
+                None => quote! { (None, &#sp_module::LOOKUP) },
             }
         });
 
         tokens.extend(quote! {
-            pub mod #ident_lower {
+            pub mod #module {
                 use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap, SpRef};
 
                 #(#security_providers)*

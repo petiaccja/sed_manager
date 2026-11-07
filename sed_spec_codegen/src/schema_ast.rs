@@ -15,7 +15,7 @@ pub struct UidRange {
     pub start: u64,
     pub count: u64,
     #[serde(default = "default_value_one")]
-    pub step: u64,
+    pub step: u32,
     #[serde(default = "default_value_one", rename = "display_base")]
     pub start_display: u64,
 }
@@ -76,8 +76,8 @@ where
     u64::from_str_radix(&String::deserialize(de)?, 16).map_err(|_| D::Error::custom("could not parse UID"))
 }
 
-fn default_value_one() -> u64 {
-    1
+fn default_value_one<T: From<u8>>() -> T {
+    T::from(1)
 }
 
 #[cfg(test)]

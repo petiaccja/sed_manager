@@ -10,8 +10,8 @@ use crate::schema_ast;
 
 #[derive(Debug, thiserror::Error)]
 pub enum SemanticError {
-    #[error("the value {value:016x} (name: `{name}`) is defined for multiple UIDs or UID ranges")]
-    ValueCollision { value: u64, name: String },
+    #[error("the value {value:016x} is defined for both `{first}` and `{second}`")]
+    ValueCollision { value: u64, first: String, second: String },
     #[error("the UID range `{first}` overlaps with `{second}`")]
     Overlap { first: String, second: String },
     #[error("the UID range `{0}` has an invalid name; names must be `<prefix>{{<index>}}<suffix>")]
@@ -43,7 +43,7 @@ pub struct UidRangeObject {
     pub start: u64,
     pub count: u64,
     /// The distance between consecutive UIDs, in the units of the table (see [`OBJECT_STEP_UNIT`] and [`TABLE_STEP_UNIT`]).
-    pub step: u64,
+    pub step: u32,
     pub start_display: u64,
     /// The distance between consecutive UIDs as raw 64-bit values.
     pub stride: u64,
@@ -74,9 +74,7 @@ impl UidRangeObject {
         let shift = second_range.start - first_range.start;
         let stride_gcd = num_integer::gcd(self.stride, other.stride);
 
-        if first_range.end <= second_range.start {
-            Ok(())
-        } else if shift.is_multiple_of(stride_gcd) {
+        if first_range.end > second_range.start && shift.is_multiple_of(stride_gcd) {
             Err(SemanticError::Overlap { first: self.name(), second: other.name() })
         } else {
             Ok(())
@@ -148,7 +146,7 @@ fn convert_objects(
                     [prefix, _index, suffix] => ((*prefix).to_owned(), (*suffix).to_owned()),
                     _ => return Err(SemanticError::InvalidRangeName(name)),
                 };
-                let stride = step * step_unit;
+                let stride = u64::from(step) * step_unit;
                 uid_range_objects.push(UidRangeObject { prefix, suffix, start, count, step, start_display, stride })
             }
         }
@@ -159,8 +157,8 @@ fn convert_objects(
 fn check_uniqueness(uid_objects: &[UidObject]) -> Result<(), SemanticError> {
     let mut by_value = HashMap::new();
     for UidObject { name, value } in uid_objects {
-        if by_value.insert(value, name).is_some() {
-            return Err(SemanticError::ValueCollision { value: *value, name: name.clone() });
+        if let Some(first) = by_value.insert(value, name) {
+            return Err(SemanticError::ValueCollision { value: *value, first: first.clone(), second: name.clone() });
         }
     }
     Ok(())
@@ -202,7 +200,7 @@ impl SecurityProvider {
                 .transpose()?,
             special_tables: special_tables
                 .into_iter()
-                .filter_map(|(name, table)| table.map(|table| (name, table)))
+                .filter_map(|(name, table)| Some((name, table?)))
                 .map(|(name, table)| Table::try_from(name.to_owned(), Some(table_uid(name)?), table, OBJECT_STEP_UNIT))
                 .collect::<Result<_, _>>()?,
             object_tables: tables
@@ -295,7 +293,7 @@ mod tests {
         UidObject { name: name.to_owned(), value }
     }
 
-    fn range(prefix: &str, start: u64, count: u64, step: u64) -> UidRangeObject {
+    fn range(prefix: &str, start: u64, count: u64, step: u32) -> UidRangeObject {
         UidRangeObject {
             prefix: prefix.to_owned(),
             suffix: String::new(),
@@ -303,7 +301,7 @@ mod tests {
             count,
             step,
             start_display: 1,
-            stride: step,
+            stride: u64::from(step),
         }
     }
 
@@ -331,7 +329,7 @@ mod tests {
     #[rstest]
     #[case::adjacent((0, 5, 2), (9, 5, 1))]
     #[case::interleaved_different_steps((0, 10, 4), (1, 10, 6))]
-    fn check_overlaps_disjoint(#[case] first: (u64, u64, u64), #[case] second: (u64, u64, u64)) {
+    fn check_overlaps_disjoint(#[case] first: (u64, u64, u32), #[case] second: (u64, u64, u32)) {
         let first = range("First", first.0, first.1, first.2);
         let second = range("Second", second.0, second.1, second.2);
         assert_that!(first.check_overlaps(&second), ok(anything()));
@@ -343,7 +341,7 @@ mod tests {
     #[case::different_steps((0, 10, 4), (2, 10, 6))]
     // False positive: an empty range has no elements, but it is still flagged when it starts inside another range.
     #[case::empty_inside((5, 0, 1), (0, 10, 1))]
-    fn check_overlaps_overlapping(#[case] first: (u64, u64, u64), #[case] second: (u64, u64, u64)) {
+    fn check_overlaps_overlapping(#[case] first: (u64, u64, u32), #[case] second: (u64, u64, u32)) {
         let first = range("First", first.0, first.1, first.2);
         let second = range("Second", second.0, second.1, second.2);
         assert_that!(
@@ -367,7 +365,7 @@ mod tests {
         let objects = [uid("A", 1), uid("B", 2), uid("C", 1)];
         assert_that!(
             check_uniqueness(&objects),
-            err(matches_pattern!(SemanticError::ValueCollision { name: eq("C"), value: eq(&1) }))
+            err(matches_pattern!(SemanticError::ValueCollision { value: eq(&1), first: eq("A"), second: eq("C") }))
         );
     }
 
@@ -383,11 +381,11 @@ mod tests {
             .into(),
         };
         assert_that!(
-            Table::try_from("TableID".to_owned(), None, table(0x0000100400000000), TABLE_STEP_UNIT).map(|_| ()),
+            Table::try_from(TABLE_ID_TABLE.to_owned(), None, table(0x0000100400000000), TABLE_STEP_UNIT).map(|_| ()),
             ok(anything())
         );
         assert_that!(
-            Table::try_from("TableID".to_owned(), None, table(0x0000100300000000), TABLE_STEP_UNIT).map(|_| ()),
+            Table::try_from(TABLE_ID_TABLE.to_owned(), None, table(0x0000100300000000), TABLE_STEP_UNIT).map(|_| ()),
             err(matches_pattern!(SemanticError::Overlap { first: eq("DataStore{n}"), second: eq("Table") }))
         );
     }

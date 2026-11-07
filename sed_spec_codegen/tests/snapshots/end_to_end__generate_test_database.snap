@@ -9,8 +9,11 @@ pub mod core {
         use ::sed_packet::TableRef;
         use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
         pub mod table_id {
-            use ::sed_packet::{TableRef, UidRange};
-            use crate::lookup::{UidRangeEntry, SortedMap, TableIdLookup};
+            use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
+            use crate::lookup::{
+                UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup,
+                MetaTableLookup,
+            };
             pub const INVOKING_ID: TableRef = TableRef::new(0xfffffffe00000000_u64);
             pub const SP: TableRef = TableRef::new(0x0000020500000000_u64);
             pub const TABLE_W: TableRef = TableRef::new(0x0000000a00000000_u64);
@@ -51,8 +54,11 @@ pub mod core {
             };
         }
         pub mod invoking_id {
-            use ::sed_packet::{Uid, TableRef, UidRange};
-            use crate::lookup::{UidRangeEntry, SortedMap, MetaTableLookup};
+            use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
+            use crate::lookup::{
+                UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup,
+                MetaTableLookup,
+            };
             pub const THIS_TABLE: TableRef = TableRef::new(0xfffffffe00000000_u64);
             pub const SESSION_MANAGER: Uid = Uid::new(0x00000000000000ff_u64);
             pub const THIS_SP: Uid = Uid::new(0x0000000000000001_u64);
@@ -93,8 +99,11 @@ pub mod feature_x {
         use ::sed_packet::TableRef;
         use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
         pub mod sp {
-            use ::sed_packet::{ObjectRef, TableRef, UidRange};
-            use crate::lookup::{UidRangeEntry, SortedMap, ObjectTableLookup};
+            use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
+            use crate::lookup::{
+                UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup,
+                MetaTableLookup,
+            };
             pub const THIS_TABLE: TableRef = TableRef::new(0x0000020500000000_u64);
             pub const ADMIN: ObjectRef<{ THIS_TABLE.to_u64() }> = ObjectRef::new(
                 0x0000020500000002_u64,
@@ -131,8 +140,11 @@ pub mod feature_x {
         use ::sed_packet::TableRef;
         use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
         pub mod table_w {
-            use ::sed_packet::{ObjectRef, TableRef, UidRange};
-            use crate::lookup::{UidRangeEntry, SortedMap, ObjectTableLookup};
+            use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
+            use crate::lookup::{
+                UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup,
+                MetaTableLookup,
+            };
             pub const THIS_TABLE: TableRef = TableRef::new(0x0000000a00000000_u64);
             pub const OBJECT_D: ObjectRef<{ THIS_TABLE.to_u64() }> = ObjectRef::new(
                 0x0000000a00000001_u64,
@@ -152,8 +164,11 @@ pub mod feature_x {
             };
         }
         pub mod table_z {
-            use ::sed_packet::{ObjectRef, TableRef, UidRange};
-            use crate::lookup::{UidRangeEntry, SortedMap, ObjectTableLookup};
+            use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
+            use crate::lookup::{
+                UidRangeEntry, SortedMap, ObjectTableLookup, TableIdLookup,
+                MetaTableLookup,
+            };
             pub const THIS_TABLE: TableRef = TableRef::new(0x0000000900000000_u64);
             pub const OBJECT_A: ObjectRef<{ THIS_TABLE.to_u64() }> = ObjectRef::new(
                 0x0000000900000001_u64,
@@ -214,8 +229,8 @@ pub mod feature_x {
         };
     }
     const SP_LOOKUPS: [(Option<SpRef>, &SecurityProviderLookup); 2usize] = [
-        (Some(admin::sp::SPY), &spy::LOOKUP),
-        (Some(admin::sp::ADMIN), &admin::LOOKUP),
+        (Some(SpRef::new(0x0000020500000001_u64)), &spy::LOOKUP),
+        (Some(SpRef::new(0x0000020500000002_u64)), &admin::LOOKUP),
     ];
     pub const LOOKUP: FeatureLookup<'static> = FeatureLookup {
         sp_lookups: SortedMap { items: &SP_LOOKUPS },
