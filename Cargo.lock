@@ -4476,6 +4476,7 @@ dependencies = [
  "prettyplease",
  "proc-macro2",
  "quote",
+ "rstest",
  "serde",
  "serde_json",
  "syn 2.0.117",

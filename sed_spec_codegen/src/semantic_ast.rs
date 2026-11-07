@@ -47,6 +47,9 @@ impl UidRangeObject {
         }
     }
 
+    /// Returns if the two UID ranges share elements. False positives are
+    /// possible when the ranges overlap, but do not actually have a common
+    /// element due to their finite length.
     pub fn check_overlaps(&self, other: &UidRangeObject) -> Result<(), SemanticError> {
         let mut ranges = [self.to_range(), other.to_range()];
         ranges.sort_by_key(|range| range.start);
@@ -65,7 +68,12 @@ impl UidRangeObject {
     }
 
     fn to_range(&self) -> Range<u64> {
-        self.start..(self.start + self.count * self.step + 1 - self.step)
+        let end = if self.count == 0 {
+            self.start
+        } else {
+            self.start + self.count * self.step + 1 - self.step
+        };
+        self.start..end
     }
 }
 
@@ -174,5 +182,94 @@ impl Database {
                 .map(|(name, feature)| Feature::try_from(name, feature))
                 .collect::<Result<_, _>>()?,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use googletest::prelude::*;
+    use rstest::rstest;
+
+    fn uid(name: &str, value: u64) -> UidObject {
+        UidObject { name: name.to_owned(), value }
+    }
+
+    fn range(prefix: &str, start: u64, count: u64, step: u64) -> UidRangeObject {
+        UidRangeObject { prefix: prefix.to_owned(), suffix: String::new(), start, count, step, start_display: 1 }
+    }
+
+    // The range used for `check_contains` contains 0x10, 0x12, 0x14, 0x16.
+    #[rstest]
+    #[case::before_start(0x0F)]
+    #[case::after_end(0x18)]
+    #[case::off_stride(0x13)]
+    fn check_contains_disjoint(#[case] value: u64) {
+        let range = range("Range", 0x10, 4, 2);
+        assert_that!(range.check_contains(&uid("Object", value)), ok(anything()));
+    }
+
+    #[rstest]
+    #[case::first(0x10)]
+    #[case::last(0x16)]
+    fn check_contains_overlapping(#[case] value: u64) {
+        let range = range("Range", 0x10, 4, 2);
+        assert_that!(
+            range.check_contains(&uid("Object", value)),
+            err(matches_pattern!(SemanticError::Overlap { first: eq("Range{n}"), second: eq("Object") }))
+        );
+    }
+
+    #[rstest]
+    #[case::adjacent((0, 5, 2), (9, 5, 1))]
+    #[case::interleaved_different_steps((0, 10, 4), (1, 10, 6))]
+    fn check_overlaps_disjoint(#[case] first: (u64, u64, u64), #[case] second: (u64, u64, u64)) {
+        let first = range("First", first.0, first.1, first.2);
+        let second = range("Second", second.0, second.1, second.2);
+        assert_that!(first.check_overlaps(&second), ok(anything()));
+        assert_that!(second.check_overlaps(&first), ok(anything()));
+    }
+
+    #[rstest]
+    #[case::shared_last_first((0, 5, 2), (8, 5, 2))]
+    #[case::different_steps((0, 10, 4), (2, 10, 6))]
+    // False positive: an empty range has no elements, but it is still flagged when it starts inside another range.
+    #[case::empty_inside((5, 0, 1), (0, 10, 1))]
+    fn check_overlaps_overlapping(#[case] first: (u64, u64, u64), #[case] second: (u64, u64, u64)) {
+        let first = range("First", first.0, first.1, first.2);
+        let second = range("Second", second.0, second.1, second.2);
+        assert_that!(
+            first.check_overlaps(&second),
+            err(matches_pattern!(SemanticError::Overlap { first: eq("First{n}"), second: eq("Second{n}") }))
+        );
+        assert_that!(
+            second.check_overlaps(&first),
+            err(matches_pattern!(SemanticError::Overlap { first: eq("Second{n}"), second: eq("First{n}") }))
+        );
+    }
+
+    #[test]
+    fn check_uniqueness_unique() {
+        let objects = [uid("A", 1), uid("B", 2), uid("C", 3)];
+        assert_that!(check_uniqueness(&objects), ok(anything()));
+    }
+
+    #[test]
+    fn check_uniqueness_name_collision() {
+        let objects = [uid("A", 1), uid("B", 2), uid("A", 3)];
+        assert_that!(
+            check_uniqueness(&objects),
+            err(matches_pattern!(SemanticError::NameCollision { name: eq("A"), value: eq(&3) }))
+        );
+    }
+
+    #[test]
+    fn check_uniqueness_value_collision() {
+        let objects = [uid("A", 1), uid("B", 2), uid("C", 1)];
+        assert_that!(
+            check_uniqueness(&objects),
+            err(matches_pattern!(SemanticError::ValueCollision { name: eq("C"), value: eq(&1) }))
+        );
     }
 }

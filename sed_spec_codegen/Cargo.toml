@@ -19,4 +19,5 @@ thiserror.workspace = true
 
 [dev-dependencies]
 googletest.workspace = true
+rstest.workspace = true
 insta.workspace = true
