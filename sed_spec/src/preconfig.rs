@@ -91,6 +91,17 @@ mod tests {
     }
 
     #[rstest]
+    #[case("General::Null".to_owned(), self::core::shared::general::NULL)]
+    #[case("General::CharSetUnrestricted".to_owned(), self::core::shared::general::CHAR_SET_UNRESTRICTED)]
+    #[case("InvokingID::ThisSP".to_owned(), self::core::shared::invoking_id::THIS_SP)]
+    #[case("InvokingID::SessionManager".to_owned(), self::core::shared::invoking_id::SESSION_MANAGER)]
+    #[case("SMMethodID::StartSession".to_owned(), self::core::shared::sm_method_id::START_SESSION)]
+    fn lookup_security_provider_special(#[case] path: String, #[case] uid: Uid) {
+        assert_eq!(self::core::shared::LOOKUP.by_path(&path), Some(uid));
+        assert_eq!(self::core::shared::LOOKUP.by_uid(uid), Some(path));
+    }
+
+    #[rstest]
     #[case("Authority::Anybody", Some(self::core::shared::authority::ANYBODY.to_uid()))]
     #[case("Shared::Authority::Anybody", Some(self::core::shared::authority::ANYBODY.to_uid()))]
     #[case("Invalid::Authority::Anybody", None)]

@@ -13,7 +13,6 @@ use crate::path::Path;
 // These tables and types are hardcoded here because the generated specification
 // is not available here.
 pub const SP_TABLE: TableRef = TableRef::new(0x00000205_00000000);
-pub const META_TABLE: TableRef = TableRef::new(0xFFFFFFFF_00000000);
 pub(crate) type SpRef = ObjectRef<{ SP_TABLE.to_u64() }>;
 
 /// A contiguous range of UIDs whose names follow the pattern `{prefix}{n}{suffix}`,
@@ -147,34 +146,22 @@ impl<'a> SecurityProviderLookup<'a> {
     }
 
     pub fn by_path_with_table(&self, name: &str, table: TableRef) -> Option<Uid> {
-        if table == META_TABLE {
-            for (table_ref, table_lookup) in self.table_lookups.items.iter().rev() {
-                if *table_ref == META_TABLE {
-                    if let Some(uid) = table_lookup.by_name(name) {
-                        return Some(uid);
-                    }
-                } else {
-                    break;
-                }
-            }
-            None
-        } else {
-            let table_lookup = self.table_lookups.get(&table)?;
-            table_lookup.by_name(name)
-        }
+        let table_lookup = self.table_lookups.get(&table)?;
+        table_lookup.by_name(name)
     }
 
     pub fn by_uid(&self, uid: Uid) -> Option<String> {
-        let table_ref = uid.containing_table().map(|table_ref| TableRef::new(table_ref.to_u64()));
-        let path = if let Some(table_ref) = table_ref {
-            let table_lookup = self.table_lookups.get(&table_ref)?;
-            let table_name = table_lookup.name();
-            table_lookup.by_uid(uid).map(|name| format!("{table_name}::{name}"))
-        } else {
-            let mut meta_tables =
-                self.table_lookups.items.iter().rev().filter(|(table_ref, _)| table_ref == &META_TABLE);
-            meta_tables.find_map(|(_, lookup)| lookup.by_uid(uid).map(|name| format!("{}::{name}", lookup.name())))
+        let by_uid_in = |table_lookup: &dyn TableLookup| {
+            table_lookup.by_uid(uid).map(|name| format!("{}::{name}", table_lookup.name()))
         };
+        // Objects are usually found in their containing table, which is a fast
+        // binary search. Special-purpose UIDs have no containing table, and the
+        // special tables may also list objects (e.g. `General::CharSetUnrestricted`),
+        // so all tables are searched as a fallback.
+        let path = TableRef::containing_table(uid)
+            .and_then(|table_ref| self.table_lookups.get(&table_ref))
+            .and_then(|table_lookup| by_uid_in(*table_lookup))
+            .or_else(|| self.table_lookups.items.iter().find_map(|(_, table_lookup)| by_uid_in(*table_lookup)));
         match self.name {
             "Shared" => path,
             sp => path.map(|path| format!("{sp}::{path}")),
