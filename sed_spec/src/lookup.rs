@@ -10,12 +10,13 @@ use sed_packet::{ObjectRef, TableRef, Uid, UidRange};
 
 use crate::path::Path;
 
-// These tables and types are hardcoded here because the generated UID registry
-// is not available here.
+// These tables and types are hardcoded here despite being defined in the UID registry.
+// This is because the code generated for the UID registry needs these throughout and
+// importing them from here is easier than self-referencing in the generated code.
 pub const SP_TABLE: TableRef = TableRef::new(0x00000205_00000000);
 pub(crate) type SpRef = ObjectRef<{ SP_TABLE.to_u64() }>;
 
-/// A contiguous range of UIDs whose names follow the pattern `{prefix}{n}{suffix}`,
+/// A range of UIDs whose names follow the pattern `{prefix}{n}{suffix}`,
 /// where `n` is a display index starting at `display_start`.
 pub struct UidRangeLookupEntry<U> {
     pub range: UidRange<U>,
@@ -154,10 +155,9 @@ impl<'a> SecurityProviderLookup<'a> {
         let by_uid_in = |table_lookup: &dyn TableLookup| {
             table_lookup.by_uid(uid).map(|name| format!("{}::{name}", table_lookup.name()))
         };
-        // Objects are usually found in their containing table, which is a fast
-        // binary search. Special-purpose UIDs have no containing table, and the
-        // special tables may also list objects (e.g. `General::CharSetUnrestricted`),
-        // so all tables are searched as a fallback.
+        // Special-purpose UIDs have no containing table, and special tables may
+        // also list objects (e.g. `General::CharSetUnrestricted`), so fall back
+        // to searching all tables.
         let path = TableRef::containing_table(uid)
             .and_then(|table_ref| self.table_lookups.get(&table_ref))
             .and_then(|table_lookup| by_uid_in(*table_lookup))
@@ -207,12 +207,12 @@ impl<'a> FeatureLookup<'a> {
     }
 }
 
-/// This implementation is kinda hacky:
-/// - This is `lookup.rs`, but it imports `uid_registry.rs`, which is based on
-///   `lookup.rs`. This compiles in Rust, but is not pretty.
-/// - The features are hardcoded. Instead, they should be specified dynamically
-///   based on the UID registry's JSON. This may be possible once the discovery
-///   module is fully cleaned up, but that needs all the refactoring.
+// This implementation is kinda hacky:
+// - This is `lookup.rs`, but it imports `uid_registry.rs`, which is based on
+//   `lookup.rs`. This compiles in Rust, but is not pretty.
+// - The features are hardcoded. Instead, they should be specified dynamically
+//   based on the UID registry's JSON. This may be possible once the discovery
+//   module is fully cleaned up, but that needs all the refactoring.
 pub struct GlobalLookup;
 
 impl GlobalLookup {

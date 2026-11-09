@@ -150,9 +150,7 @@ impl From<Uid> for u64 {
 /// Offsets the raw 64-bit value of the UID.
 ///
 /// Beware that arithmetic on [`ObjectRef`] and [`TableRef`] may give different
-/// results to arithmetic on [`Uid`]s, even if they contain the same numeric
-/// value. [`Uid`] doesn't consider the type of the UID, and performs raw
-/// arithmetic.
+/// results to arithmetic on [`Uid`]s, even for the same value.
 ///
 /// [`ObjectRef`]: crate::ObjectRef
 /// [`TableRef`]: crate::TableRef
@@ -168,10 +166,7 @@ impl Add<u32> for Uid {
 ///
 /// # Panics
 ///
-/// Panics if the distance doesn't fit into an [`i64`], i.e. if the UIDs are
-/// 2<sup>63</sup> or more apart. UIDs within the same table are always closer
-/// than that, so the panic indicates the subtraction of unrelated UIDs (e.g. a
-/// special-purpose UID and an object), whose difference is not meaningful.
+/// Panics if the UIDs are 2<sup>63</sup> or more apart.
 impl Sub for Uid {
     type Output = i64;
 

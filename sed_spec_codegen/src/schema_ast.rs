@@ -14,15 +14,15 @@ use serde::{Deserialize, Deserializer};
 pub enum UidEntry {
     /// A single UID in the JSON.
     Single(#[serde(deserialize_with = "deserialize_uid")] u64),
-    /// A contiguous range of UIDs, named `<prefix>{n}<suffix>` in the JSON.
+    /// A range of UIDs, named `<prefix>{n}<suffix>` in the JSON.
     Range {
         /// The first UID of the range.
         #[serde(deserialize_with = "deserialize_uid")]
         start: u64,
         /// The number of UIDs in the range.
         count: u64,
-        #[serde(default = "default_value_one")]
         /// Only every `step`th UID is part of the range.
+        #[serde(default = "default_value_one")]
         step: u32,
         /// When the UID is rendered as a string, `display_start` will be
         /// displayed as the index of the 0th UID in this range.
@@ -31,7 +31,7 @@ pub enum UidEntry {
     },
 }
 
-/// A generic table that might contains table IDs, special purpose UIDs, or
+/// A generic table that might contain table IDs, special purpose UIDs, or
 /// object UIDs.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Table {

@@ -38,7 +38,7 @@ fn strip_generic_arguments(ty: &Type) -> Type {
 /// A UID literal, e.g. `ObjectRef::new(0x0000000900000001_u64)`.
 #[derive(Debug, Clone)]
 pub struct Uid {
-    /// The exact type of the UID, which may be `Uid`, `ObjectRef<...>`, or `TableRef`.
+    /// The exact type of the UID, e.g. `ObjectRef<...>`.
     pub ty: Type,
     pub value: u64,
 }
@@ -57,7 +57,7 @@ impl ToTokens for Uid {
 /// A UID range literal, with an exclusive `end`.
 #[derive(Debug, Clone)]
 pub struct UidRange {
-    /// The type of the UIDs in the range, which may be `Uid`, `ObjectRef<...>`, or `TableRef`.
+    /// The exact type of the UIDs in the range, e.g. `ObjectRef<...>`.
     pub uid_ty: Type,
     pub start: u64,
     pub end: u64,
