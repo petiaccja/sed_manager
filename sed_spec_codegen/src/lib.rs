@@ -19,6 +19,8 @@ pub enum Error {
     Semantic(#[from] SemanticError),
 }
 
+/// Parse the UID registry from the JSON file and generate the corresponding Rust
+/// module that defines the same UIDs.
 pub fn generate_uid_registry(registry_json: &str) -> Result<String, Error> {
     let registry: schema_ast::UidRegistry = serde_json::from_str(registry_json)?;
     let registry = semantic_ast::UidRegistry::try_from(registry)?;

@@ -22,15 +22,22 @@ pub enum SemanticError {
     UnknownSecurityProvider { feature: String, security_provider: String },
 }
 
-/// The name of the table that lists the UIDs of tables.
+/// The name of the JSON table that lists the UIDs of tables.
 const TABLE_ID_TABLE: &str = "TableID";
+/// The name of the JSON table that lists the uncategorized special purpose UIDs.
+const GENERAL_TABLE: &str = "General";
+/// The name of the JSON table that lists the invoking ID special purpose UIDs.
+const INVOKING_ID_TABLE: &str = "InvokingID";
+/// The name of the JSON table that lists the session manager method UIDs.
+const SM_METHOD_ID_TABLE: &str = "SMMethodID";
+
 /// The security provider whose tables are shared among all SPs, and which has no UID.
 const SHARED_SECURITY_PROVIDER: &str = "Shared";
 /// The security provider and table that list the UIDs of the SPs within a feature.
 const SP_TABLE: (&str, &str) = ("Admin", "SP");
 
 /// Maps the names of tables to their UIDs, as listed in the `TableID` tables.
-pub type TableIds = BTreeMap<String, u64>;
+pub type TableIdTable = BTreeMap<String, u64>;
 
 pub struct UidSingleEntry {
     pub name: String,
@@ -50,10 +57,12 @@ pub struct UidRangeEntry {
 }
 
 impl UidRangeEntry {
+    /// Returns the original name of this range as found in the JSON file.
     pub fn name(&self) -> String {
         format!("{}{{n}}{}", self.prefix, self.suffix)
     }
 
+    /// Returns an error when the `uid_entry` is part of this range.
     pub fn check_contains(&self, uid_entry: &UidSingleEntry) -> Result<(), SemanticError> {
         let range = self.to_range();
         if range.contains(&uid_entry.value) && (uid_entry.value - range.start).is_multiple_of(self.stride) {
@@ -63,7 +72,7 @@ impl UidRangeEntry {
         }
     }
 
-    /// Returns if the two UID ranges share elements. False positives are
+    /// Returns an error if the two UID ranges share elements. False positives are
     /// possible when the ranges overlap, but do not actually have a common
     /// element due to their finite length.
     pub fn check_overlaps(&self, other: &UidRangeEntry) -> Result<(), SemanticError> {
@@ -96,8 +105,8 @@ impl UidRangeEntry {
 pub const OBJECT_STEP_UNIT: u64 = 1;
 
 /// The raw 64-bit distance corresponding to a `step` of 1 in the `TableID` table.
-///
-/// Table UIDs differ in their upper half, so a step of 1 means the next table.
+/// Table UIDs are stored in the upper 32 bits, so to get the next table, 2^32
+/// has to be added.
 pub const TABLE_STEP_UNIT: u64 = 1 << 32;
 
 pub struct Table {
@@ -109,8 +118,11 @@ pub struct Table {
 }
 
 impl Table {
-    /// The `step_unit` is the raw distance between UIDs for a `step` of 1 in the
-    /// table's UID ranges, either [`OBJECT_STEP_UNIT`] or [`TABLE_STEP_UNIT`].
+    /// Semantically checks a parsed schema table and lowers it to the semantic AST.
+    ///
+    /// For `step_unit`, you should pass [`OBJECT_STEP_UNIT`] if this is a special
+    /// purpose or an object table, and [`TABLE_STEP_UNIT`] if this is the table ID
+    /// table.
     pub fn try_from(
         name: String,
         uid: Option<u64>,
@@ -181,17 +193,18 @@ impl SecurityProvider {
         name: String,
         uid: Option<u64>,
         source: schema_ast::SecurityProvider,
-        table_ids: &TableIds,
+        table_ids: &TableIdTable,
     ) -> Result<Self, SemanticError> {
         let schema_ast::SecurityProvider { table_id, general, invoking_id, sm_method_id, tables } = source;
-        // These names must match the `rename` attributes of `schema_ast::SecurityProvider`.
+
         let special_tables = [
-            ("General", general),
-            ("InvokingID", invoking_id),
-            ("SMMethodID", sm_method_id),
+            (GENERAL_TABLE, general),
+            (INVOKING_ID_TABLE, invoking_id),
+            (SM_METHOD_ID_TABLE, sm_method_id),
         ];
         let table_uid =
             |name: &str| table_ids.get(name).copied().ok_or_else(|| SemanticError::UnknownTable(name.to_owned()));
+
         Ok(Self {
             name,
             uid,
@@ -220,7 +233,11 @@ pub struct Feature {
 }
 
 impl Feature {
-    pub fn try_from(name: String, source: schema_ast::Feature, table_ids: &TableIds) -> Result<Self, SemanticError> {
+    pub fn try_from(
+        name: String,
+        source: schema_ast::Feature,
+        table_ids: &TableIdTable,
+    ) -> Result<Self, SemanticError> {
         let sp_uids = source
             .security_providers
             .get(SP_TABLE.0)
@@ -253,7 +270,7 @@ pub struct UidRegistry {
 
 impl UidRegistry {
     pub fn try_from(source: schema_ast::UidRegistry) -> Result<Self, SemanticError> {
-        let table_ids: TableIds = source
+        let table_ids: TableIdTable = source
             .features
             .values()
             .flat_map(|feature| feature.security_providers.values())

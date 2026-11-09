@@ -8,10 +8,7 @@ use std::collections::BTreeMap;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer};
 
-/// An entry of a table: either a single UID or a range of UIDs.
-///
-/// The interpretation of the entry (e.g. object, table, or special-purpose UID)
-/// depends on the table, and is decided in the semantic AST.
+/// A single UID or a range of UIDs inside a table of the JSON.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(untagged)]
 pub enum UidEntry {
@@ -19,16 +16,23 @@ pub enum UidEntry {
     Single(#[serde(deserialize_with = "deserialize_uid")] u64),
     /// A contiguous range of UIDs, named `<prefix>{n}<suffix>` in the JSON.
     Range {
+        /// The first UID of the range.
         #[serde(deserialize_with = "deserialize_uid")]
         start: u64,
+        /// The number of UIDs in the range.
         count: u64,
         #[serde(default = "default_value_one")]
+        /// Only every `step`th UID is part of the range.
         step: u32,
+        /// When the UID is rendered as a string, `display_start` will be
+        /// displayed as the index of the 0th UID in this range.
         #[serde(default = "default_value_one")]
         display_start: u64,
     },
 }
 
+/// A generic table that might contains table IDs, special purpose UIDs, or
+/// object UIDs.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Table {
     #[serde(flatten)]
