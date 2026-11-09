@@ -32,32 +32,32 @@ const SP_TABLE: (&str, &str) = ("Admin", "SP");
 /// Maps the names of tables to their UIDs, as listed in the `TableID` tables.
 pub type TableIds = BTreeMap<String, u64>;
 
-pub struct UidObject {
+pub struct UidSingleEntry {
     pub name: String,
     pub value: u64,
 }
 
-pub struct UidRangeObject {
+pub struct UidRangeEntry {
     pub prefix: String,
     pub suffix: String,
     pub start: u64,
     pub count: u64,
     /// The distance between consecutive UIDs, in the units of the table (see [`OBJECT_STEP_UNIT`] and [`TABLE_STEP_UNIT`]).
     pub step: u32,
-    pub start_display: u64,
+    pub display_start: u64,
     /// The distance between consecutive UIDs as raw 64-bit values.
     pub stride: u64,
 }
 
-impl UidRangeObject {
+impl UidRangeEntry {
     pub fn name(&self) -> String {
         format!("{}{{n}}{}", self.prefix, self.suffix)
     }
 
-    pub fn check_contains(&self, uid_object: &UidObject) -> Result<(), SemanticError> {
+    pub fn check_contains(&self, uid_entry: &UidSingleEntry) -> Result<(), SemanticError> {
         let range = self.to_range();
-        if range.contains(&uid_object.value) && (uid_object.value - range.start).is_multiple_of(self.stride) {
-            Err(SemanticError::Overlap { first: self.name(), second: uid_object.name.clone() })
+        if range.contains(&uid_entry.value) && (uid_entry.value - range.start).is_multiple_of(self.stride) {
+            Err(SemanticError::Overlap { first: self.name(), second: uid_entry.name.clone() })
         } else {
             Ok(())
         }
@@ -66,7 +66,7 @@ impl UidRangeObject {
     /// Returns if the two UID ranges share elements. False positives are
     /// possible when the ranges overlap, but do not actually have a common
     /// element due to their finite length.
-    pub fn check_overlaps(&self, other: &UidRangeObject) -> Result<(), SemanticError> {
+    pub fn check_overlaps(&self, other: &UidRangeEntry) -> Result<(), SemanticError> {
         let mut ranges = [self.to_range(), other.to_range()];
         ranges.sort_by_key(|range| range.start);
         let [first_range, second_range] = ranges;
@@ -104,8 +104,8 @@ pub struct Table {
     pub name: String,
     /// The UID of the table, or `None` for the `TableID` table, which has no UID.
     pub uid: Option<u64>,
-    pub uid_objects: Vec<UidObject>,
-    pub uid_range_objects: Vec<UidRangeObject>,
+    pub uid_entries: Vec<UidSingleEntry>,
+    pub uid_range_entries: Vec<UidRangeEntry>,
 }
 
 impl Table {
@@ -117,46 +117,46 @@ impl Table {
         source: schema_ast::Table,
         step_unit: u64,
     ) -> Result<Self, SemanticError> {
-        let (uid_objects, uid_range_objects) = convert_objects(source, step_unit)?;
-        check_uniqueness(&uid_objects)?;
-        for (index, uid_range_object) in uid_range_objects.iter().enumerate() {
-            for uid_object in &uid_objects {
-                uid_range_object.check_contains(uid_object)?;
+        let (uid_entries, uid_range_entries) = convert_entries(source, step_unit)?;
+        check_uniqueness(&uid_entries)?;
+        for (index, uid_range_entry) in uid_range_entries.iter().enumerate() {
+            for uid_entry in &uid_entries {
+                uid_range_entry.check_contains(uid_entry)?;
             }
-            for other_range in &uid_range_objects[index + 1..] {
-                uid_range_object.check_overlaps(other_range)?;
+            for other_range in &uid_range_entries[index + 1..] {
+                uid_range_entry.check_overlaps(other_range)?;
             }
         }
-        Ok(Self { name, uid, uid_objects, uid_range_objects })
+        Ok(Self { name, uid, uid_entries, uid_range_entries })
     }
 }
 
-fn convert_objects(
+fn convert_entries(
     source: schema_ast::Table,
     step_unit: u64,
-) -> Result<(Vec<UidObject>, Vec<UidRangeObject>), SemanticError> {
-    let mut uid_objects = Vec::new();
-    let mut uid_range_objects = Vec::new();
+) -> Result<(Vec<UidSingleEntry>, Vec<UidRangeEntry>), SemanticError> {
+    let mut uid_entries = Vec::new();
+    let mut uid_range_entries = Vec::new();
     for (name, entry) in source.entries {
         match entry {
-            schema_ast::Entry::Uid(value) => uid_objects.push(UidObject { name, value }),
-            schema_ast::Entry::UidRange(schema_ast::UidRange { start, count, step, start_display }) => {
+            schema_ast::UidEntry::Single(value) => uid_entries.push(UidSingleEntry { name, value }),
+            schema_ast::UidEntry::Range { start, count, step, display_start } => {
                 let parts: Vec<_> = name.split(['{', '}']).collect();
                 let (prefix, suffix) = match parts.as_slice() {
                     [prefix, _index, suffix] => ((*prefix).to_owned(), (*suffix).to_owned()),
                     _ => return Err(SemanticError::InvalidRangeName(name)),
                 };
                 let stride = u64::from(step) * step_unit;
-                uid_range_objects.push(UidRangeObject { prefix, suffix, start, count, step, start_display, stride })
+                uid_range_entries.push(UidRangeEntry { prefix, suffix, start, count, step, display_start, stride })
             }
         }
     }
-    Ok((uid_objects, uid_range_objects))
+    Ok((uid_entries, uid_range_entries))
 }
 
-fn check_uniqueness(uid_objects: &[UidObject]) -> Result<(), SemanticError> {
+fn check_uniqueness(uid_entries: &[UidSingleEntry]) -> Result<(), SemanticError> {
     let mut by_value = HashMap::new();
-    for UidObject { name, value } in uid_objects {
+    for UidSingleEntry { name, value } in uid_entries {
         if let Some(first) = by_value.insert(value, name) {
             return Err(SemanticError::ValueCollision { value: *value, first: first.clone(), second: name.clone() });
         }
@@ -247,12 +247,12 @@ impl Feature {
     }
 }
 
-pub struct Database {
+pub struct UidRegistry {
     pub features: Vec<Feature>,
 }
 
-impl Database {
-    pub fn try_from(source: schema_ast::Database) -> Result<Self, SemanticError> {
+impl UidRegistry {
+    pub fn try_from(source: schema_ast::UidRegistry) -> Result<Self, SemanticError> {
         let table_ids: TableIds = source
             .features
             .values()
@@ -276,8 +276,8 @@ fn single_uids(table: &schema_ast::Table) -> BTreeMap<String, u64> {
         .entries
         .iter()
         .filter_map(|(name, entry)| match entry {
-            schema_ast::Entry::Uid(value) => Some((name.clone(), *value)),
-            schema_ast::Entry::UidRange(_) => None,
+            schema_ast::UidEntry::Single(value) => Some((name.clone(), *value)),
+            schema_ast::UidEntry::Range { .. } => None,
         })
         .collect()
 }
@@ -289,18 +289,18 @@ mod tests {
     use googletest::prelude::*;
     use rstest::rstest;
 
-    fn uid(name: &str, value: u64) -> UidObject {
-        UidObject { name: name.to_owned(), value }
+    fn uid(name: &str, value: u64) -> UidSingleEntry {
+        UidSingleEntry { name: name.to_owned(), value }
     }
 
-    fn range(prefix: &str, start: u64, count: u64, step: u32) -> UidRangeObject {
-        UidRangeObject {
+    fn range(prefix: &str, start: u64, count: u64, step: u32) -> UidRangeEntry {
+        UidRangeEntry {
             prefix: prefix.to_owned(),
             suffix: String::new(),
             start,
             count,
             step,
-            start_display: 1,
+            display_start: 1,
             stride: u64::from(step),
         }
     }
@@ -356,15 +356,15 @@ mod tests {
 
     #[test]
     fn check_uniqueness_unique() {
-        let objects = [uid("A", 1), uid("B", 2), uid("C", 3)];
-        assert_that!(check_uniqueness(&objects), ok(anything()));
+        let entries = [uid("A", 1), uid("B", 2), uid("C", 3)];
+        assert_that!(check_uniqueness(&entries), ok(anything()));
     }
 
     #[test]
     fn check_uniqueness_value_collision() {
-        let objects = [uid("A", 1), uid("B", 2), uid("C", 1)];
+        let entries = [uid("A", 1), uid("B", 2), uid("C", 1)];
         assert_that!(
-            check_uniqueness(&objects),
+            check_uniqueness(&entries),
             err(matches_pattern!(SemanticError::ValueCollision { value: eq(&1), first: eq("A"), second: eq("C") }))
         );
     }
@@ -372,11 +372,13 @@ mod tests {
     #[test]
     fn table_id_ranges_step_by_tables() {
         // Contains tables 0x1001, 0x1003, 0x1005, and 0x1007.
-        let range = schema_ast::UidRange { start: 0x0000100100000000, count: 4, step: 2, start_display: 0 };
         let table = |uid: u64| schema_ast::Table {
             entries: [
-                ("DataStore{n}".to_owned(), schema_ast::Entry::UidRange(range.clone())),
-                ("Table".to_owned(), schema_ast::Entry::Uid(uid)),
+                (
+                    "DataStore{n}".to_owned(),
+                    schema_ast::UidEntry::Range { start: 0x0000100100000000, count: 4, step: 2, display_start: 0 },
+                ),
+                ("Table".to_owned(), schema_ast::UidEntry::Single(uid)),
             ]
             .into(),
         };
@@ -390,9 +392,9 @@ mod tests {
         );
     }
 
-    fn convert(database_json: &str) -> Option<SemanticError> {
-        let database: schema_ast::Database = serde_json::from_str(database_json).unwrap();
-        Database::try_from(database).err()
+    fn convert(registry_json: &str) -> Option<SemanticError> {
+        let registry: schema_ast::UidRegistry = serde_json::from_str(registry_json).unwrap();
+        UidRegistry::try_from(registry).err()
     }
 
     #[test]

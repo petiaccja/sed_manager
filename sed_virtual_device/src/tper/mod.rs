@@ -22,8 +22,8 @@ use sed_packet::discovery::{
 };
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::SecurityProviderRef;
-use sed_spec::preconfig::opal_2::admin::c_pin;
 use sed_spec::types::LifeCycleState;
+use sed_spec::uid_registry::opal_2::admin::c_pin;
 use sorbit::ser_de::ToBytes;
 
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};

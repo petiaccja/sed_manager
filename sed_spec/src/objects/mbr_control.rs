@@ -9,8 +9,8 @@ use sed_packet::ObjectUid;
 use sed_spec_macros::{DetokenizeStruct, FieldList, Object, TokenizeField, TokenizeStruct};
 
 use crate::objects::MbrControlRef;
-use crate::preconfig::core::shared::table_id;
 use crate::types::ResetType;
+use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
 #[object(table=table_id::MBR_CONTROL)]

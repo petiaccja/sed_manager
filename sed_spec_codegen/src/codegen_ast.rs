@@ -66,7 +66,7 @@ pub struct UidRange {
 }
 
 impl UidRange {
-    pub fn new(value_type: Type, range: &semantic_ast::UidRangeObject) -> Self {
+    pub fn new(value_type: Type, range: &semantic_ast::UidRangeEntry) -> Self {
         Self { value_type, start: range.start, end: range.start + range.count * range.stride, step: range.step }
     }
 }
@@ -84,12 +84,12 @@ impl ToTokens for UidRange {
 
 /// A public constant for a single UID.
 #[derive(Debug)]
-pub struct UidConst {
+pub struct UidConstant {
     pub ident: Ident,
     pub uid: Uid,
 }
 
-impl ToTokens for UidConst {
+impl ToTokens for UidConstant {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { ident, uid } = self;
         let value_type = &uid.value_type;
@@ -101,12 +101,12 @@ impl ToTokens for UidConst {
 
 /// A public constant for a UID range.
 #[derive(Debug)]
-pub struct UidRangeConst {
+pub struct UidRangeConstant {
     pub ident: Ident,
     pub uid_range: UidRange,
 }
 
-impl ToTokens for UidRangeConst {
+impl ToTokens for UidRangeConstant {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { ident, uid_range } = self;
         let value_type = &uid_range.value_type;
@@ -136,18 +136,18 @@ impl ToTokens for LookupByName {
 }
 
 #[derive(Debug)]
-pub struct LookupByValue {
+pub struct LookupByUid {
     pub value_type: Type,
     pub lookup: BTreeMap<u64, (Ident, String)>,
 }
 
-impl ToTokens for LookupByValue {
+impl ToTokens for LookupByUid {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let value_type = &self.value_type;
         let len = self.lookup.len();
         let items = self.lookup.values().map(|(ident, name)| quote! { (#ident, #name) });
         tokens.extend(quote! {
-            const BY_VALUE: [(#value_type, &str); #len] = [
+            const BY_UID: [(#value_type, &str); #len] = [
                 #(#items,)*
             ];
         });
@@ -155,22 +155,22 @@ impl ToTokens for LookupByValue {
 }
 
 #[derive(Debug)]
-pub struct RangeLookupEntry {
+pub struct UidRangeLookupEntry {
     pub uid_range: UidRange,
     pub prefix: String,
     pub suffix: String,
-    pub start_display: u64,
+    pub display_start: u64,
 }
 
-impl ToTokens for RangeLookupEntry {
+impl ToTokens for UidRangeLookupEntry {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Self { uid_range, prefix, suffix, start_display } = self;
+        let Self { uid_range, prefix, suffix, display_start } = self;
         tokens.extend(quote! {
-            UidRangeEntry {
+            UidRangeLookupEntry {
                 range: #uid_range,
                 prefix: #prefix,
                 suffix: #suffix,
-                display_base: #start_display,
+                display_start: #display_start,
             }
         });
     }
@@ -179,7 +179,7 @@ impl ToTokens for RangeLookupEntry {
 #[derive(Debug)]
 pub struct LookupRanges {
     pub value_type: Type,
-    pub lookup: Vec<RangeLookupEntry>,
+    pub lookup: Vec<UidRangeLookupEntry>,
 }
 
 impl ToTokens for LookupRanges {
@@ -188,7 +188,7 @@ impl ToTokens for LookupRanges {
         let len = self.lookup.len();
         let items = &self.lookup;
         tokens.extend(quote! {
-            const RANGES: [UidRangeEntry<#value_type>; #len] = [
+            const RANGES: [UidRangeLookupEntry<#value_type>; #len] = [
                 #(#items,)*
             ];
         });
@@ -197,14 +197,14 @@ impl ToTokens for LookupRanges {
 
 /// The public `LOOKUP` constant of a table.
 #[derive(Debug)]
-pub struct LookupConst {
+pub struct LookupConstant {
     /// The type of the constant, e.g. `RefTableLookup<'static, ObjectRef<{ THIS_TABLE.to_u64() }>>`.
     pub lookup_type: Type,
     /// The value of the `name` field, if the lookup has one.
     pub name: Option<String>,
 }
 
-impl ToTokens for LookupConst {
+impl ToTokens for LookupConstant {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { lookup_type, name } = self;
         let constructor = strip_generic_arguments(lookup_type);
@@ -213,7 +213,7 @@ impl ToTokens for LookupConst {
             pub const LOOKUP: #lookup_type = #constructor {
                 #name
                 by_name: SortedMap { items: &BY_NAME },
-                by_uid: SortedMap { items: &BY_VALUE },
+                by_uid: SortedMap { items: &BY_UID },
                 ranges: &RANGES,
             };
         });
@@ -225,13 +225,13 @@ impl ToTokens for LookupConst {
 pub struct Table {
     pub name: String,
     /// The `THIS_TABLE` constant with the UID of the table, or `None` for the `TableID` table.
-    pub uid: Option<UidConst>,
-    pub uids: Vec<UidConst>,
-    pub uid_ranges: Vec<UidRangeConst>,
+    pub uid: Option<UidConstant>,
+    pub uid_constants: Vec<UidConstant>,
+    pub uid_range_constants: Vec<UidRangeConstant>,
     pub lookup_by_name: LookupByName,
-    pub lookup_by_value: LookupByValue,
+    pub lookup_by_uid: LookupByUid,
     pub lookup_ranges: LookupRanges,
-    pub lookup: LookupConst,
+    pub lookup: LookupConstant,
 }
 
 impl Table {
@@ -242,7 +242,7 @@ impl Table {
 
     /// The `TableID` table, whose rows are the UIDs of tables.
     pub fn table_id(source: semantic_ast::Table) -> Self {
-        let lookup = LookupConst { lookup_type: parse_quote! { TableIdLookup<'static> }, name: None };
+        let lookup = LookupConstant { lookup_type: parse_quote! { TableIdLookup<'static> }, name: None };
         Self::new(source, parse_quote! { TableRef }, lookup)
     }
 
@@ -253,7 +253,7 @@ impl Table {
 
     /// A table whose rows are referenced by `value_type`, with a `RefTableLookup`.
     fn ref_table(source: semantic_ast::Table, value_type: Type) -> Self {
-        let lookup = LookupConst {
+        let lookup = LookupConstant {
             lookup_type: parse_quote! { RefTableLookup<'static, #value_type> },
             name: Some(source.name.clone()),
         };
@@ -262,54 +262,72 @@ impl Table {
 
     /// Builds the UID constants and lookups, which are the same for all kinds of tables
     /// except for the types of the UIDs.
-    fn new(source: semantic_ast::Table, value_type: Type, lookup: LookupConst) -> Self {
-        let uid = source.uid.map(|value| UidConst {
+    fn new(source: semantic_ast::Table, value_type: Type, lookup: LookupConstant) -> Self {
+        let uid = source.uid.map(|value| UidConstant {
             ident: format_ident!("THIS_TABLE"),
             uid: Uid { value_type: parse_quote! { TableRef }, value },
         });
 
-        let mut uids = Vec::new();
+        let mut uid_constants = Vec::new();
         let mut lookup_by_name = LookupByName { value_type: value_type.clone(), lookup: BTreeMap::new() };
-        let mut lookup_by_value = LookupByValue { value_type: value_type.clone(), lookup: BTreeMap::new() };
-        for semantic_ast::UidObject { name, value } in source.uid_objects {
+        let mut lookup_by_uid = LookupByUid { value_type: value_type.clone(), lookup: BTreeMap::new() };
+        for semantic_ast::UidSingleEntry { name, value } in source.uid_entries {
             let ident = const_ident(&name);
             let uid = Uid { value_type: value_type.clone(), value };
-            uids.push(UidConst { ident: ident.clone(), uid });
+            uid_constants.push(UidConstant { ident: ident.clone(), uid });
             lookup_by_name.lookup.insert(name.clone(), ident.clone());
-            lookup_by_value.lookup.insert(value, (ident, name));
+            lookup_by_uid.lookup.insert(value, (ident, name));
         }
 
-        let mut uid_ranges = Vec::new();
+        let mut uid_range_constants = Vec::new();
         let mut lookup_ranges = LookupRanges { value_type: value_type.clone(), lookup: Vec::new() };
-        for range in source.uid_range_objects {
+        for range in source.uid_range_entries {
             let uid_range = UidRange::new(value_type.clone(), &range);
-            let semantic_ast::UidRangeObject { prefix, suffix, start_display, .. } = range;
+            let semantic_ast::UidRangeEntry { prefix, suffix, display_start, .. } = range;
             let ident = const_ident(&format!("{prefix}_{suffix}"));
-            uid_ranges.push(UidRangeConst { ident, uid_range: uid_range.clone() });
-            lookup_ranges.lookup.push(RangeLookupEntry { uid_range, prefix, suffix, start_display });
+            uid_range_constants.push(UidRangeConstant { ident, uid_range: uid_range.clone() });
+            lookup_ranges.lookup.push(UidRangeLookupEntry { uid_range, prefix, suffix, display_start });
         }
 
-        Self { name: source.name, uid, uids, uid_ranges, lookup_by_name, lookup_by_value, lookup_ranges, lookup }
+        Self {
+            name: source.name,
+            uid,
+            uid_constants,
+            uid_range_constants,
+            lookup_by_name,
+            lookup_by_uid,
+            lookup_ranges,
+            lookup,
+        }
     }
 }
 
 impl ToTokens for Table {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Self { name, uid, uids, uid_ranges, lookup_by_name, lookup_by_value, lookup_ranges, lookup } = self;
+        let Self {
+            name,
+            uid,
+            uid_constants,
+            uid_range_constants,
+            lookup_by_name,
+            lookup_by_uid,
+            lookup_ranges,
+            lookup,
+        } = self;
         let module = module_ident(name);
         // The same imports for all kinds of tables, unused ones are allowed in the generated code.
         tokens.extend(quote! {
             pub mod #module {
                 use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
-                use crate::lookup::{UidRangeEntry, SortedMap, RefTableLookup, TableIdLookup};
+                use crate::lookup::{UidRangeLookupEntry, SortedMap, RefTableLookup, TableIdLookup};
 
                 #uid
 
-                #(#uids)*
-                #(#uid_ranges)*
+                #(#uid_constants)*
+                #(#uid_range_constants)*
 
                 #lookup_by_name
-                #lookup_by_value
+                #lookup_by_uid
                 #lookup_ranges
 
                 #lookup
@@ -424,17 +442,17 @@ impl ToTokens for Feature {
     }
 }
 
-pub struct Database {
+pub struct UidRegistry {
     pub features: Vec<Feature>,
 }
 
-impl From<semantic_ast::Database> for Database {
-    fn from(value: semantic_ast::Database) -> Self {
+impl From<semantic_ast::UidRegistry> for UidRegistry {
+    fn from(value: semantic_ast::UidRegistry) -> Self {
         Self { features: value.features.into_iter().map(Into::into).collect() }
     }
 }
 
-impl ToTokens for Database {
+impl ToTokens for UidRegistry {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         tokens.extend(quote! { const GENERATED_MARKER: () = (); });
         for feature in &self.features {

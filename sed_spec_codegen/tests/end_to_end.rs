@@ -3,12 +3,12 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
-use sed_spec_codegen::generate_database_module;
+use sed_spec_codegen::generate_uid_registry;
 
-const TEST_DATABASE: &str = include_str!("test_database.json");
+const TEST_REGISTRY: &str = include_str!("test_uid_registry.json");
 
 #[test]
-fn generate_test_database() {
-    let generated = generate_database_module(TEST_DATABASE).expect("test database must be valid");
+fn generate_test_uid_registry() {
+    let generated = generate_uid_registry(TEST_REGISTRY).expect("test registry must be valid");
     insta::assert_snapshot!(generated);
 }

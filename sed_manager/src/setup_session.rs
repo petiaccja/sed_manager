@@ -8,10 +8,10 @@ use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{
     Authority, AuthorityRef, AuthorityRefExt as _, CPinRef, CPinRefExt, SecurityProviderRef, SecurityProviderRefExt,
 };
-use sed_spec::preconfig::core::shared::authority::SID;
-use sed_spec::preconfig::core::shared::table_id;
-use sed_spec::preconfig::opal_2::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
 use sed_spec::types::LifeCycleState;
+use sed_spec::uid_registry::core::shared::authority::SID;
+use sed_spec::uid_registry::core::shared::table_id;
+use sed_spec::uid_registry::opal_2::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
 use sed_tper::{Error as TperError, Tper, TperHandle};
 use tracing::instrument;
 

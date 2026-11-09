@@ -10,34 +10,34 @@ use sed_packet::{ObjectRef, TableRef, Uid, UidRange};
 
 use crate::path::Path;
 
-// These tables and types are hardcoded here because the generated specification
+// These tables and types are hardcoded here because the generated UID registry
 // is not available here.
 pub const SP_TABLE: TableRef = TableRef::new(0x00000205_00000000);
 pub(crate) type SpRef = ObjectRef<{ SP_TABLE.to_u64() }>;
 
 /// A contiguous range of UIDs whose names follow the pattern `{prefix}{n}{suffix}`,
-/// where `n` is a display index starting at `display_base`.
-pub struct UidRangeEntry<U> {
+/// where `n` is a display index starting at `display_start`.
+pub struct UidRangeLookupEntry<U> {
     pub range: UidRange<U>,
     pub prefix: &'static str,
     pub suffix: &'static str,
-    pub display_base: u64,
+    pub display_start: u64,
 }
 
-impl<U> UidRangeEntry<U>
+impl<U> UidRangeLookupEntry<U>
 where
     U: Copy + PartialOrd + Add<u32, Output = U> + Sub<U, Output = i64>,
 {
     pub fn by_name(&self, name: &str) -> Option<U> {
         let digits = name.strip_prefix(self.prefix)?.strip_suffix(self.suffix)?;
         let display_index: u64 = digits.parse().ok()?;
-        let index = display_index.checked_sub(self.display_base)?;
+        let index = display_index.checked_sub(self.display_start)?;
         self.range.get(usize::try_from(index).ok()?)
     }
 
     pub fn by_uid(&self, uid: U) -> Option<String> {
         let index = self.range.index_of(uid)?;
-        let display_index = index as u64 + self.display_base;
+        let display_index = index as u64 + self.display_start;
         Some(format!("{}{}{}", self.prefix, display_index, self.suffix))
     }
 }
@@ -58,7 +58,7 @@ impl<'a, K, V> SortedMap<'a, K, V> {
 pub struct TableIdLookup<'a> {
     pub by_name: SortedMap<'a, &'a str, TableRef>,
     pub by_uid: SortedMap<'a, TableRef, &'a str>,
-    pub ranges: &'a [UidRangeEntry<TableRef>],
+    pub ranges: &'a [UidRangeLookupEntry<TableRef>],
 }
 
 impl<'a> TableIdLookup<'a> {
@@ -90,7 +90,7 @@ pub struct RefTableLookup<'a, Ref> {
     pub name: &'a str,
     pub by_name: SortedMap<'a, &'a str, Ref>,
     pub by_uid: SortedMap<'a, Ref, &'a str>,
-    pub ranges: &'a [UidRangeEntry<Ref>],
+    pub ranges: &'a [UidRangeLookupEntry<Ref>],
 }
 
 impl<'a, Ref> TableLookup for RefTableLookup<'a, Ref>
@@ -208,10 +208,10 @@ impl<'a> FeatureLookup<'a> {
 }
 
 /// This implementation is kinda hacky:
-/// - This is `lookup.rs`, but it imports `preconfig.rs`, which is based on
+/// - This is `lookup.rs`, but it imports `uid_registry.rs`, which is based on
 ///   `lookup.rs`. This compiles in Rust, but is not pretty.
 /// - The features are hardcoded. Instead, they should be specified dynamically
-///   based on the JSON specification. This may be possible once the discovery
+///   based on the UID registry's JSON. This may be possible once the discovery
 ///   module is fully cleaned up, but that needs all the refactoring.
 pub struct GlobalLookup;
 
@@ -246,19 +246,19 @@ impl GlobalLookup {
     }
 
     fn search<T>(&self, features: &[FeatureDescriptor], f: impl Fn(FeatureLookup) -> Option<T>) -> Option<T> {
-        use crate::preconfig;
+        use crate::uid_registry;
         let ssc_features = features.iter().filter_map(FeatureDescriptor::to_ssc);
         let common_features = features.iter().filter(|feature| !feature.is_ssc());
         for ssc in ssc_features {
             let result = match ssc {
-                SscFeatureDescriptor::Enterprise(_) => f(preconfig::enterprise::LOOKUP),
-                SscFeatureDescriptor::OpalV1(_) => f(preconfig::opal_2::LOOKUP),
-                SscFeatureDescriptor::OpalV2(_) => f(preconfig::opal_2::LOOKUP),
-                SscFeatureDescriptor::Opalite(_) => f(preconfig::opalite::LOOKUP),
-                SscFeatureDescriptor::PyriteV1(_) => f(preconfig::pyrite_2::LOOKUP),
-                SscFeatureDescriptor::PyriteV2(_) => f(preconfig::pyrite_2::LOOKUP),
-                SscFeatureDescriptor::Ruby(_) => f(preconfig::ruby::LOOKUP),
-                SscFeatureDescriptor::KeyPerIO(_) => f(preconfig::kpio::LOOKUP),
+                SscFeatureDescriptor::Enterprise(_) => f(uid_registry::enterprise::LOOKUP),
+                SscFeatureDescriptor::OpalV1(_) => f(uid_registry::opal_2::LOOKUP),
+                SscFeatureDescriptor::OpalV2(_) => f(uid_registry::opal_2::LOOKUP),
+                SscFeatureDescriptor::Opalite(_) => f(uid_registry::opalite::LOOKUP),
+                SscFeatureDescriptor::PyriteV1(_) => f(uid_registry::pyrite_2::LOOKUP),
+                SscFeatureDescriptor::PyriteV2(_) => f(uid_registry::pyrite_2::LOOKUP),
+                SscFeatureDescriptor::Ruby(_) => f(uid_registry::ruby::LOOKUP),
+                SscFeatureDescriptor::KeyPerIO(_) => f(uid_registry::kpio::LOOKUP),
             };
             if result.is_some() {
                 return result;
@@ -266,17 +266,17 @@ impl GlobalLookup {
         }
         for feature in common_features {
             let result = match feature {
-                FeatureDescriptor::AdditionalDataStoreTables(_) => f(preconfig::data_store::LOOKUP),
+                FeatureDescriptor::AdditionalDataStoreTables(_) => f(uid_registry::data_store::LOOKUP),
                 _ => None,
             };
             if result.is_some() {
                 return result;
             }
         }
-        if let Some(result) = f(preconfig::psid::LOOKUP) {
+        if let Some(result) = f(uid_registry::psid::LOOKUP) {
             return Some(result);
         }
-        if let Some(result) = f(preconfig::core::LOOKUP) {
+        if let Some(result) = f(uid_registry::core::LOOKUP) {
             return Some(result);
         }
         None

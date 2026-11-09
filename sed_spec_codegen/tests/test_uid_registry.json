@@ -7,10 +7,10 @@
                 "TableW": "0000000A00000000",
                 "TableZ": "0000000900000000",
                 "DataStore{n}": {
-                    "base": "0000100100000000",
+                    "start": "0000100100000000",
                     "count": 4,
                     "step": 2,
-                    "display_base": 0
+                    "display_start": 0
                 }
             },
             "InvokingID": {
@@ -33,13 +33,13 @@
             "TableZ": {
                 "ObjectA": "0000000900000001",
                 "ObjectB{n}": {
-                    "base": "0000000900000002",
+                    "start": "0000000900000002",
                     "count": 100,
                     "step": 2,
-                    "display_base": 0
+                    "display_start": 0
                 },
                 "ObjectC{n}_Suffix": {
-                    "base": "0000000900001000",
+                    "start": "0000000900001000",
                     "count": 8
                 }
             }

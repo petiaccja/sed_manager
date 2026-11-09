@@ -13,7 +13,7 @@ use sed_spec::objects::{
     Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange, LockingRangeRef,
     LockingRangeRefExt, MbrControl, TableDescRefExt,
 };
-use sed_spec::preconfig::core::shared::{locking_info, mbr_control, table, table_id};
+use sed_spec::uid_registry::core::shared::{locking_info, mbr_control, table, table_id};
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 

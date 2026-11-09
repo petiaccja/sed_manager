@@ -9,8 +9,8 @@ use sed_packet::discovery::{
 };
 use sed_packet::discovery::{LockingDescriptor, TperDescriptor};
 use sed_spec::objects::SecurityProviderRef;
-use sed_spec::preconfig::{enterprise, opalite, pyrite_2, ruby};
-use sed_spec::preconfig::{kpio, opal_2};
+use sed_spec::uid_registry::{enterprise, opalite, pyrite_2, ruby};
+use sed_spec::uid_registry::{kpio, opal_2};
 
 use crate::Error;
 

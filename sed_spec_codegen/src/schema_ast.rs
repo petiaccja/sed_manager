@@ -8,33 +8,31 @@ use std::collections::BTreeMap;
 use serde::de::Error;
 use serde::{Deserialize, Deserializer};
 
-/// A contiguous range of UIDs, named `<prefix>{n}<suffix>` in the JSON.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct UidRange {
-    #[serde(deserialize_with = "deserialize_uid", rename = "base")]
-    pub start: u64,
-    pub count: u64,
-    #[serde(default = "default_value_one")]
-    pub step: u32,
-    #[serde(default = "default_value_one", rename = "display_base")]
-    pub start_display: u64,
-}
-
 /// An entry of a table: either a single UID or a range of UIDs.
 ///
 /// The interpretation of the entry (e.g. object, table, or special-purpose UID)
 /// depends on the table, and is decided in the semantic AST.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(untagged)]
-pub enum Entry {
-    Uid(#[serde(deserialize_with = "deserialize_uid")] u64),
-    UidRange(UidRange),
+pub enum UidEntry {
+    /// A single UID in the JSON.
+    Single(#[serde(deserialize_with = "deserialize_uid")] u64),
+    /// A contiguous range of UIDs, named `<prefix>{n}<suffix>` in the JSON.
+    Range {
+        #[serde(deserialize_with = "deserialize_uid")]
+        start: u64,
+        count: u64,
+        #[serde(default = "default_value_one")]
+        step: u32,
+        #[serde(default = "default_value_one")]
+        display_start: u64,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Table {
     #[serde(flatten)]
-    pub entries: BTreeMap<String, Entry>,
+    pub entries: BTreeMap<String, UidEntry>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize)]
@@ -42,17 +40,16 @@ pub struct SecurityProvider {
     /// The table that lists the UIDs of tables.
     #[serde(rename = "TableID")]
     pub table_id: Option<Table>,
-    /// Tables of special-purpose UIDs (see Core Specification, Table 239 "Special Purpose UIDs").
-    ///
-    /// These tables don't exist in the TCG specifications, they only group the
-    /// special-purpose UIDs so that they can be looked up the same way as objects.
+    /// The table of special-purpose UIDs that aren't further categorized.
     #[serde(rename = "General")]
     pub general: Option<Table>,
+    /// The table of special purpose UIDs used as the invoking ID.
     #[serde(rename = "InvokingID")]
     pub invoking_id: Option<Table>,
+    /// The table of session manager method special-purpose UIDs.
     #[serde(rename = "SMMethodID")]
     pub sm_method_id: Option<Table>,
-    /// All tables not captured by the fields above, whose rows are objects.
+    /// All remaining tables, which are object tables.
     #[serde(flatten)]
     pub tables: BTreeMap<String, Table>,
 }
@@ -64,7 +61,7 @@ pub struct Feature {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct Database {
+pub struct UidRegistry {
     #[serde(flatten)]
     pub features: BTreeMap<String, Feature>,
 }
@@ -88,26 +85,26 @@ mod tests {
 
     #[test]
     fn verify_loaded_content() {
-        let input = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/test_database.json"));
+        let input = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/test_uid_registry.json"));
 
         let shared = SecurityProvider {
             table_id: Some(Table {
                 entries: [
-                    ("InvokingID".to_owned(), Entry::Uid(0xFFFFFFFE00000000)),
-                    ("SP".to_owned(), Entry::Uid(0x0000020500000000)),
-                    ("TableW".to_owned(), Entry::Uid(0x0000000A00000000)),
-                    ("TableZ".to_owned(), Entry::Uid(0x0000000900000000)),
+                    ("InvokingID".to_owned(), UidEntry::Single(0xFFFFFFFE00000000)),
+                    ("SP".to_owned(), UidEntry::Single(0x0000020500000000)),
+                    ("TableW".to_owned(), UidEntry::Single(0x0000000A00000000)),
+                    ("TableZ".to_owned(), UidEntry::Single(0x0000000900000000)),
                     (
                         "DataStore{n}".to_owned(),
-                        Entry::UidRange(UidRange { start: 0x0000100100000000, count: 4, step: 2, start_display: 0 }),
+                        UidEntry::Range { start: 0x0000100100000000, count: 4, step: 2, display_start: 0 },
                     ),
                 ]
                 .into(),
             }),
             invoking_id: Some(Table {
                 entries: [
-                    ("ThisSP".to_owned(), Entry::Uid(0x0000000000000001)),
-                    ("SessionManager".to_owned(), Entry::Uid(0x00000000000000FF)),
+                    ("ThisSP".to_owned(), UidEntry::Single(0x0000000000000001)),
+                    ("SessionManager".to_owned(), UidEntry::Single(0x00000000000000FF)),
                 ]
                 .into(),
             }),
@@ -118,8 +115,8 @@ mod tests {
                 "SP".to_owned(),
                 Table {
                     entries: [
-                        ("Admin".to_owned(), Entry::Uid(0x0000020500000002)),
-                        ("SPY".to_owned(), Entry::Uid(0x0000020500000001)),
+                        ("Admin".to_owned(), UidEntry::Single(0x0000020500000002)),
+                        ("SPY".to_owned(), UidEntry::Single(0x0000020500000001)),
                     ]
                     .into(),
                 },
@@ -131,31 +128,21 @@ mod tests {
             tables: [
                 (
                     "TableW".to_owned(),
-                    Table { entries: [("ObjectD".to_owned(), Entry::Uid(0x0000000A00000001))].into() },
+                    Table { entries: [("ObjectD".to_owned(), UidEntry::Single(0x0000000A00000001))].into() },
                 ),
                 (
                     "TableZ".to_owned(),
                     Table {
                         entries: [
-                            ("ObjectA".to_owned(), Entry::Uid(0x0000000900000001)),
+                            ("ObjectA".to_owned(), UidEntry::Single(0x0000000900000001)),
                             (
                                 "ObjectB{n}".to_owned(),
-                                Entry::UidRange(UidRange {
-                                    start: 0x0000000900000002,
-                                    count: 100,
-                                    step: 2,
-                                    start_display: 0,
-                                }),
+                                UidEntry::Range { start: 0x0000000900000002, count: 100, step: 2, display_start: 0 },
                             ),
-                            // `step` and `display_base` are omitted in the JSON.
+                            // `step` and `display_start` are omitted in the JSON.
                             (
                                 "ObjectC{n}_Suffix".to_owned(),
-                                Entry::UidRange(UidRange {
-                                    start: 0x0000000900001000,
-                                    count: 8,
-                                    step: 1,
-                                    start_display: 1,
-                                }),
+                                UidEntry::Range { start: 0x0000000900001000, count: 8, step: 1, display_start: 1 },
                             ),
                         ]
                         .into(),
@@ -165,7 +152,7 @@ mod tests {
             .into(),
             ..Default::default()
         };
-        let expected = Database {
+        let expected = UidRegistry {
             features: [
                 ("Core".to_owned(), Feature { security_providers: [("Shared".to_owned(), shared)].into() }),
                 (
@@ -176,7 +163,7 @@ mod tests {
             .into(),
         };
 
-        let database: Database = serde_json::from_str(input).unwrap();
-        assert_that!(database, eq(&expected));
+        let registry: UidRegistry = serde_json::from_str(input).unwrap();
+        assert_that!(registry, eq(&expected));
     }
 }

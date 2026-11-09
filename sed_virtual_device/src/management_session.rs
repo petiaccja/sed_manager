@@ -14,9 +14,9 @@ use sed_spec::methods::{
     PropertiesMethod, StartSession, SyncSession, extract_method,
 };
 use sed_spec::objects::CPinRef;
-use sed_spec::preconfig::core::shared::authority::ANYBODY;
-use sed_spec::preconfig::core::shared::invoking_id::SESSION_MANAGER;
 use sed_spec::types::LifeCycleState;
+use sed_spec::uid_registry::core::shared::authority::ANYBODY;
+use sed_spec::uid_registry::core::shared::invoking_id::SESSION_MANAGER;
 
 use crate::internal_error::Expect;
 use crate::session::Session;

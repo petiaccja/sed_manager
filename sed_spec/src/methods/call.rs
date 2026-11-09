@@ -12,8 +12,8 @@ use crate::methods::{
     SyncSession,
 };
 use crate::objects::{Ace, Authority, CPin, KAes256, LockingRange, MbrControl, MethodRef, SecurityProvider, TableDesc};
-use crate::preconfig::core::shared::invoking_id::SESSION_MANAGER;
-use crate::preconfig::core::shared::{method_id, table_id};
+use crate::uid_registry::core::shared::invoking_id::SESSION_MANAGER;
+use crate::uid_registry::core::shared::{method_id, table_id};
 
 //------------------------------------------------------------------------------
 // Generic method call

@@ -28,20 +28,20 @@ Each crate has a well-defined role and it fits a particular level of abstraction
 is built up by layering the crates: the crates with a higher level of abstraction reside on top
 of crates that have a lower level of abstraction.
 
-| Crate                                   | Role                                                                                                                                                                                                                                                                                                                                                 |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sed_async`                             | A minimal async runtime abstraction that enables the entire codebase to switch between async runtimes. Can use the `tokio` and the `slint` (event loop) runtimes as a backend, but `smol` or `embassy` may be added in the future.                                                                                                                   |
-| `sed_telemetry`                         | Utilities to set up `tracing` and OpenTelemetry, for both production and automated tests through test-specific utilities. Configured with `OTEL_EXPORTER_OTLP_*` env vars                                                                                                                                                                            |
-| `sed_packet`                            | The data structures used in the TCG protocol and their wire-level serialization. The data structures are organized in layers: low-level messages (ComID request, discovery) & containers (sub-packet, packet, com-packet) -> tokenized primitives -> generic column types & compound types (named, list, bytes, etc.).                               |
-| `sed_spec`                              | A Rust representation of the tables and methods in the TCG specification: objects (i.e. a row of a table), specific column types (i.e. fields of objects), method call and response parameters, and a list of all known UIDs in each SSC (i.e. preconfig). The preconfig is generated from `sed_spec/spec.json` via `build.rs` + `sed_spec_codegen`. |
-| `sed_spec_codegen`                      | The known object UIDs are listed in the concise `sed_spec/spec.json`. This crate contains the logic to generate the verbose Rust equivalent in `spec.rs`. The generated code relies on primitives (e.g. `Uid`) defined in crates like `sed_packet`.                                                                                                  |
-| `sed_spec_macros`                       | Proc-macro crate: `#[derive(Object, TokenizeField, FieldList, TokenizeStruct, DetokenizeStruct)]`, used across `sed_spec` and `sed_tper` to convert Rust structs to/from TCG token streams.                                                                                                                                                          |
-| `sed_device`                            | OS-specific code for issuing security commands to storage devices using IOCTLs. Separated into conditionally compiled `windows/` and `linux/` folders, as well as `shared/` code. The `mock_device` (behind the `test-utils` feature) is a `Device` for unit tests.                                                                                  |
-| `sed_virtual_device`                    | An in-memory simulated SED implementing the same `Device` interface as `sed_device`. The virtual device is comprehensive and emulates all functionality required for testing. Automated tests should run against the virtual device.                                                                                                                 |
-| `sed_tper`                              | The implementation of remote procedure calls over IOCTls according to the TCG standard. Contains the protocol stack implementation, as well as RPC session creation and the method calls themselves.                                                                                                                                                 |
-| `sed_manager`                           | Chains the RPC calls implemented by `sed_tper` into higher level workflows to configure SEDs. The workflows are more relevant and relatable to end users, and abstract away the differences between SSCs where possible.                                                                                                                             |
-| `sed_manager_gui/sed_manager_gui_slint` | The location of the `.slint` UI files. This crate contains no Rust code or logic, and is responsible purely for the presentation. The Slint files are compiled by `build.rs` and reexported.                                                                                                                                                         |
-| `sed_manager_gui/sed_manager_gui`       | The logic that drives the UI. This crate is essentially a bridge that marshals data and commands between the `sed_manager` and the `sed_manager_gui_slint` crates.                                                                                                                                                                                   |
+| Crate                                   | Role                                                                                                                                                                                                                                                                                                                                                                   |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sed_async`                             | A minimal async runtime abstraction that enables the entire codebase to switch between async runtimes. Can use the `tokio` and the `slint` (event loop) runtimes as a backend, but `smol` or `embassy` may be added in the future.                                                                                                                                     |
+| `sed_telemetry`                         | Utilities to set up `tracing` and OpenTelemetry, for both production and automated tests through test-specific utilities. Configured with `OTEL_EXPORTER_OTLP_*` env vars                                                                                                                                                                                              |
+| `sed_packet`                            | The data structures used in the TCG protocol and their wire-level serialization. The data structures are organized in layers: low-level messages (ComID request, discovery) & containers (sub-packet, packet, com-packet) -> tokenized primitives -> generic column types & compound types (named, list, bytes, etc.).                                                 |
+| `sed_spec`                              | A Rust representation of the tables and methods in the TCG specification: objects (i.e. a row of a table), specific column types (i.e. fields of objects), method call and response parameters, and a list of all known UIDs in each SSC (i.e. the UID registry). The UID registry is generated from `sed_spec/uid_registry.json` via `build.rs` + `sed_spec_codegen`. |
+| `sed_spec_codegen`                      | The known UIDs are listed in the concise UID registry, `sed_spec/uid_registry.json`. This crate contains the logic to generate the verbose Rust equivalent in `uid_registry.rs`. The generated code relies on primitives (e.g. `Uid`) defined in crates like `sed_packet`.                                                                                             |
+| `sed_spec_macros`                       | Proc-macro crate: `#[derive(Object, TokenizeField, FieldList, TokenizeStruct, DetokenizeStruct)]`, used across `sed_spec` and `sed_tper` to convert Rust structs to/from TCG token streams.                                                                                                                                                                            |
+| `sed_device`                            | OS-specific code for issuing security commands to storage devices using IOCTLs. Separated into conditionally compiled `windows/` and `linux/` folders, as well as `shared/` code. The `mock_device` (behind the `test-utils` feature) is a `Device` for unit tests.                                                                                                    |
+| `sed_virtual_device`                    | An in-memory simulated SED implementing the same `Device` interface as `sed_device`. The virtual device is comprehensive and emulates all functionality required for testing. Automated tests should run against the virtual device.                                                                                                                                   |
+| `sed_tper`                              | The implementation of remote procedure calls over IOCTls according to the TCG standard. Contains the protocol stack implementation, as well as RPC session creation and the method calls themselves.                                                                                                                                                                   |
+| `sed_manager`                           | Chains the RPC calls implemented by `sed_tper` into higher level workflows to configure SEDs. The workflows are more relevant and relatable to end users, and abstract away the differences between SSCs where possible.                                                                                                                                               |
+| `sed_manager_gui/sed_manager_gui_slint` | The location of the `.slint` UI files. This crate contains no Rust code or logic, and is responsible purely for the presentation. The Slint files are compiled by `build.rs` and reexported.                                                                                                                                                                           |
+| `sed_manager_gui/sed_manager_gui`       | The logic that drives the UI. This crate is essentially a bridge that marshals data and commands between the `sed_manager` and the `sed_manager_gui_slint` crates.                                                                                                                                                                                                     |
 
 ## Build, test, and lint
 
@@ -134,8 +134,8 @@ licensesnip check # Check if all files have the correct license header.
 
 ### Code generation
 
-- The storage devices' preconfiguration (list of known UIDs) is stored in `sed_spec/spec.json`.
-  This is a relatively concise file. The Rust code for the preconfiguration is much more verbose
+- The list of known UIDs of the storage devices (the UID registry) is stored in `sed_spec/uid_registry.json`.
+  This is a relatively concise file. The Rust code for the UID registry is much more verbose
   and repetitive, and is therefore generated from the JSON file.
 - All generated code should be placed into the `target` folder among other intermediate files.
 - Generated code should never be edited by hand, although inspecting it may be valuable.
@@ -183,13 +183,13 @@ is implemented for a particular device, and which subset of it is used.
 ### Known values (UIDs, MethodIDs, status codes)
 
 - Don't extract UIDs, MethodIDs, or method status codes from the spec documents by hand. These are
-  already available as named Rust constants: UIDs and MethodIDs are generated from `sed_spec/spec.json`
-  into `sed_spec::preconfig` (see "Code generation" above), and method status codes are the hand-written
+  already available as named Rust constants: UIDs and MethodIDs are generated from `sed_spec/uid_registry.json`
+  into `sed_spec::uid_registry` (see "Code generation" above), and method status codes are the hand-written
   `sed_spec::methods::status::MethodStatus` enum.
 - This is a design choice for readability and correctness, not just a workaround for spec conversion
   issues: named constants are self-documenting and reviewed once, whereas a magic number copied out of
   a spec table is neither.
-- If a UID, MethodID, or status code you need is genuinely missing, add it to `spec.json` or to the
+- If a UID, MethodID, or status code you need is genuinely missing, add it to `uid_registry.json` or to the
   `MethodStatus` enum rather than hardcoding a literal value pulled from the spec text.
 
 ### Conversion accuracy
@@ -204,7 +204,7 @@ is implemented for a particular device, and which subset of it is used.
   method/status codes) that could end up in code issuing real IOCTLs to hardware (see "Interaction with
   hardware" above). Before relying on a table, sanity-check it for internal consistency — e.g. sequential
   IDs that skip unexpectedly, columns that don't line up with the surrounding prose, or values that
-  contradict cross-references elsewhere in the spec or in `sed_spec/spec.json`. If a table looks suspect,
+  contradict cross-references elsewhere in the spec or in `sed_spec/uid_registry.json`. If a table looks suspect,
   verify it against the original PDF before relying on it.
 
 ## Contributing workflow

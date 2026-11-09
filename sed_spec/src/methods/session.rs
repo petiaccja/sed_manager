@@ -12,7 +12,7 @@ use sed_spec_macros::{DetokenizeStruct, TokenizeStruct};
 use crate::methods::SessionMethodParam;
 use crate::methods::cell_block::CellBlock;
 use crate::objects::{AceRef, AuthorityRef, MethodRef};
-use crate::preconfig::core::shared::method_id;
+use crate::uid_registry::core::shared::method_id;
 
 //------------------------------------------------------------------------------
 // Authenticate

@@ -14,8 +14,8 @@ use sed_spec::methods::{
     CloseSession, ExtractResult, MethodCall, MethodParam, MethodStatus, MgmtMethodCall, MgmtMethodCallParams,
     Properties, PropertiesMethod, SessionProperties, StartSession, SyncSession, extract_method,
 };
-use sed_spec::preconfig::core::shared::invoking_id::SESSION_MANAGER;
-use sed_spec::preconfig::core::shared::sm_method_id::START_SESSION;
+use sed_spec::uid_registry::core::shared::invoking_id::SESSION_MANAGER;
+use sed_spec::uid_registry::core::shared::sm_method_id::START_SESSION;
 use tracing::{Span, debug, info_span, warn};
 
 use crate::Error;
@@ -609,7 +609,7 @@ mod tests {
     use sed_packet::packet::{SubPacket, SubPacketKind};
     use sed_packet::token_stream::ToTokens;
     use sed_spec::methods::{Limit, MethodCall, MethodParam};
-    use sed_spec::preconfig::core::shared::invoking_id::SESSION_MANAGER;
+    use sed_spec::uid_registry::core::shared::invoking_id::SESSION_MANAGER;
 
     use super::*;
     use crate::protocol::shared::tests::*;
