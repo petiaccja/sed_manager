@@ -10,9 +10,10 @@ use sed_packet::{ObjectRef, TableRef, Uid, UidRange};
 
 use crate::path::Path;
 
-// These tables and types are hardcoded here despite being defined in the UID registry.
-// This is because the code generated for the UID registry needs these throughout and
-// importing them from here is easier than self-referencing in the generated code.
+// These tables and types are hardcoded here despite being defined in the UID
+// registry. This is because the code generated for the UID registry needs these
+// and importing them from here is easier than self-referencing in the generated
+// code.
 pub const SP_TABLE: TableRef = TableRef::new(0x00000205_00000000);
 pub(crate) type SpRef = ObjectRef<{ SP_TABLE.to_u64() }>;
 
