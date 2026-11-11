@@ -8,7 +8,7 @@ use std::io::{Read as _, Write as _};
 use std::path::PathBuf;
 
 fn main() -> Result<(), ()> {
-    let registry_path = "uid_registry.json";
+    let registry_path = "data/uid_registry.json";
     let mut registry_file = File::open(registry_path).unwrap();
     let mut registry_json = String::new();
     registry_file.read_to_string(&mut registry_json).unwrap();
