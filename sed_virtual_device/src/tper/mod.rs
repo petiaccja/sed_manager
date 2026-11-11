@@ -13,7 +13,6 @@ use std::marker::PhantomData;
 
 pub use admin::Admin;
 pub use locking::Locking;
-pub use opal_2::Opal2Tper;
 pub use preconfig_shared::{INITIAL_SID_PASSWORD, PSID_PASSWORD};
 pub use security_provider::{SecurityProvider, Table};
 use sed_packet::discovery::{
@@ -28,55 +27,51 @@ use sorbit::ser_de::ToBytes;
 
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};
 
-#[derive(Debug)]
-pub enum Tper {
-    Opal2(Opal2Tper),
+use sed_spec::uid_registry::opal_2::admin::sp;
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Tper {
+    pub admin: Admin,
+    pub locking: Option<Locking>,
 }
 
 impl Tper {
     pub fn sp(&self, uid: SecurityProviderRef) -> Option<&dyn SecurityProvider> {
-        match self {
-            Tper::Opal2(tper) => tper.sp(uid),
+        match uid {
+            sp::ADMIN => Some(&self.admin),
+            sp::LOCKING => self.locking.as_ref().map(|sp| sp as &dyn SecurityProvider),
+            _ => None,
         }
     }
 
     pub fn sp_mut(&mut self, uid: SecurityProviderRef) -> Option<&mut dyn SecurityProvider> {
-        match self {
-            Tper::Opal2(tper) => tper.sp_mut(uid),
-        }
-    }
-
-    pub fn admin_sp(&self) -> &Admin {
-        match self {
-            Tper::Opal2(tper) => tper.admin_sp(),
-        }
-    }
-
-    pub fn admin_sp_mut(&mut self) -> &mut Admin {
-        match self {
-            Tper::Opal2(tper) => tper.admin_sp_mut(),
-        }
-    }
-
-    pub fn locking_sp(&self) -> Option<&Locking> {
-        match self {
-            Tper::Opal2(tper) => tper.locking_sp(),
-        }
-    }
-
-    #[allow(unused)]
-    pub fn locking_sp_mut(&mut self) -> Option<&mut Locking> {
-        match self {
-            Tper::Opal2(tper) => tper.locking_sp_mut(),
+        match uid {
+            sp::ADMIN => Some(&mut self.admin),
+            sp::LOCKING => self.locking.as_mut().map(|sp| sp as &mut dyn SecurityProvider),
+            _ => None,
         }
     }
 
     pub fn restore_preconfig(&mut self, sp: SecurityProviderRef) -> Result<Vec<SecurityProviderRef>, MethodStatus> {
-        match self {
-            Tper::Opal2(tper) => tper.restore_preconfig(sp),
+        match sp {
+            sp::ADMIN => {
+                self.admin = opal_2::preconfig_admin::preconfig();
+                self.locking = Some(opal_2::preconfig_locking::preconfig());
+                Ok(vec![sp::ADMIN, sp::LOCKING])
+            }
+            sp::LOCKING => {
+                if let Some(locking_sp) = self.admin.sp.get_mut(&sp::LOCKING) {
+                    locking_sp.life_cycle_state = Some(LifeCycleState::ManufacturedInactive);
+                }
+                self.locking = Some(opal_2::preconfig_locking::preconfig());
+                Ok(vec![sp::LOCKING])
+            }
+            _ => Err(MethodStatus::InvalidParameter),
         }
     }
+}
 
+impl Tper {
     pub fn discover(&self, capabilities: &Properties) -> Discovery {
         let fixed = [
             Self::tper_feature_desc(capabilities),
@@ -107,8 +102,8 @@ impl Tper {
     }
 
     fn locking_feature_desc(&self) -> Option<FeatureDescriptor> {
-        self.locking_sp().map(|locking_sp| {
-            let admin_sp = self.admin_sp();
+        self.locking.as_ref().map(|locking_sp| {
+            let admin_sp = &self.admin;
             let locking_sp_obj = admin_sp.sp.get(&locking_sp.uid).expect("locking SP missing from preconfig");
             let life_cycle_state = locking_sp_obj.life_cycle_state.unwrap_or(LifeCycleState::ManufacturedInactive);
             let locking_enabled =
@@ -140,19 +135,17 @@ impl Tper {
     }
 
     fn ssc_feature_desc(&self) -> FeatureDescriptor {
-        match self {
-            Tper::Opal2(_) => FeatureDescriptor::OpalV2(OpalV2Descriptor {
-                version: 1,
-                length: PhantomData,
-                base_com_id: BASE_COM_ID,
-                num_com_ids: NUM_COM_IDS,
-                no_range_crossing: false,
-                num_locking_admins_supported: 4,
-                num_locking_users_supported: 8,
-                initial_owner_pw: OwnerPasswordState::SameAsMSID,
-                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
-            }),
-        }
+        FeatureDescriptor::OpalV2(OpalV2Descriptor {
+            version: 1,
+            length: PhantomData,
+            base_com_id: BASE_COM_ID,
+            num_com_ids: NUM_COM_IDS,
+            no_range_crossing: false,
+            num_locking_admins_supported: 4,
+            num_locking_users_supported: 8,
+            initial_owner_pw: OwnerPasswordState::SameAsMSID,
+            reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+        })
     }
 
     fn geometry_feature_desc() -> FeatureDescriptor {
@@ -168,7 +161,7 @@ impl Tper {
     }
 
     fn block_sid_authentication_desc(&self) -> FeatureDescriptor {
-        let admin_sp = self.admin_sp();
+        let admin_sp = &self.admin;
         let c_pin_table = &admin_sp.c_pin;
         let c_pin_sid = c_pin_table.get(&c_pin::SID).expect("C_PIN::SID missing from preconfig");
         let c_pin_msid = c_pin_table.get(&c_pin::MSID).expect("C_PIN::MSID missing from preconfig");
@@ -181,5 +174,11 @@ impl Tper {
             sid_msid_pin_differ: c_pin_sid.pin != c_pin_msid.pin,
             hw_reset_unblocks: false,
         })
+    }
+}
+
+impl Default for Tper {
+    fn default() -> Self {
+        Self { admin: opal_2::preconfig_admin::preconfig(), locking: Some(opal_2::preconfig_locking::preconfig()) }
     }
 }

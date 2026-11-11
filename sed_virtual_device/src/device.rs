@@ -23,7 +23,7 @@ use tracing::instrument;
 use crate::com_session::ComSession;
 use crate::internal_error::Expect;
 use crate::packet_session::PacketSession;
-use crate::tper::{Opal2Tper, Tper};
+use crate::tper::Tper;
 
 pub const VIRTUAL_DEVICE_PATH: &str = "/dev/virtual_device";
 pub const BASE_COM_ID: ComId = ComId(3072);
@@ -230,7 +230,7 @@ impl Default for VirtualDevice {
     ///
     /// The device's configuration is the preconfiguration for the Opal 2.0 SSC.
     fn default() -> Self {
-        let tper = Tper::Opal2(Opal2Tper::default());
+        let tper = Tper::default();
         let capabilities = CAPABILITIES;
 
         Self::new(capabilities, tper)
@@ -258,7 +258,7 @@ impl VirtualDeviceBuilder {
     }
 
     pub fn opal_2(self) -> VirtualDevice {
-        let tper = Tper::Opal2(Opal2Tper::default());
+        let tper = Tper::default();
         VirtualDevice::new(self.capabilities, tper)
     }
 }

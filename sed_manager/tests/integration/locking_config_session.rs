@@ -272,7 +272,7 @@ async fn set_locking_ranges_invalid_desired() {
 
 fn get_media_encryption_key(virtual_device: &VirtualDevice) -> Option<heapless::Vec<u8, 64>> {
     virtual_device.inspect(|tper| {
-        let locking_sp = tper.locking_sp().unwrap();
+        let locking_sp = tper.locking.as_ref().unwrap();
         let key_uid = locking_sp.locking[&range_uid(2)].active_key.unwrap();
         match key_uid {
             MediaKeyRef::Aes128(_k_aes_128_ref) => panic!("no K_AES_128 table in virtual device"),
@@ -367,14 +367,14 @@ async fn set_mbr_control() {
         MbrControl { uid: Some(mbr_control::MBR_CONTROL), enable: Some(true), done: Some(true), done_on_reset: None };
 
     assert_that!(
-        device.inspect(|tper| tper.locking_sp().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
+        device.inspect(|tper| tper.locking.as_ref().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
         some(eq(false))
     );
 
     session.set_mbr_control(mbr_control).await.unwrap();
 
     assert_that!(
-        device.inspect(|tper| tper.locking_sp().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
+        device.inspect(|tper| tper.locking.as_ref().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
         some(eq(true))
     );
 }
@@ -390,8 +390,8 @@ async fn write_mbr() {
     session.write_mbr(500, &data).await.unwrap();
 
     device.inspect(|tper| {
-        assert!(tper.locking_sp().unwrap().mbr[0..500].iter().all(|x| *x == 0));
-        assert!(tper.locking_sp().unwrap().mbr[500..987653] == data);
-        assert!(tper.locking_sp().unwrap().mbr[987653..988154].iter().all(|x| *x == 0));
+        assert!(tper.locking.as_ref().unwrap().mbr[0..500].iter().all(|x| *x == 0));
+        assert!(tper.locking.as_ref().unwrap().mbr[500..987653] == data);
+        assert!(tper.locking.as_ref().unwrap().mbr[987653..988154].iter().all(|x| *x == 0));
     });
 }

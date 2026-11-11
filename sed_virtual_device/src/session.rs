@@ -172,7 +172,7 @@ impl Session {
         self.check_permission(tper, invoking_id, params.method_id(), [0].into_iter())?;
 
         let sp_uid = SecurityProviderRef::try_from(invoking_id).map_err(|_| MethodStatus::InvalidParameter)?;
-        let admin_sp = tper.admin_sp_mut();
+        let admin_sp = &mut tper.admin;
         let sid_pin = admin_sp.c_pin.get(&admin::c_pin::SID).expect_object("C_PIN", "SID").pin.clone();
         let sp_info = admin_sp.sp.get_mut(&sp_uid).ok_or(MethodStatus::InvalidParameter)?;
         if sp_info.life_cycle_state == Some(LifeCycleState::ManufacturedInactive) {

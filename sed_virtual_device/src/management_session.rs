@@ -153,7 +153,7 @@ impl ManagementSession {
 
         let (sp_uid, authority, password) = (params.spid, &params.host_signing_authority, &params.host_challenge);
 
-        let admin_sp = tper.admin_sp();
+        let admin_sp = &tper.admin;
         let Some(sp_info) = admin_sp.sp.get(&sp_uid) else {
             return Err(MethodStatus::InvalidParameter);
         };
