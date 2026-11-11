@@ -195,6 +195,26 @@ impl core::fmt::Debug for Uid {
     }
 }
 
+#[cfg(feature = "serde")]
+impl serde::Serialize for Uid {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.to_u64().serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for Uid {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        u64::deserialize(deserializer).map(Self::new)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rstest::rstest;

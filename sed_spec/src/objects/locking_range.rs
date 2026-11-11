@@ -15,6 +15,7 @@ use crate::types::{
 use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[object(table=table_id::LOCKING)]
 pub struct LockingRange {
     pub uid: Option<LockingRangeRef>,

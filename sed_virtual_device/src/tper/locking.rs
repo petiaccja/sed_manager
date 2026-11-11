@@ -12,7 +12,7 @@ use sed_spec::objects::{
 
 use crate::tper::security_provider::{SecurityProvider, Table};
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Locking {
     pub uid: SecurityProviderRef,
     pub access_control: Table<AccessControl>,

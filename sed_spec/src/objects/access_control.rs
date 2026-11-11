@@ -10,6 +10,7 @@ use crate::types::LogSelect;
 use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AccessControl {
     pub common_name: String,
     pub acl: Vec<AceRef>,

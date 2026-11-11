@@ -10,6 +10,7 @@ use crate::objects::TypeRef;
 use crate::types::r#type::Type;
 
 #[derive(PartialEq, Eq, Clone, Debug, Copy, TryFromPrimitive, IntoPrimitive)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(u8)]
 pub enum BooleanOp {
     And = 0,

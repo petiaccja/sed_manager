@@ -51,6 +51,7 @@ pub use ace_expr;
 pub use ace_operand;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[object(table = table_id::ACE)]
 pub struct Ace {
     pub uid: Option<AceRef>,

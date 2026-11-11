@@ -11,6 +11,7 @@ use crate::types::{EncryptionSupport, KeysAvailableCondition};
 use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[object(table=table_id::LOCKING_INFO)]
 pub struct LockingInfo {
     pub uid: Option<LockingInfoRef>,
@@ -33,6 +34,7 @@ impl ObjectUid for LockingInfo {
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[object(table=table_id::LOCKING_INFO)]
 pub struct LockingInfoExt {
     pub uid: Option<LockingInfoRef>,

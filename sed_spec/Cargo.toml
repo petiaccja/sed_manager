@@ -13,6 +13,10 @@ heapless.workspace = true
 num_enum.workspace = true
 thiserror.workspace = true
 sorbit.workspace = true
+serde = { workspace = true, optional = true }
+
+[features]
+serde = ["dep:serde", "heapless/serde"]
 
 [dev-dependencies]
 rstest.workspace = true

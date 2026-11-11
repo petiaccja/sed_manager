@@ -8,10 +8,11 @@ workspace = true
 
 [dependencies]
 sed_device.workspace = true
-sed_packet.workspace = true
-sed_spec.workspace = true
+sed_packet = { workspace = true, features = ["serde"] }
+sed_spec = { workspace = true, features = ["serde"] }
 sorbit.workspace = true
 rand.workspace = true
 tracing.workspace = true
 async-trait.workspace = true
 heapless.workspace = true
+serde.workspace = true

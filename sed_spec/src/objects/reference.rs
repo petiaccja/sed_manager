@@ -60,6 +60,7 @@ pub type TypeRef = ObjectRef<{ table_id::TYPE.to_u64() }>;
 /// This is because the AccessControl table is not indexed by UIDs, it's indexed
 /// by a pair of InvokingIDs and MethodIDs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AccessControlRef {
     pub invoking_id: Uid,
     pub method_id: MethodRef,
@@ -81,6 +82,7 @@ impl Type for AuthorityRef {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(untagged))]
 pub enum MediaKeyRef {
     Aes128(KAes128Ref),
     Aes256(KAes256Ref),

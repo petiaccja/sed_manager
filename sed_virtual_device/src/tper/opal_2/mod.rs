@@ -14,7 +14,7 @@ use crate::tper::{Admin, Locking};
 mod preconfig_admin;
 mod preconfig_locking;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Opal2Tper {
     admin: Admin,
     locking: Locking,

@@ -270,13 +270,13 @@ async fn set_locking_ranges_invalid_desired() {
     assert_that!(session.get_locking_ranges().await, ok(eq(&current)));
 }
 
-fn get_media_encryption_key(virtual_device: &VirtualDevice) -> Option<[u8; 64]> {
+fn get_media_encryption_key(virtual_device: &VirtualDevice) -> Option<heapless::Vec<u8, 64>> {
     virtual_device.inspect(|tper| {
         let locking_sp = tper.locking_sp().unwrap();
         let key_uid = locking_sp.locking[&range_uid(2)].active_key.unwrap();
         match key_uid {
             MediaKeyRef::Aes128(_k_aes_128_ref) => panic!("no K_AES_128 table in virtual device"),
-            MediaKeyRef::Aes256(k_aes_256_ref) => locking_sp.k_aes_256[&k_aes_256_ref].key,
+            MediaKeyRef::Aes256(k_aes_256_ref) => locking_sp.k_aes_256[&k_aes_256_ref].key.clone(),
         }
     })
 }
@@ -294,7 +294,7 @@ async fn erase_locking_range() {
 
     session.erase_locking_range(range_uid(2)).await.unwrap();
 
-    assert_that!(get_media_encryption_key(&device), not(eq(key_before)));
+    assert_that!(get_media_encryption_key(&device), not(eq(&key_before)));
     assert_that!(session.get_locking_ranges().await, ok(eq(&ranges_before)));
 }
 
@@ -319,7 +319,7 @@ async fn erase_locking_range_no_media_encryption() {
     let result = session.erase_locking_range(range_uid(2)).await;
 
     assert_that!(result, err(eq(&Error::NotSupported)));
-    assert_that!(get_media_encryption_key(&device), eq(key_before));
+    assert_that!(get_media_encryption_key(&device), eq(&key_before));
 }
 
 #[instrument]

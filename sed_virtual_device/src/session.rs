@@ -236,7 +236,7 @@ impl Session {
             let k_aes_256 = locking_sp.k_aes_256.get_mut(&k_aes_256_uid).ok_or(MethodStatus::InvalidParameter)?;
             let mut new_key = [0u8; 64];
             rand::Fill::fill_slice(&mut new_key, &mut rand::rng());
-            k_aes_256.key = Some(new_key);
+            k_aes_256.key = Some(new_key.into());
             Ok(GenKeyResult)
         } else {
             Err(MethodStatus::InvalidParameter)

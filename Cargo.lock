@@ -1757,6 +1757,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25ba4bd83f9415b58b4ed8dc5714c76e626a105be4646c02630ad730ad3b5aa4"
 dependencies = [
  "hash32",
+ "serde_core",
  "stable_deref_trait",
 ]
 
@@ -4409,6 +4410,7 @@ version = "0.1.0"
 dependencies = [
  "async-broadcast",
  "googletest",
+ "heapless",
  "rstest",
  "sed_async",
  "sed_device",
@@ -4472,6 +4474,7 @@ dependencies = [
  "googletest",
  "heapless",
  "rstest",
+ "serde",
  "sorbit",
  "thiserror 2.0.18",
 ]
@@ -4486,6 +4489,7 @@ dependencies = [
  "sed_packet",
  "sed_spec_codegen",
  "sed_spec_macros",
+ "serde",
  "sorbit",
  "thiserror 2.0.18",
 ]
@@ -4584,6 +4588,7 @@ dependencies = [
  "sed_device",
  "sed_packet",
  "sed_spec",
+ "serde",
  "sorbit",
  "tracing",
 ]

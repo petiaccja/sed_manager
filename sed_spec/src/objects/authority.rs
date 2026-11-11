@@ -12,6 +12,7 @@ use crate::uid_registry::core::shared::table_id;
 use crate::uid_registry::{core, enterprise, opal_2, psid};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[object(table=table_id::AUTHORITY)]
 pub struct Authority {
     pub uid: Option<AuthorityRef>,
