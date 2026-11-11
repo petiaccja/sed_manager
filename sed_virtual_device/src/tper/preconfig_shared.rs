@@ -9,10 +9,8 @@ use crate::tper::security_provider::Table;
 
 // This is very annoying, unsafe should be absolutely unnecessary here, and
 // this should be rewritten if proper const programming are available in Rust.
-pub const INITIAL_SID_PASSWORD: MaxBytes<32> =
-    unsafe { MaxBytes::from_const_with_len_unchecked(*b"password                        ", 8) };
-pub const PSID_PASSWORD: MaxBytes<32> =
-    unsafe { MaxBytes::from_const_with_len_unchecked(*b"recovery                        ", 8) };
+pub const INITIAL_SID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"password");
+pub const PSID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"recovery");
 
 pub trait AllColumns {
     fn all_columns() -> impl Iterator<Item = u16>;

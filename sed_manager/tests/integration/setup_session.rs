@@ -21,6 +21,8 @@ use sed_tper::Tper;
 use sed_virtual_device::{BASE_COM_ID, INITIAL_SID_PASSWORD, PSID_PASSWORD, VirtualDevice};
 use tracing::instrument;
 
+const NOT_DEFAULT: MaxBytes<32> = MaxBytes::from_array(*b"not_default");
+
 async fn setup() -> (SetupSession, Arc<VirtualDevice>) {
     let device = Arc::new(VirtualDevice::default());
     let runtime = Arc::new(PolyRuntime::Tokio(TokioRuntime::current().unwrap()));
@@ -39,7 +41,7 @@ async fn take_ownership() {
     let block_sid_before = device.discover().get::<BlockSIDAuthDescriptor>().unwrap().clone();
     assert_that!(block_sid_before.sid_msid_pin_differ, eq(false));
 
-    let result = session.take_owneship(b"not_default".as_slice().into()).await;
+    let result = session.take_owneship(NOT_DEFAULT).await;
     assert_that!(result, ok(anything()));
 
     let block_sid_after = device.discover().get::<BlockSIDAuthDescriptor>().unwrap().clone();
@@ -52,8 +54,8 @@ async fn take_ownership() {
 async fn take_ownership_already_owned() {
     let (session, _device) = setup().await;
 
-    session.take_owneship(b"not_default".as_slice().into()).await.unwrap();
-    let result = session.take_owneship(b"not_default".as_slice().into()).await;
+    session.take_owneship(NOT_DEFAULT).await.unwrap();
+    let result = session.take_owneship(NOT_DEFAULT).await;
     assert_that!(result, err(eq(&Error::AlreadyOwned)));
 }
 
@@ -88,7 +90,7 @@ async fn activate_secondary_sp_already_activated() {
 #[tokio::test]
 #[with_tracing]
 async fn revert_tper_with_sid() {
-    let new_sid_password = MaxBytes::<32>::from(b"not_default".as_slice());
+    let new_sid_password = NOT_DEFAULT;
     let (session, device) = setup().await;
 
     session.take_owneship(new_sid_password.clone()).await.unwrap();
@@ -107,7 +109,7 @@ async fn revert_tper_with_sid() {
 #[tokio::test]
 #[with_tracing]
 async fn revert_tper_with_psid() {
-    let new_sid_password = MaxBytes::<32>::from(b"not_default".as_slice());
+    let new_sid_password = NOT_DEFAULT;
     let (session, device) = setup().await;
 
     session.take_owneship(new_sid_password.clone()).await.unwrap();
@@ -126,7 +128,7 @@ async fn revert_tper_with_psid() {
 #[tokio::test]
 #[with_tracing]
 async fn revert_secondary_sp() {
-    let new_sid_password = MaxBytes::<32>::from(b"not_default".as_slice());
+    let new_sid_password = NOT_DEFAULT;
     let (session, device) = setup().await;
 
     session.take_owneship(new_sid_password.clone()).await.unwrap();
@@ -148,7 +150,7 @@ async fn revert_secondary_sp() {
 #[tokio::test]
 #[with_tracing]
 async fn revert_secondary_sp_ex() {
-    let new_sid_password = MaxBytes::<32>::from(b"not_default".as_slice());
+    let new_sid_password = NOT_DEFAULT;
     let (session, device) = setup().await;
 
     session.take_owneship(new_sid_password.clone()).await.unwrap();
@@ -172,17 +174,16 @@ async fn revert_secondary_sp_ex() {
 #[with_tracing]
 async fn change_password() {
     let (session, _device) = setup().await;
-    const NEW_PASSWORD: &[u8] = b"not_default".as_slice();
 
     // Change the password of SID, authenticating in with the MSID password.
     let result = session
-        .change_password(opal_admin::sp::ADMIN, opal_admin::authority::SID, INITIAL_SID_PASSWORD, NEW_PASSWORD.into())
+        .change_password(opal_admin::sp::ADMIN, opal_admin::authority::SID, INITIAL_SID_PASSWORD, NOT_DEFAULT)
         .await;
     assert_that!(result, ok(eq(&())));
 
     // Change the password of SID again, but this time authenticate with the newly set password.
     let result = session
-        .change_password(opal_admin::sp::ADMIN, opal_admin::authority::SID, NEW_PASSWORD.into(), NEW_PASSWORD.into())
+        .change_password(opal_admin::sp::ADMIN, opal_admin::authority::SID, NOT_DEFAULT, NOT_DEFAULT)
         .await;
     assert_that!(result, ok(eq(&())));
 }

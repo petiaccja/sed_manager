@@ -1049,14 +1049,12 @@ impl App {
     }
 
     fn try_convert_password(&self, password: &str) -> Option<MaxBytes<32>> {
-        let byte_password: MaxBytes<32> = password.as_bytes().into();
-        if byte_password.len() == password.len() {
-            Some(byte_password)
-        } else {
+        let byte_password = password.as_bytes().try_into().ok();
+        if byte_password.is_none() {
             self.toast_queue
                 .error("Password too long", "The password cannot be longer than 32 bytes (32 Latin characters)");
-            None
         }
+        byte_password
     }
 
     async fn listen_connection_changed(

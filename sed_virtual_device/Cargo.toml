@@ -14,3 +14,4 @@ sorbit.workspace = true
 rand.workspace = true
 tracing.workspace = true
 async-trait.workspace = true
+heapless.workspace = true

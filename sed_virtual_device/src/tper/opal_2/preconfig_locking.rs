@@ -621,13 +621,13 @@ pub fn authority() -> Table<Authority> {
 pub fn c_pin() -> Table<CPin> {
     let admins = ADMINS.map(|admin_idx| CPin {
         uid: Some(c_pin::ADMIN.get(admin_idx).unwrap()),
-        pin: Some("default_admin_pw".as_bytes().into()),
+        pin: Some(heapless::Vec::from_array(*b"default_admin_pw")),
         ..Default::default()
     });
 
     let users = USERS.map(|user_idx| CPin {
         uid: Some(c_pin::USER.get(user_idx).unwrap()),
-        pin: Some("default_user_pw".as_bytes().into()),
+        pin: Some(heapless::Vec::from_array(*b"default_user_pw")),
         ..Default::default()
     });
 

@@ -51,7 +51,7 @@ async-fs = "2.2.0"
 
 # -- Data structures
 thiserror = { version = "2.0.18" }
-smallvec = { version = "1.15.1", features = ["const_new", "const_generics"] }
+heapless = { version = "0.9.3" }
 num_enum = { version = "0.7.6" }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.149" }
@@ -79,9 +79,15 @@ tracing-subscriber = "0.3.23"
 tracing-opentelemetry = "=0.34.0"
 opentelemetry = "=0.33.0"
 opentelemetry_sdk = { version = "=0.33.0", features = ["rt-tokio"] }
-opentelemetry-otlp = { version = "=0.33.0", features = ["trace", "http-json", "gzip-http"] }
+opentelemetry-otlp = { version = "=0.33.0", features = [
+    "trace",
+    "http-json",
+    "gzip-http",
+] }
 opentelemetry-proto = "=0.33.0"
-opentelemetry-semantic-conventions = { version = "=0.33.0", features = ["semconv_experimental"] }
+opentelemetry-semantic-conventions = { version = "=0.33.0", features = [
+    "semconv_experimental",
+] }
 
 # -- Crypto & random
 rand = "0.10.1"
@@ -109,9 +115,9 @@ suspicious = { priority = -1, level = "deny" }
 complexity = { priority = -1, level = "warn" }
 perf = { priority = -1, level = "warn" }
 style = { priority = -1, level = "warn" }
-unusual_byte_groupings = "allow" # Bitfields often grouped by member.
-bool_assert_comparison = "allow" # Sometimes it's more expressive.
-large_enum_variant = "allow" # Simplicity and correctness is more important.
+unusual_byte_groupings = "allow"                # Bitfields often grouped by member.
+bool_assert_comparison = "allow"                # Sometimes it's more expressive.
+large_enum_variant = "allow"                    # Simplicity and correctness is more important.
 
 # Optimize the Slint runtime and the generated UI code even in debug builds.
 # Unoptimized, the UI is sluggish and the UI smoke tests are about 4x slower,

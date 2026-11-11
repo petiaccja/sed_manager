@@ -9,7 +9,7 @@ workspace = true
 [dependencies]
 sed_packet.workspace = true
 sed_spec_macros.workspace = true
-smallvec.workspace = true
+heapless.workspace = true
 num_enum.workspace = true
 thiserror.workspace = true
 sorbit.workspace = true

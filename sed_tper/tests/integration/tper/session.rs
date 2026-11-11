@@ -238,7 +238,7 @@ async fn random() {
 async fn set_field() {
     let device = Arc::new(VirtualDevice::default());
     let (session, protocol) = spawn_session(&device, sp::ADMIN, Some(admin::authority::SID));
-    assert_that!(session.set_field(admin::c_pin::SID.pin(), b"asd".as_slice().into()).await, ok(anything()));
+    assert_that!(session.set_field(admin::c_pin::SID.pin(), (*b"asd").into()).await, ok(anything()));
     let _ = session.close().await;
     let _ = protocol.await;
 }
@@ -249,7 +249,7 @@ async fn set_field() {
 async fn set_object() {
     let device = Arc::new(VirtualDevice::default());
     let (session, protocol) = spawn_session(&device, sp::ADMIN, Some(admin::authority::SID));
-    let values = CPin { pin: Some(b"asd".as_slice().into()), ..Default::default() };
+    let values = CPin { pin: Some((*b"asd").into()), ..Default::default() };
     assert_that!(session.set_object(admin::c_pin::SID, values).await, ok(anything()));
     let _ = session.close().await;
     let _ = protocol.await;

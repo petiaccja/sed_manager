@@ -5,7 +5,6 @@
 
 use sed_packet::{ObjectUid, TableRef};
 use sed_spec_macros::{DetokenizeStruct, FieldList, Object, TokenizeField, TokenizeStruct};
-use smallvec::SmallVec;
 
 use crate::objects::CPinRef;
 use crate::uid_registry::core::shared::table_id;
@@ -16,7 +15,7 @@ pub struct CPin {
     pub uid: Option<CPinRef>,
     pub name: Option<String>,
     pub common_name: Option<String>,
-    pub pin: Option<SmallVec<[u8; 32]>>,
+    pub pin: Option<heapless::Vec<u8, 32>>,
     pub char_set: Option<TableRef>,
     pub try_limit: Option<u32>,
     pub tries: Option<u32>,

@@ -274,7 +274,7 @@ pub fn c_pin() -> Table<CPin> {
 
     let admins = ADMINS.map(|admin_idx| CPin {
         uid: Some(c_pin::ADMIN.get(admin_idx).unwrap()),
-        pin: Some(b"random_password".as_slice().into()),
+        pin: Some(heapless::Vec::from_array(*b"random_password")),
         ..Default::default()
     });
 

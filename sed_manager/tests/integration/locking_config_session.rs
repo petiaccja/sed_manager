@@ -21,8 +21,7 @@ use sed_tper::Tper;
 use sed_virtual_device::{BASE_COM_ID, LOGICAL_SECTOR_COUNT, VirtualDevice};
 use tracing::instrument;
 
-const NEW_SID_PASSWORD: MaxBytes<32> =
-    unsafe { MaxBytes::from_const_with_len_unchecked(*b"not_default\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 0) };
+const NEW_SID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"not_default");
 
 async fn setup_tper() -> Tper {
     let (tper, _device) = setup().await;
@@ -88,7 +87,7 @@ async fn login() {
 #[with_tracing]
 async fn login_wrong_password() {
     let tper = setup_tper().await;
-    let wrong_password = MaxBytes::<32>::from(b"wrong_password".as_slice());
+    let wrong_password = MaxBytes::<32>::from_array(*b"wrong_password");
 
     let admin1 = locking_admin1();
     let spec = DeviceSpec::try_new(tper.discover_current().await.unwrap()).unwrap();
@@ -350,7 +349,7 @@ async fn change_password() {
     let session = login_admin1(&tper).await.unwrap();
 
     let authority = user_uid(3);
-    let new_password = MaxBytes::<32>::from(b"wrong_password".as_slice());
+    let new_password = MaxBytes::<32>::from_array(*b"wrong_password");
 
     session.change_password(authority, new_password.clone()).await.unwrap();
 
