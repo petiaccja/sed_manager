@@ -10,11 +10,11 @@ use sed_spec::objects::{
     AccessControl, AccessControlRef, Ace, Authority, AuthorityRef, CPin, KAes256, LockingInfoExt, LockingRange,
     MbrControl, TableDesc,
 };
-use sed_spec::preconfig::core::shared::invoking_id::THIS_SP;
-use sed_spec::preconfig::core::shared::{locking_info, mbr_control, table};
-use sed_spec::preconfig::opal_2::admin::sp;
-use sed_spec::preconfig::opal_2::locking::{ace, authority, c_pin, k_aes_256, locking};
 use sed_spec::types::{AuthMethod, EncryptionSupport, ResetType, TableKind};
+use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
+use sed_spec::uid_registry::core::shared::{locking_info, mbr_control, table};
+use sed_spec::uid_registry::opal_2::admin::sp;
+use sed_spec::uid_registry::opal_2::locking::{ace, authority, c_pin, k_aes_256, locking};
 
 use crate::tper::Locking;
 use crate::tper::preconfig_shared::{AllColumns, IntoTable};
@@ -44,8 +44,8 @@ pub fn preconfig() -> Locking {
 }
 
 pub fn access_control() -> Table<AccessControl> {
-    use sed_spec::preconfig::core::shared::method_id::*;
-    use sed_spec::preconfig::core::shared::table_id::*;
+    use sed_spec::uid_registry::core::shared::method_id::*;
+    use sed_spec::uid_registry::core::shared::table_id::*;
 
     let fixed = [
         // SP

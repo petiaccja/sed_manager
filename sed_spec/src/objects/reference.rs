@@ -6,8 +6,8 @@
 use sed_packet::token_stream::{Detokenize, Detokenizer, MessageError, Tokenize, Tokenizer};
 use sed_packet::{ObjectRef, Uid};
 
-use crate::preconfig::core::shared::table_id;
 use crate::types::Type;
+use crate::uid_registry::core::shared::table_id;
 
 /// The UID of an object in the ACE table.
 pub type AceRef = ObjectRef<{ table_id::ACE.to_u64() }>;
@@ -148,7 +148,7 @@ mod tests {
     use sed_packet::token_stream::{FromTokens, ToTokens};
 
     use super::*;
-    use crate::preconfig::opal_2::locking::{k_aes_128, k_aes_256, locking};
+    use crate::uid_registry::opal_2::locking::{k_aes_128, k_aes_256, locking};
 
     #[rstest]
     // Null UIDs are assumed AES_128 because we cannot determine it.

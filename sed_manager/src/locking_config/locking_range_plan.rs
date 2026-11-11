@@ -6,7 +6,7 @@
 use std::collections::BTreeMap;
 
 use sed_spec::objects::{LockingRange, LockingRangeRef};
-use sed_spec::preconfig::opal_2::locking::locking::GLOBAL_RANGE;
+use sed_spec::uid_registry::opal_2::locking::locking::GLOBAL_RANGE;
 
 use crate::Alignment;
 use crate::locking_config::plan::{

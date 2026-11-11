@@ -230,7 +230,7 @@ impl CellBlock {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::preconfig::core::shared::{authority, invoking_id, table_id};
+    use crate::uid_registry::core::shared::{authority, invoking_id, table_id};
 
     #[test]
     fn cell_block_target_table() {

@@ -9,10 +9,10 @@ use sed_spec::ace_expr;
 use sed_spec::objects::{
     AccessControl, AccessControlRef, Ace, Authority, AuthorityRef, CPin, SecurityProvider, TableDesc,
 };
-use sed_spec::preconfig::core::shared::invoking_id::THIS_SP;
-use sed_spec::preconfig::opal_2::admin::{ace, authority, c_pin, sp};
-use sed_spec::preconfig::psid;
 use sed_spec::types::{AuthMethod, LifeCycleState};
+use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
+use sed_spec::uid_registry::opal_2::admin::{ace, authority, c_pin, sp};
+use sed_spec::uid_registry::psid;
 
 use crate::tper::Admin;
 use crate::tper::preconfig_shared::{AllColumns, INITIAL_SID_PASSWORD, IntoTable, PSID_PASSWORD};
@@ -33,8 +33,8 @@ pub fn preconfig() -> Admin {
 }
 
 pub fn access_control() -> Table<AccessControl> {
-    use sed_spec::preconfig::core::shared::method_id::*;
-    use sed_spec::preconfig::core::shared::table_id::*;
+    use sed_spec::uid_registry::core::shared::method_id::*;
+    use sed_spec::uid_registry::core::shared::table_id::*;
 
     let fixed = [
         // Table

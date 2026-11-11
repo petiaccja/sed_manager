@@ -11,7 +11,7 @@ use sed_packet::packet::ComPacket;
 use sed_packet::session_id::SessionId;
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::{AuthorityRef, SecurityProviderRef};
-use sed_spec::preconfig::core::shared::authority::ANYBODY;
+use sed_spec::uid_registry::core::shared::authority::ANYBODY;
 
 use crate::management_session::ManagementSession;
 use crate::session::Session;

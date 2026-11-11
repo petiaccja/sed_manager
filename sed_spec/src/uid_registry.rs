@@ -7,8 +7,8 @@ use crate::lookup::GlobalLookup;
 #[allow(clippy::identity_op, reason = "codegen follow patterns")]
 #[allow(clippy::module_inception, reason = "codegen follow patterns")]
 #[allow(unused)]
-mod spec {
-    include!(concat!(env!("OUT_DIR"), "/spec.rs"));
+mod generated {
+    include!(concat!(env!("OUT_DIR"), "/uid_registry.rs"));
 
     /// The purpose of this is only so that it's easy to jump into the generated
     /// code using "go to definition".
@@ -16,7 +16,7 @@ mod spec {
     const MARKER: () = GENERATED_MARKER;
 }
 
-pub use spec::*;
+pub use generated::*;
 
 pub const GLOBAL_LOOKUP: GlobalLookup = GlobalLookup;
 
@@ -58,7 +58,7 @@ mod tests {
     }
 
     #[test]
-    fn sortedness_meta_table_lookups() {
+    fn sortedness_special_table_lookups() {
         assert!(self::core::shared::method_id::LOOKUP.by_name.items.is_sorted_by_key(|(key, _)| key));
         assert!(self::core::shared::method_id::LOOKUP.by_uid.items.is_sorted_by_key(|(key, _)| key));
         assert!(self::core::shared::table_id::LOOKUP.by_name.items.is_sorted_by_key(|(key, _)| key));
@@ -88,6 +88,17 @@ mod tests {
         if let Some(uid) = uid {
             assert_eq!(self::core::shared::LOOKUP.by_uid(uid), Some(stripped));
         }
+    }
+
+    #[rstest]
+    #[case("General::Null".to_owned(), self::core::shared::general::NULL)]
+    #[case("General::CharSetUnrestricted".to_owned(), self::core::shared::general::CHAR_SET_UNRESTRICTED)]
+    #[case("InvokingID::ThisSP".to_owned(), self::core::shared::invoking_id::THIS_SP)]
+    #[case("InvokingID::SessionManager".to_owned(), self::core::shared::invoking_id::SESSION_MANAGER)]
+    #[case("SMMethodID::StartSession".to_owned(), self::core::shared::sm_method_id::START_SESSION)]
+    fn lookup_security_provider_special(#[case] path: String, #[case] uid: Uid) {
+        assert_eq!(self::core::shared::LOOKUP.by_path(&path), Some(uid));
+        assert_eq!(self::core::shared::LOOKUP.by_uid(uid), Some(path));
     }
 
     #[rstest]

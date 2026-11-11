@@ -7,9 +7,9 @@ use sed_packet::{ObjectUid, Uid};
 use sed_spec_macros::{DetokenizeStruct, FieldList, Object, TokenizeField, TokenizeStruct};
 
 use crate::objects::{AuthorityRef, LogListRef};
-use crate::preconfig::core::shared::table_id;
-use crate::preconfig::{core, enterprise, opal_2, psid};
 use crate::types::{AuthMethod, Date, HashProtocol, LogSelect, MessagingType};
+use crate::uid_registry::core::shared::table_id;
+use crate::uid_registry::{core, enterprise, opal_2, psid};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
 #[object(table=table_id::AUTHORITY)]
@@ -195,12 +195,12 @@ mod tests {
     use rstest::rstest;
 
     use super::*;
-    use crate::preconfig::core::shared::authority::{ADMINS, ANYBODY, MAKERS, SID};
-    use crate::preconfig::enterprise::locking::authority::{BAND_MASTER, BAND_MASTERS, ERASE_MASTER};
-    use crate::preconfig::kpio;
-    use crate::preconfig::opal_2::admin::authority::ADMIN as ADMIN_SP_ADMIN;
-    use crate::preconfig::opal_2::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER, USERS};
-    use crate::preconfig::psid::admin::authority::PSID;
+    use crate::uid_registry::core::shared::authority::{ADMINS, ANYBODY, MAKERS, SID};
+    use crate::uid_registry::enterprise::locking::authority::{BAND_MASTER, BAND_MASTERS, ERASE_MASTER};
+    use crate::uid_registry::kpio;
+    use crate::uid_registry::opal_2::admin::authority::ADMIN as ADMIN_SP_ADMIN;
+    use crate::uid_registry::opal_2::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER, USERS};
+    use crate::uid_registry::psid::admin::authority::PSID;
 
     /// The classification relies on the authorities sharing UIDs across SSCs
     /// and SPs. These UIDs should be stable, but we want to document the

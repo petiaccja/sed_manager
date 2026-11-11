@@ -14,3 +14,10 @@ prettyplease.workspace = true
 syn.workspace = true
 proc-macro2.workspace = true
 num-integer.workspace = true
+heck.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+googletest.workspace = true
+rstest.workspace = true
+insta.workspace = true

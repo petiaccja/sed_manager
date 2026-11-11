@@ -84,9 +84,9 @@ pub mod tests {
         CloseSession, MethodCall, MethodParam, MethodResult, MethodStatus, Random, RandomResult,
         SessionMethodParam as _, StartSession, SyncSession,
     };
-    use sed_spec::preconfig::core::shared::invoking_id::{SESSION_MANAGER, THIS_SP};
-    use sed_spec::preconfig::core::shared::sm_method_id::{START_SESSION, SYNC_SESSION};
-    use sed_spec::preconfig::opal_2::admin::sp;
+    use sed_spec::uid_registry::core::shared::invoking_id::{SESSION_MANAGER, THIS_SP};
+    use sed_spec::uid_registry::core::shared::sm_method_id::{START_SESSION, SYNC_SESSION};
+    use sed_spec::uid_registry::opal_2::admin::sp;
 
     pub fn start_session_call(session_id: SessionId) -> MethodCall<StartSession> {
         MethodCall {

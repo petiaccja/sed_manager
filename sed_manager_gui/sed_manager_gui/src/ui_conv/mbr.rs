@@ -5,7 +5,7 @@
 
 use sed_manager_gui_slint as ui;
 use sed_spec::objects::MbrControl;
-use sed_spec::preconfig::core::shared::mbr_control;
+use sed_spec::uid_registry::core::shared::mbr_control;
 
 use crate::ui_conv::{FromBackend, FromUi};
 

@@ -9,8 +9,8 @@ use sed_packet::ObjectUid;
 use sed_spec_macros::{DetokenizeStruct, FieldList, Object, TokenizeField, TokenizeStruct};
 
 use crate::objects::{AceRef, AuthorityRef};
-use crate::preconfig::core::shared::table_id;
 use crate::types::{AceOperand, BooleanOp};
+use crate::uid_registry::core::shared::table_id;
 
 /// Do not use this macro directly. See [ace_expr!].
 #[macro_export]
@@ -34,8 +34,8 @@ macro_rules! ace_operand {
 ///
 /// Example:
 /// ```
-/// # use sed_spec::preconfig::core::shared::authority::ADMINS;
-/// # use sed_spec::preconfig::core::shared::authority::SID;
+/// # use sed_spec::uid_registry::core::shared::authority::ADMINS;
+/// # use sed_spec::uid_registry::core::shared::authority::SID;
 /// # use sed_spec::objects::ace_expr;
 /// # use sed_spec::objects::EvalAceExpr;
 /// let expr = ace_expr!(SID ADMINS ||);

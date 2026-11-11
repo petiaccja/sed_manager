@@ -5,8 +5,8 @@
 
 use sed_spec::methods::MethodStatus;
 use sed_spec::objects::SecurityProviderRef;
-use sed_spec::preconfig::opal_2::admin::sp;
 use sed_spec::types::LifeCycleState;
+use sed_spec::uid_registry::opal_2::admin::sp;
 
 use crate::tper::security_provider::SecurityProvider;
 use crate::tper::{Admin, Locking};

@@ -10,35 +10,36 @@ use sed_packet::{ObjectRef, TableRef, Uid, UidRange};
 
 use crate::path::Path;
 
-// These tables and types are hardcoded here because the generated specification
-// is not available here.
+// These tables and types are hardcoded here despite being defined in the UID
+// registry. This is because the code generated for the UID registry needs these
+// and importing them from here is easier than self-referencing in the generated
+// code.
 pub const SP_TABLE: TableRef = TableRef::new(0x00000205_00000000);
-pub const META_TABLE: TableRef = TableRef::new(0xFFFFFFFF_00000000);
 pub(crate) type SpRef = ObjectRef<{ SP_TABLE.to_u64() }>;
 
-/// A contiguous range of UIDs whose names follow the pattern `{prefix}{n}{suffix}`,
-/// where `n` is a display index starting at `display_base`.
-pub struct UidRangeEntry<U> {
+/// A range of UIDs whose names follow the pattern `{prefix}{n}{suffix}`,
+/// where `n` is a display index starting at `display_start`.
+pub struct UidRangeLookupEntry<U> {
     pub range: UidRange<U>,
     pub prefix: &'static str,
     pub suffix: &'static str,
-    pub display_base: u64,
+    pub display_start: u64,
 }
 
-impl<U> UidRangeEntry<U>
+impl<U> UidRangeLookupEntry<U>
 where
     U: Copy + PartialOrd + Add<u32, Output = U> + Sub<U, Output = i64>,
 {
     pub fn by_name(&self, name: &str) -> Option<U> {
         let digits = name.strip_prefix(self.prefix)?.strip_suffix(self.suffix)?;
         let display_index: u64 = digits.parse().ok()?;
-        let index = display_index.checked_sub(self.display_base)?;
+        let index = display_index.checked_sub(self.display_start)?;
         self.range.get(usize::try_from(index).ok()?)
     }
 
     pub fn by_uid(&self, uid: U) -> Option<String> {
         let index = self.range.index_of(uid)?;
-        let display_index = index as u64 + self.display_base;
+        let display_index = index as u64 + self.display_start;
         Some(format!("{}{}{}", self.prefix, display_index, self.suffix))
     }
 }
@@ -59,7 +60,7 @@ impl<'a, K, V> SortedMap<'a, K, V> {
 pub struct TableIdLookup<'a> {
     pub by_name: SortedMap<'a, &'a str, TableRef>,
     pub by_uid: SortedMap<'a, TableRef, &'a str>,
-    pub ranges: &'a [UidRangeEntry<TableRef>],
+    pub ranges: &'a [UidRangeLookupEntry<TableRef>],
 }
 
 impl<'a> TableIdLookup<'a> {
@@ -85,14 +86,19 @@ pub trait TableLookup {
     fn by_uid(&self, uid: Uid) -> Option<String>;
 }
 
-pub struct ObjectTableLookup<'a, const TABLE: u64> {
+/// The lookup of a table whose rows are referenced by `Ref`, e.g. objects
+/// (`ObjectRef`) or special-purpose UIDs (`Uid`).
+pub struct RefTableLookup<'a, Ref> {
     pub name: &'a str,
-    pub by_name: SortedMap<'a, &'a str, ObjectRef<TABLE>>,
-    pub by_uid: SortedMap<'a, ObjectRef<TABLE>, &'a str>,
-    pub ranges: &'a [UidRangeEntry<ObjectRef<TABLE>>],
+    pub by_name: SortedMap<'a, &'a str, Ref>,
+    pub by_uid: SortedMap<'a, Ref, &'a str>,
+    pub ranges: &'a [UidRangeLookupEntry<Ref>],
 }
 
-impl<'a, const TABLE: u64> TableLookup for ObjectTableLookup<'a, TABLE> {
+impl<'a, Ref> TableLookup for RefTableLookup<'a, Ref>
+where
+    Ref: Copy + Ord + Into<Uid> + TryFrom<Uid> + Add<u32, Output = Ref> + Sub<Ref, Output = i64>,
+{
     fn name(&self) -> &str {
         self.name
     }
@@ -109,47 +115,17 @@ impl<'a, const TABLE: u64> TableLookup for ObjectTableLookup<'a, TABLE> {
     fn by_name(&self, name: &str) -> Option<Uid> {
         self.by_name
             .get(&name)
-            .map(|x| x.to_uid())
-            .or_else(|| self.ranges.iter().find_map(|range| range.by_name(name)).map(|x| x.to_uid()))
+            .copied()
+            .or_else(|| self.ranges.iter().find_map(|range| range.by_name(name)))
+            .map(Into::into)
     }
 
     fn by_uid(&self, uid: Uid) -> Option<String> {
-        let Ok(uid) = ObjectRef::<TABLE>::try_from(uid) else {
-            return None;
-        };
+        let uid = Ref::try_from(uid).ok()?;
         self.by_uid
             .get(&uid)
             .map(|name| (*name).to_owned())
             .or_else(|| self.ranges.iter().find_map(|range| range.by_uid(uid)))
-    }
-}
-
-pub struct MetaTableLookup<'a> {
-    pub name: &'a str,
-    pub by_name: SortedMap<'a, &'a str, Uid>,
-    pub by_uid: SortedMap<'a, Uid, &'a str>,
-}
-
-impl<'a> TableLookup for MetaTableLookup<'a> {
-    fn name(&self) -> &str {
-        self.name
-    }
-
-    fn by_path(&self, path: &Path) -> Option<Uid> {
-        if let Some(table_name) = path.table()
-            && table_name != self.name
-        {
-            return None;
-        }
-        self.by_name(path.object())
-    }
-
-    fn by_name(&self, name: &str) -> Option<Uid> {
-        self.by_name.get(&name).cloned()
-    }
-
-    fn by_uid(&self, uid: Uid) -> Option<String> {
-        self.by_uid.get(&uid).map(|name| (*name).to_owned())
     }
 }
 
@@ -172,34 +148,21 @@ impl<'a> SecurityProviderLookup<'a> {
     }
 
     pub fn by_path_with_table(&self, name: &str, table: TableRef) -> Option<Uid> {
-        if table == META_TABLE {
-            for (table_ref, table_lookup) in self.table_lookups.items.iter().rev() {
-                if *table_ref == META_TABLE {
-                    if let Some(uid) = table_lookup.by_name(name) {
-                        return Some(uid);
-                    }
-                } else {
-                    break;
-                }
-            }
-            None
-        } else {
-            let table_lookup = self.table_lookups.get(&table)?;
-            table_lookup.by_name(name)
-        }
+        let table_lookup = self.table_lookups.get(&table)?;
+        table_lookup.by_name(name)
     }
 
     pub fn by_uid(&self, uid: Uid) -> Option<String> {
-        let table_ref = uid.containing_table().map(|table_ref| TableRef::new(table_ref.to_u64()));
-        let path = if let Some(table_ref) = table_ref {
-            let table_lookup = self.table_lookups.get(&table_ref)?;
-            let table_name = table_lookup.name();
-            table_lookup.by_uid(uid).map(|name| format!("{table_name}::{name}"))
-        } else {
-            let mut meta_tables =
-                self.table_lookups.items.iter().rev().filter(|(table_ref, _)| table_ref == &META_TABLE);
-            meta_tables.find_map(|(_, lookup)| lookup.by_uid(uid).map(|name| format!("{}::{name}", lookup.name())))
+        let by_uid_in = |table_lookup: &dyn TableLookup| {
+            table_lookup.by_uid(uid).map(|name| format!("{}::{name}", table_lookup.name()))
         };
+        // Special-purpose UIDs have no containing table, and special tables may
+        // also list objects (e.g. `General::CharSetUnrestricted`), so fall back
+        // to searching all tables.
+        let path = TableRef::containing_table(uid)
+            .and_then(|table_ref| self.table_lookups.get(&table_ref))
+            .and_then(|table_lookup| by_uid_in(*table_lookup))
+            .or_else(|| self.table_lookups.items.iter().find_map(|(_, table_lookup)| by_uid_in(*table_lookup)));
         match self.name {
             "Shared" => path,
             sp => path.map(|path| format!("{sp}::{path}")),
@@ -245,12 +208,12 @@ impl<'a> FeatureLookup<'a> {
     }
 }
 
-/// This implementation is kinda hacky:
-/// - This is `lookup.rs`, but it imports `preconfig.rs`, which is based on
-///   `lookup.rs`. This compiles in Rust, but is not pretty.
-/// - The features are hardcoded. Instead, they should be specified dynamically
-///   based on the JSON specification. This may be possible once the discovery
-///   module is fully cleaned up, but that needs all the refactoring.
+// This implementation is kinda hacky:
+// - This is `lookup.rs`, but it imports `uid_registry.rs`, which is based on
+//   `lookup.rs`. This compiles in Rust, but is not pretty.
+// - The features are hardcoded. Instead, they should be specified dynamically
+//   based on the UID registry's JSON. This may be possible once the discovery
+//   module is fully cleaned up, but that needs all the refactoring.
 pub struct GlobalLookup;
 
 impl GlobalLookup {
@@ -284,19 +247,19 @@ impl GlobalLookup {
     }
 
     fn search<T>(&self, features: &[FeatureDescriptor], f: impl Fn(FeatureLookup) -> Option<T>) -> Option<T> {
-        use crate::preconfig;
+        use crate::uid_registry;
         let ssc_features = features.iter().filter_map(FeatureDescriptor::to_ssc);
         let common_features = features.iter().filter(|feature| !feature.is_ssc());
         for ssc in ssc_features {
             let result = match ssc {
-                SscFeatureDescriptor::Enterprise(_) => f(preconfig::enterprise::LOOKUP),
-                SscFeatureDescriptor::OpalV1(_) => f(preconfig::opal_2::LOOKUP),
-                SscFeatureDescriptor::OpalV2(_) => f(preconfig::opal_2::LOOKUP),
-                SscFeatureDescriptor::Opalite(_) => f(preconfig::opalite::LOOKUP),
-                SscFeatureDescriptor::PyriteV1(_) => f(preconfig::pyrite_2::LOOKUP),
-                SscFeatureDescriptor::PyriteV2(_) => f(preconfig::pyrite_2::LOOKUP),
-                SscFeatureDescriptor::Ruby(_) => f(preconfig::ruby::LOOKUP),
-                SscFeatureDescriptor::KeyPerIO(_) => f(preconfig::kpio::LOOKUP),
+                SscFeatureDescriptor::Enterprise(_) => f(uid_registry::enterprise::LOOKUP),
+                SscFeatureDescriptor::OpalV1(_) => f(uid_registry::opal_2::LOOKUP),
+                SscFeatureDescriptor::OpalV2(_) => f(uid_registry::opal_2::LOOKUP),
+                SscFeatureDescriptor::Opalite(_) => f(uid_registry::opalite::LOOKUP),
+                SscFeatureDescriptor::PyriteV1(_) => f(uid_registry::pyrite_2::LOOKUP),
+                SscFeatureDescriptor::PyriteV2(_) => f(uid_registry::pyrite_2::LOOKUP),
+                SscFeatureDescriptor::Ruby(_) => f(uid_registry::ruby::LOOKUP),
+                SscFeatureDescriptor::KeyPerIO(_) => f(uid_registry::kpio::LOOKUP),
             };
             if result.is_some() {
                 return result;
@@ -304,17 +267,17 @@ impl GlobalLookup {
         }
         for feature in common_features {
             let result = match feature {
-                FeatureDescriptor::AdditionalDataStoreTables(_) => f(preconfig::data_store::LOOKUP),
+                FeatureDescriptor::AdditionalDataStoreTables(_) => f(uid_registry::data_store::LOOKUP),
                 _ => None,
             };
             if result.is_some() {
                 return result;
             }
         }
-        if let Some(result) = f(preconfig::psid::LOOKUP) {
+        if let Some(result) = f(uid_registry::psid::LOOKUP) {
             return Some(result);
         }
-        if let Some(result) = f(preconfig::core::LOOKUP) {
+        if let Some(result) = f(uid_registry::core::LOOKUP) {
             return Some(result);
         }
         None

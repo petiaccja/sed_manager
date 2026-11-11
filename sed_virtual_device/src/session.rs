@@ -21,10 +21,10 @@ use sed_spec::objects::{
     AccessControlRef, Ace, Authority, AuthorityRef, CPin, EvalAceExpr, KAes256, KAes256Ref, LockingInfoExt,
     LockingRange, MbrControl, MethodRef, SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
 };
-use sed_spec::preconfig::core::shared::authority::ANYBODY;
-use sed_spec::preconfig::core::shared::invoking_id::THIS_SP;
-use sed_spec::preconfig::core::shared::table_id;
 use sed_spec::types::LifeCycleState;
+use sed_spec::uid_registry::core::shared::authority::ANYBODY;
+use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
+use sed_spec::uid_registry::core::shared::table_id;
 
 use crate::internal_error::Expect;
 use crate::tper::{Locking, SecurityProvider, Table, Tper};
@@ -167,7 +167,7 @@ impl Session {
     }
 
     fn activate(&self, tper: &mut Tper, invoking_id: Uid, params: &Activate) -> Result<ActivateResult, MethodStatus> {
-        use sed_spec::preconfig::opal_2::{admin, locking};
+        use sed_spec::uid_registry::opal_2::{admin, locking};
 
         self.check_permission(tper, invoking_id, params.method_id(), [0].into_iter())?;
 

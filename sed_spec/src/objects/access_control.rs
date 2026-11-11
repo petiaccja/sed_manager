@@ -6,8 +6,8 @@
 use sed_packet::{Object, TableRef};
 
 use crate::objects::{AccessControlRef, AceRef, LogListRef};
-use crate::preconfig::core::shared::table_id;
 use crate::types::LogSelect;
+use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug)]
 pub struct AccessControl {

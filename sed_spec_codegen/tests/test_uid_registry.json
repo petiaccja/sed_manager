@@ -1,0 +1,48 @@
+{
+    "Core": {
+        "Shared": {
+            "TableID": {
+                "InvokingID": "FFFFFFFE00000000",
+                "SP": "0000020500000000",
+                "TableW": "0000000A00000000",
+                "TableZ": "0000000900000000",
+                "DataStore{n}": {
+                    "start": "0000100100000000",
+                    "count": 4,
+                    "step": 2,
+                    "display_start": 0
+                }
+            },
+            "InvokingID": {
+                "ThisSP": "0000000000000001",
+                "SessionManager": "00000000000000FF"
+            }
+        }
+    },
+    "FeatureX": {
+        "Admin": {
+            "SP": {
+                "Admin": "0000020500000002",
+                "SPY": "0000020500000001"
+            }
+        },
+        "SPY": {
+            "TableW": {
+                "ObjectD": "0000000A00000001"
+            },
+            "TableZ": {
+                "ObjectA": "0000000900000001",
+                "ObjectB{n}": {
+                    "start": "0000000900000002",
+                    "count": 100,
+                    "step": 2,
+                    "display_start": 0
+                },
+                "ObjectC{n}_Suffix": {
+                    "start": "0000000900001000",
+                    "count": 8
+                }
+            }
+        }
+    }
+}

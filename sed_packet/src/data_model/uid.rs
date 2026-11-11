@@ -3,6 +3,8 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
+use std::ops::{Add, Sub};
+
 use crate::token_stream::{Detokenize, Detokenizer, Tokenize, Tokenizer};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -145,6 +147,36 @@ impl From<Uid> for u64 {
     }
 }
 
+/// Offsets the raw 64-bit value of the UID.
+///
+/// Beware that arithmetic on [`ObjectRef`] and [`TableRef`] may give different
+/// results to arithmetic on [`Uid`]s, even for the same value.
+///
+/// [`ObjectRef`]: crate::ObjectRef
+/// [`TableRef`]: crate::TableRef
+impl Add<u32> for Uid {
+    type Output = Self;
+
+    fn add(self, rhs: u32) -> Self::Output {
+        Self::new(self.to_u64() + u64::from(rhs))
+    }
+}
+
+/// The signed distance between the raw 64-bit values of the UIDs.
+///
+/// # Panics
+///
+/// Panics if the UIDs are 2<sup>63</sup> or more apart.
+impl Sub for Uid {
+    type Output = i64;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        self.to_u64()
+            .checked_signed_diff(rhs.to_u64())
+            .expect("the distance between the UIDs must fit into an i64")
+    }
+}
+
 impl Default for Uid {
     fn default() -> Self {
         Self::null()
@@ -260,5 +292,35 @@ mod tests {
     #[case(Uid::new(0x0000_0000_0000_0000), 1, None)]
     fn previous_table(#[case] lhs: Uid, #[case] rhs: u32, #[case] expected: Option<Uid>) {
         assert_eq!(lhs.previous_table(rhs), expected);
+    }
+
+    #[rstest]
+    #[case::special(Uid::new(0x0000_0000_0000_FF01), 2, Uid::new(0x0000_0000_0000_FF03))]
+    // Unlike `next_object`, the raw addition carries over into the table half.
+    #[case::object_carry(Uid::new(0x0000_0009_FFFF_FFFF), 1, Uid::new(0x0000_000A_0000_0000))]
+    // Unlike `next_table`, the raw addition increments the object half.
+    #[case::table(Uid::new(0x0000_0009_0000_0000), 1, Uid::new(0x0000_0009_0000_0001))]
+    fn add(#[case] lhs: Uid, #[case] rhs: u32, #[case] expected: Uid) {
+        assert_eq!(lhs + rhs, expected);
+    }
+
+    #[rstest]
+    #[case::positive(Uid::new(0x0000_0000_0000_FF03), Uid::new(0x0000_0000_0000_FF01), 2)]
+    #[case::negative(Uid::new(0x0000_0000_0000_FF01), Uid::new(0x0000_0000_0000_FF03), -2)]
+    #[case::zero(Uid::new(0x0000_0000_0000_FF01), Uid::new(0x0000_0000_0000_FF01), 0)]
+    // Unlike the difference of `TableRef`s, the raw difference is not in units of tables.
+    #[case::tables(Uid::new(0x0000_000A_0000_0000), Uid::new(0x0000_0009_0000_0000), 1 << 32)]
+    #[case::max(Uid::new(i64::MAX as u64), Uid::new(0), i64::MAX)]
+    #[case::min(Uid::new(0), Uid::new(1 << 63), i64::MIN)]
+    fn sub(#[case] lhs: Uid, #[case] rhs: Uid, #[case] expected: i64) {
+        assert_eq!(lhs - rhs, expected);
+    }
+
+    #[rstest]
+    #[case::above_max(Uid::new(1 << 63), Uid::new(0))]
+    #[case::below_min(Uid::new(0), Uid::new((1 << 63) + 1))]
+    #[should_panic(expected = "the distance between the UIDs must fit into an i64")]
+    fn sub_out_of_range(#[case] lhs: Uid, #[case] rhs: Uid) {
+        let _ = lhs - rhs;
     }
 }

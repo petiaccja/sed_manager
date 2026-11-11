@@ -15,8 +15,8 @@ use sed_spec::methods::{
     SetObject, SetResult, StartSession,
 };
 use sed_spec::objects::{AceRef, AuthorityRef, CredentialRef, MethodRef, SecurityProviderRef};
-use sed_spec::preconfig::core::shared::invoking_id::THIS_SP;
-use sed_spec::preconfig::core::shared::{method_id, table_id};
+use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
+use sed_spec::uid_registry::core::shared::{method_id, table_id};
 use sed_spec_macros::DetokenizeStruct;
 use tracing::instrument;
 

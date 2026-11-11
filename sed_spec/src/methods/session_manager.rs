@@ -12,7 +12,7 @@ use sed_spec_macros::{DetokenizeStruct, TokenizeStruct};
 use crate::methods::MethodParam;
 use crate::methods::properties::Properties;
 use crate::objects::{AuthorityRef, SecurityProviderRef};
-use crate::preconfig::core::shared::sm_method_id;
+use crate::uid_registry::core::shared::sm_method_id;
 
 //------------------------------------------------------------------------------
 // Properties

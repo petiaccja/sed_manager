@@ -8,7 +8,7 @@ use sed_spec_macros::{DetokenizeStruct, FieldList, Object, TokenizeField, Tokeni
 use smallvec::SmallVec;
 
 use crate::objects::CPinRef;
-use crate::preconfig::core::shared::table_id;
+use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
 #[object(table=table_id::C_PIN)]

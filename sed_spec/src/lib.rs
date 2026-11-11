@@ -7,7 +7,7 @@ pub mod lookup;
 pub mod methods;
 pub mod objects;
 pub mod path;
-pub mod preconfig;
 pub mod types;
+pub mod uid_registry;
 
 extern crate self as sed_spec;
