@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Install dependencies
       if: matrix.os == 'ubuntu-latest'
@@ -58,7 +58,7 @@ jobs:
         fi
 
     - name: "Upload binaries"
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: sed-manager-${{ matrix.os_name }}-${{ matrix.cargo_profile }}
         path: |
