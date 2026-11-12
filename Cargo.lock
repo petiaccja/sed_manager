@@ -4586,12 +4586,14 @@ dependencies = [
  "googletest",
  "heapless",
  "rand 0.10.1",
+ "rstest",
  "sed_device",
  "sed_packet",
  "sed_spec",
  "serde",
  "serde_json",
  "sorbit",
+ "thiserror 2.0.18",
  "tracing",
 ]
 

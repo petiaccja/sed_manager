@@ -7,8 +7,6 @@ use sed_packet::{MaxBytes, Object, ObjectUid};
 
 use crate::tper::security_provider::Table;
 
-// This is very annoying, unsafe should be absolutely unnecessary here, and
-// this should be rewritten if proper const programming are available in Rust.
 pub const INITIAL_SID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"password");
 pub const PSID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"recovery");
 

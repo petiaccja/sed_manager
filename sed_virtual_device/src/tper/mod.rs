@@ -6,10 +6,12 @@
 mod admin;
 mod locking;
 mod opal_2;
+mod preconfig;
 mod preconfig_shared;
 mod security_provider;
 
 use std::marker::PhantomData;
+use std::str::FromStr;
 
 pub use admin::Admin;
 pub use locking::Locking;
@@ -21,21 +23,49 @@ use sed_packet::discovery::{
 };
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::SecurityProviderRef;
+use sed_spec::preconfig::OPAL_2;
+use sed_spec::ssc::Ssc;
 use sed_spec::types::LifeCycleState;
 use sed_spec::uid_registry::opal_2::admin::c_pin;
 use sorbit::ser_de::ToBytes;
 
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};
+use crate::tper::preconfig::resolve_paths;
 
 use sed_spec::uid_registry::opal_2::admin::sp;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Tper {
+    #[serde(skip, default = "default_ssc")]
+    ssc: Ssc,
     pub admin: Admin,
     pub locking: Option<Locking>,
 }
 
 impl Tper {
+    pub fn from_preconfig(ssc: Ssc) -> Self {
+        let raw_json_str = match ssc {
+            Ssc::Enterprise => todo!(),
+            Ssc::OpalV1 => todo!(),
+            Ssc::OpalV2 => OPAL_2,
+            Ssc::Opalite => todo!(),
+            Ssc::PyriteV1 => todo!(),
+            Ssc::PyriteV2 => todo!(),
+            Ssc::Ruby => todo!(),
+            Ssc::KeyPerIO => todo!(),
+        };
+        let raw_json_value =
+            serde_json::Value::from_str(raw_json_str).expect("the JSON syntax is ensured by unit tests");
+        let json_value = resolve_paths(raw_json_value, ssc).expect("the UID path resolution is ensured by unit tests");
+        let mut tper: Self = serde_json::from_value(json_value).expect("the schema is ensured by unit tests");
+        tper.ssc = ssc;
+        if let Some(locking) = tper.locking.as_mut() {
+            locking.resize_mbr();
+            locking.resize_data_stores();
+        }
+        tper
+    }
+
     pub fn sp(&self, uid: SecurityProviderRef) -> Option<&dyn SecurityProvider> {
         match uid {
             sp::ADMIN => Some(&self.admin),
@@ -76,9 +106,7 @@ impl Tper {
             locking.resize_data_stores();
         }
     }
-}
 
-impl Tper {
     pub fn discover(&self, capabilities: &Properties) -> Discovery {
         let fixed = [
             Self::tper_feature_desc(capabilities),
@@ -186,15 +214,22 @@ impl Tper {
 
 impl Default for Tper {
     fn default() -> Self {
-        Self { admin: opal_2::preconfig_admin::preconfig(), locking: Some(opal_2::preconfig_locking::preconfig()) }
+        Self {
+            ssc: default_ssc(),
+            admin: opal_2::preconfig_admin::preconfig(),
+            locking: Some(opal_2::preconfig_locking::preconfig()),
+        }
     }
+}
+
+fn default_ssc() -> Ssc {
+    Ssc::OpalV2
 }
 
 #[cfg(test)]
 mod tests {
-    use std::path::Path;
-
     use googletest::prelude::*;
+    use rstest::rstest;
 
     use super::*;
 
@@ -241,7 +276,7 @@ mod tests {
     }
 
     fn expect_tper_eq(actual: &Tper, expected: &Tper) {
-        let Tper { admin, locking } = actual;
+        let Tper { ssc: _, admin, locking } = actual;
         expect_admin_eq(admin, &expected.admin);
         match (locking, &expected.locking) {
             (Some(actual), Some(expected)) => expect_locking_eq(actual, expected),
@@ -249,30 +284,21 @@ mod tests {
         }
     }
 
-    #[test]
-    fn print_opal_2_preconfig() {
-        let tper = Tper::default();
-        let output = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("..")
-            .join("sed_spec")
-            .join("data")
-            .join("preconfig_opal_2.json");
-        let json_str = serde_json::to_string_pretty(&tper).unwrap();
-        std::fs::write(output, json_str).unwrap();
-    }
-
     #[gtest]
     fn read_opal_2_preconfig() {
         let mut expected = Tper::default();
         expected.locking.as_mut().unwrap().mbr.clear();
         expected.locking.as_mut().unwrap().data_store = vec![vec![]];
-        let output = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("..")
-            .join("sed_spec")
-            .join("data")
-            .join("preconfig_opal_2.json");
-        let json_str = std::fs::read_to_string(output).unwrap();
-        let loaded: Tper = serde_json::from_str(&json_str).unwrap();
+        let mut loaded = Tper::from_preconfig(Ssc::OpalV2);
+        loaded.locking.as_mut().unwrap().mbr.clear();
+        loaded.locking.as_mut().unwrap().data_store = vec![vec![]];
         expect_tper_eq(&loaded, &expected);
+    }
+
+    #[rstest]
+    #[case::opal_2(Ssc::OpalV2)]
+    fn from_preconfig(#[case] ssc: Ssc) {
+        let tper = Tper::from_preconfig(ssc);
+        assert_eq!(tper.ssc, ssc)
     }
 }

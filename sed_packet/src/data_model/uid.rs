@@ -197,7 +197,7 @@ impl core::str::FromStr for Uid {
         if let Some(digits) = s.strip_prefix("0x") {
             u64::from_str_radix(digits, 16).map(Self::new)
         } else {
-            u64::from_str_radix(&s, 10).map(Self::new)
+            s.parse().map(Self::new)
         }
     }
 }
