@@ -634,19 +634,12 @@ pub fn c_pin() -> Table<CPin> {
     admins.into_iter().chain(users).into_table().expect("object missing an UID")
 }
 
-fn random_key() -> [u8; 64] {
-    let mut key = [0u8; 64];
-    rand::Fill::fill_slice(&mut key, &mut rand::rng());
-    key
-}
-
 pub fn k_aes_256() -> Table<KAes256> {
-    let fixed =
-        [KAes256 { uid: Some(k_aes_256::GLOBAL_RANGE_KEY), key: Some(random_key().into()), ..Default::default() }];
+    let fixed = [KAes256 { uid: Some(k_aes_256::GLOBAL_RANGE_KEY), key: Some([0u8; 64].into()), ..Default::default() }];
 
     let ranges = RANGES.map(|range_idx| KAes256 {
         uid: Some(k_aes_256::RANGE_KEY.get(range_idx).unwrap()),
-        key: Some(random_key().into()),
+        key: Some([0u8; 64].into()),
         ..Default::default()
     });
 

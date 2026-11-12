@@ -29,7 +29,7 @@ use crate::device::{BASE_COM_ID, NUM_COM_IDS};
 
 use sed_spec::uid_registry::opal_2::admin::sp;
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Tper {
     pub admin: Admin,
     pub locking: Option<Locking>,
@@ -67,6 +67,13 @@ impl Tper {
                 Ok(vec![sp::LOCKING])
             }
             _ => Err(MethodStatus::InvalidParameter),
+        }
+    }
+
+    pub fn resize_byte_tables(&mut self) {
+        if let Some(locking) = &mut self.locking {
+            locking.resize_mbr();
+            locking.resize_data_stores();
         }
     }
 }
@@ -180,5 +187,92 @@ impl Tper {
 impl Default for Tper {
     fn default() -> Self {
         Self { admin: opal_2::preconfig_admin::preconfig(), locking: Some(opal_2::preconfig_locking::preconfig()) }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use googletest::prelude::*;
+
+    use super::*;
+
+    /// Compares each table separately so that a failure prints only the mismatching tables.
+    fn expect_admin_eq(actual: &Admin, expected: &Admin) {
+        // The structs are destructured exhaustively so that newly added fields can't be forgotten.
+        let Admin { uid, access_control, ace, authority, c_pin, sp, table } = actual;
+        expect_that!(uid, eq(&expected.uid));
+        expect_that!(access_control, eq(&expected.access_control));
+        expect_that!(ace, eq(&expected.ace));
+        expect_that!(authority, eq(&expected.authority));
+        expect_that!(c_pin, eq(&expected.c_pin));
+        expect_that!(sp, eq(&expected.sp));
+        expect_that!(table, eq(&expected.table));
+    }
+
+    fn expect_locking_eq(actual: &Locking, expected: &Locking) {
+        let Locking {
+            uid,
+            access_control,
+            ace,
+            authority,
+            c_pin,
+            k_aes_256,
+            locking,
+            locking_info_ext,
+            mbr_control,
+            table,
+            mbr,
+            data_store,
+        } = actual;
+        expect_that!(uid, eq(&expected.uid));
+        expect_that!(access_control, eq(&expected.access_control));
+        expect_that!(ace, eq(&expected.ace));
+        expect_that!(authority, eq(&expected.authority));
+        expect_that!(c_pin, eq(&expected.c_pin));
+        expect_that!(k_aes_256, eq(&expected.k_aes_256));
+        expect_that!(locking, eq(&expected.locking));
+        expect_that!(locking_info_ext, eq(&expected.locking_info_ext));
+        expect_that!(mbr_control, eq(&expected.mbr_control));
+        expect_that!(table, eq(&expected.table));
+        expect_that!(mbr, eq(&expected.mbr));
+        expect_that!(data_store, eq(&expected.data_store));
+    }
+
+    fn expect_tper_eq(actual: &Tper, expected: &Tper) {
+        let Tper { admin, locking } = actual;
+        expect_admin_eq(admin, &expected.admin);
+        match (locking, &expected.locking) {
+            (Some(actual), Some(expected)) => expect_locking_eq(actual, expected),
+            (actual, expected) => expect_that!(actual.is_some(), eq(expected.is_some())),
+        }
+    }
+
+    #[test]
+    fn print_opal_2_preconfig() {
+        let tper = Tper::default();
+        let output = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("sed_spec")
+            .join("data")
+            .join("preconfig_opal_2.json");
+        let json_str = serde_json::to_string_pretty(&tper).unwrap();
+        std::fs::write(output, json_str).unwrap();
+    }
+
+    #[gtest]
+    fn read_opal_2_preconfig() {
+        let mut expected = Tper::default();
+        expected.locking.as_mut().unwrap().mbr.clear();
+        expected.locking.as_mut().unwrap().data_store = vec![vec![]];
+        let output = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("sed_spec")
+            .join("data")
+            .join("preconfig_opal_2.json");
+        let json_str = std::fs::read_to_string(output).unwrap();
+        let loaded: Tper = serde_json::from_str(&json_str).unwrap();
+        expect_tper_eq(&loaded, &expected);
     }
 }

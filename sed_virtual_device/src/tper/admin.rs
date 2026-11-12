@@ -11,7 +11,7 @@ use sed_spec::objects::{
 
 use crate::tper::security_provider::{SecurityProvider, Table};
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Admin {
     #[allow(unused)]
     pub uid: SecurityProviderRef,

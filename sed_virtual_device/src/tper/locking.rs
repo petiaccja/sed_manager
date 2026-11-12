@@ -5,14 +5,17 @@
 
 use std::any::Any;
 
-use sed_spec::objects::{
-    AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl, SecurityProviderRef,
-    TableDesc,
+use sed_spec::{
+    objects::{
+        AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl, SecurityProviderRef,
+        TableDesc,
+    },
+    uid_registry::core::shared::table,
 };
 
 use crate::tper::security_provider::{SecurityProvider, Table};
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Locking {
     pub uid: SecurityProviderRef,
     pub access_control: Table<AccessControl>,
@@ -24,8 +27,35 @@ pub struct Locking {
     pub locking_info_ext: Table<LockingInfoExt>,
     pub mbr_control: Table<MbrControl>,
     pub table: Table<TableDesc>,
+    #[serde(skip_serializing, default = "empty_mbr")]
     pub mbr: Vec<u8>,
+    #[serde(skip_serializing, default = "empty_data_stores")]
     pub data_store: Vec<Vec<u8>>,
+}
+
+impl Locking {
+    /// Resizes the MBR table so that its size matches the one indicated
+    /// in the `Table` table.
+    pub fn resize_mbr(&mut self) {
+        if let Some(mbr) = self.table.get(&table::MBR) {
+            self.mbr.resize(mbr.rows.unwrap_or(134217728) as usize, 0);
+        }
+    }
+
+    /// Resizes the DataStore tables so that their size matches the ones
+    /// indicated in the `Table` table.
+    pub fn resize_data_stores(&mut self) {
+        let mut index = 0;
+        while let Some(data_store) = table::DATA_STORE.get(index).and_then(|data_store| self.table.get(&data_store)) {
+            let rows = data_store.rows.unwrap_or(0) as usize;
+            if let Some(data_store) = self.data_store.get_mut(index) {
+                data_store.resize(rows, 0);
+            } else {
+                self.data_store.push(vec![0; rows]);
+            }
+            index += 1;
+        }
+    }
 }
 
 impl SecurityProvider for Locking {
@@ -124,4 +154,12 @@ impl SecurityProvider for Locking {
     fn as_any_mut(&mut self) -> &mut dyn Any {
         self
     }
+}
+
+fn empty_mbr() -> Vec<u8> {
+    Vec::default()
+}
+
+fn empty_data_stores() -> Vec<Vec<u8>> {
+    vec![Vec::default()]
 }

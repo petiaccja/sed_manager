@@ -189,6 +189,19 @@ impl core::fmt::Display for Uid {
     }
 }
 
+impl core::str::FromStr for Uid {
+    type Err = std::num::ParseIntError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.replace('_', "");
+        if let Some(digits) = s.strip_prefix("0x") {
+            u64::from_str_radix(digits, 16).map(Self::new)
+        } else {
+            u64::from_str_radix(&s, 10).map(Self::new)
+        }
+    }
+}
+
 impl core::fmt::Debug for Uid {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "Uid::{}", self)
@@ -201,7 +214,11 @@ impl serde::Serialize for Uid {
     where
         S: serde::Serializer,
     {
-        self.to_u64().serialize(serializer)
+        if serializer.is_human_readable() {
+            self.to_string().serialize(serializer)
+        } else {
+            self.to_u64().serialize(serializer)
+        }
     }
 }
 
@@ -211,7 +228,12 @@ impl<'de> serde::Deserialize<'de> for Uid {
     where
         D: serde::Deserializer<'de>,
     {
-        u64::deserialize(deserializer).map(Self::new)
+        use serde::de::Error as _;
+        if deserializer.is_human_readable() {
+            Ok(String::deserialize(deserializer)?.parse().map_err(D::Error::custom)?)
+        } else {
+            u64::deserialize(deserializer).map(Self::new)
+        }
     }
 }
 

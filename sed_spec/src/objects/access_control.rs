@@ -9,7 +9,7 @@ use crate::objects::{AccessControlRef, AceRef, LogListRef};
 use crate::types::LogSelect;
 use crate::uid_registry::core::shared::table_id;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AccessControl {
     pub common_name: String,

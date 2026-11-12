@@ -4583,12 +4583,14 @@ name = "sed_virtual_device"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "googletest",
  "heapless",
  "rand 0.10.1",
  "sed_device",
  "sed_packet",
  "sed_spec",
  "serde",
+ "serde_json",
  "sorbit",
  "tracing",
 ]

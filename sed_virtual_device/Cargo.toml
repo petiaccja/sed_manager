@@ -16,3 +16,7 @@ tracing.workspace = true
 async-trait.workspace = true
 heapless.workspace = true
 serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+googletest.workspace = true

@@ -60,10 +60,44 @@ pub type TypeRef = ObjectRef<{ table_id::TYPE.to_u64() }>;
 /// This is because the AccessControl table is not indexed by UIDs, it's indexed
 /// by a pair of InvokingIDs and MethodIDs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AccessControlRef {
     pub invoking_id: Uid,
     pub method_id: MethodRef,
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for AccessControlRef {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            format!("{}.{}", self.invoking_id, self.method_id).serialize(serializer)
+        } else {
+            (self.invoking_id, self.method_id).serialize(serializer)
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for AccessControlRef {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error as _;
+        if deserializer.is_human_readable() {
+            const INVALID_FORMAT: &str = "access control references must be in the format `<invoking_id>.<method_id>`";
+            let s = String::deserialize(deserializer)?;
+            let (invoking_id_s, method_id_s) = s.split_once('.').ok_or(D::Error::custom(INVALID_FORMAT))?;
+            let invoking_id = invoking_id_s.parse().map_err(D::Error::custom)?;
+            let method_id: Uid = method_id_s.parse().map_err(D::Error::custom)?;
+            let method_id = MethodRef::try_from(method_id).map_err(D::Error::custom)?;
+            Ok(Self { invoking_id, method_id })
+        } else {
+            <(_, _)>::deserialize(deserializer).map(|(invoking_id, method_id)| Self { invoking_id, method_id })
+        }
+    }
 }
 
 /// A reference to any object that contains a credential.
