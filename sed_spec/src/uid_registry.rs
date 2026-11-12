@@ -124,9 +124,9 @@ mod tests {
 
     #[rstest]
     #[case("Admin1".to_owned(), Some(self::opal_2::admin::authority::ADMIN.get(0).unwrap().to_uid()))]
-    #[case("Admin256".to_owned(), Some(self::opal_2::admin::authority::ADMIN.get(255).unwrap().to_uid()))]
+    #[case("Admin255".to_owned(), Some(self::opal_2::admin::authority::ADMIN.get(254).unwrap().to_uid()))]
     #[case("Admin0".to_owned(), None)]
-    #[case("Admin257".to_owned(), None)]
+    #[case("Admin256".to_owned(), None)]
     #[case("AdminX".to_owned(), None)]
     #[case("Admin".to_owned(), None)]
     fn lookup_object_table_range(#[case] name: String, #[case] uid: Option<Uid>) {

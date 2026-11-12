@@ -20,6 +20,9 @@
                 "Reserve2": "0000000900000207",
                 "Reserve3": "0000000900000208"
             },
+            "ClockTime": {
+                "Clock": "0000040100000001"
+            },
             "General": {
                 "Null": "0000000000000000",
                 "CharSetUnrestricted": "0000000B00000001"
@@ -30,6 +33,9 @@
             },
             "LockingInfo": {
                 "LockingInfo": "0000080100000001"
+            },
+            "LogList": {
+                "Log": "00000A0200000001"
             },
             "MBRControl": {
                 "MBRControl": "0000080300000001"
@@ -54,7 +60,7 @@
                 "GetFreeSpace": "0000000600000009",
                 "GetFreeRows": "000000060000000A",
                 "DeleteMethod": "000000060000000B",
-                "OBSOLETE": "000000060000000C",
+                "OBSOLETE_000C": "000000060000000C",
                 "GetACL": "000000060000000D",
                 "AddACE": "000000060000000E",
                 "RemoveACE": "000000060000000F",
@@ -140,8 +146,7 @@
                 "Clock": "0000000300000003",
                 "Crypto": "0000000300000004",
                 "Log": "0000000300000005",
-                "Locking": "0000000300000006",
-                "Reserved": "0000000300000007"
+                "Locking": "0000000300000006"
             },
             "Table": {
                 "Table": "0000000100000001",
@@ -248,8 +253,7 @@
                 "Clock": "0000020400000003",
                 "Crypto": "0000020400000004",
                 "Log": "0000020400000005",
-                "Locking": "0000020400000006",
-                "Reserved": "0000020400000007"
+                "Locking": "0000020400000006"
             },
             "TPerInfo": {
                 "TPerInfo": "0000020100000001"
@@ -316,7 +320,7 @@
             },
             "SP": {
                 "Admin": "0000020500000001",
-                "Locking": "0000020500000002"
+                "Locking": "0000020500010001"
             }
         },
         "Locking": {
@@ -372,7 +376,7 @@
                 "GlobalRange": "0000080200000001",
                 "Band{n}": {
                     "start": "0000080200000002",
-                    "count": 2048,
+                    "count": 1023,
                     "display_start": 1
                 }
             },
@@ -380,7 +384,7 @@
                 "GlobalRange_Key": "0000080500000001",
                 "Band{n}_Key": {
                     "start": "0000080500000002",
-                    "count": 2048,
+                    "count": 1023,
                     "display_start": 1
                 }
             },
@@ -388,7 +392,7 @@
                 "GlobalRange_Key": "0000080600000001",
                 "Band{n}_Key": {
                     "start": "0000080600000002",
-                    "count": 2048,
+                    "count": 1023,
                     "display_start": 1
                 }
             }
@@ -396,6 +400,12 @@
     },
     "KPIO": {
         "Admin": {
+            "TableID": {
+                "DataRemovalMechanism": "0000110100000000"
+            },
+            "Table": {
+                "DataRemovalMechanism": "0000000100001101"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -415,7 +425,7 @@
                 "SID": "0000000900000006",
                 "Admin{n}": {
                     "start": "0000000900000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
@@ -424,21 +434,35 @@
                 "MSID": "0000000B00008402",
                 "Admin{n}": {
                     "start": "0000000B00000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
             "SP": {
                 "Admin": "0000020500000001",
                 "KeyPerIO": "0000020500000003"
+            },
+            "TPerInfo": {
+                "TPerInfo": "0000020100030001"
+            },
+            "DataRemovalMechanism": {
+                "DataRemovalMechanism": "0000110100000001"
             }
         },
         "KeyPerIO": {
             "TableID": {
-                "DataStore": "0000100100000000"
+                "DataStore": "0000100100000000",
+                "KeyTagAllocation": "0000120100000000",
+                "KeyEncryptionKey": "0000120200000000",
+                "KPIOPolicies": "0000120300000000",
+                "KeyPerIOPublicKeyCertificateData": "0000120400000000"
             },
             "Table": {
-                "DataStore": "0000000100001001"
+                "DataStore": "0000000100001001",
+                "KeyTagAllocation": "0000000100001201",
+                "KeyEncryptionKey": "0000000100001202",
+                "KPIOPolicies": "0000000100001203",
+                "KeyPerIOPublicKeyCertificateData": "0000000100001204"
             },
             "ACE": {
                 "Anybody": "0000000800000001",
@@ -475,6 +499,28 @@
                     "count": 2048,
                     "display_start": 1
                 }
+            },
+            "Certificates": {
+                "Certificate1": "0000000A00000001"
+            },
+            "KeyTagAllocation": {
+                "KeyTagAllocation{n}": {
+                    "start": "0000120100000001",
+                    "count": 65535,
+                    "display_start": 1
+                }
+            },
+            "KeyEncryptionKey": {
+                "NULLKeyEncryptionKey": "0000120200000001",
+                "PKIPublicKeyEncryptionKey": "0000120200000002",
+                "KeyEncryptionKey{n}": {
+                    "start": "0000120200010001",
+                    "count": 65535,
+                    "display_start": 1
+                }
+            },
+            "KPIOPolicies": {
+                "KPIOPolicies": "0000120300000001"
             }
         }
     },
@@ -500,6 +546,9 @@
             "SP": {
                 "Admin": "0000020500000001",
                 "Locking": "0000020500000002"
+            },
+            "TPerInfo": {
+                "TPerInfo": "0000020100030001"
             }
         },
         "Locking": {
@@ -558,6 +607,12 @@
     },
     "Opal_2": {
         "Admin": {
+            "TableID": {
+                "DataRemovalMechanism": "0000110100000000"
+            },
+            "Table": {
+                "DataRemovalMechanism": "0000000100001101"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -577,7 +632,7 @@
                 "SID": "0000000900000006",
                 "Admin{n}": {
                     "start": "0000000900000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
@@ -586,13 +641,19 @@
                 "MSID": "0000000B00008402",
                 "Admin{n}": {
                     "start": "0000000B00000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
             "SP": {
                 "Admin": "0000020500000001",
                 "Locking": "0000020500000002"
+            },
+            "TPerInfo": {
+                "TPerInfo": "0000020100030001"
+            },
+            "DataRemovalMechanism": {
+                "DataRemovalMechanism": "0000110100000001"
             }
         },
         "Locking": {
@@ -613,45 +674,45 @@
                 "Authority_Set_Enabled": "0000000800039001",
                 "User{n}_Set_CommonName": {
                     "start": "0000000800044001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "C_PIN_Admins_Get_All_NOPIN": "000000080003A000",
                 "C_PIN_Admins_Set_PIN": "000000080003A001",
                 "C_PIN_User{n}_Set_PIN": {
                     "start": "000000080003A801",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "K_AES_Mode": "000000080003BFFF",
                 "K_AES_128_GlobalRange_GenKey": "000000080003B000",
                 "K_AES_128_Range{n}_GenKey": {
                     "start": "000000080003B001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "K_AES_256_GlobalRange_GenKey": "000000080003B800",
                 "K_AES_256_Range{n}_GenKey": {
                     "start": "000000080003B801",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlobalRange_Get_RangeStartToActiveKey": "000000080003D000",
                 "Locking_Range{n}_Get_RangeStartToActiveKey": {
                     "start": "000000080003D001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlobalRange_Set_RdLocked": "000000080003E000",
                 "Locking_Range{n}_Set_RdLocked": {
                     "start": "000000080003E001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlobalRange_Set_WrLocked": "000000080003E800",
                 "Locking_Range{n}_Set_WrLocked": {
                     "start": "000000080003E801",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlblRng_Admins_Set": "000000080003F000",
@@ -672,7 +733,7 @@
                 "Users": "0000000900030000",
                 "User{n}": {
                     "start": "0000000900030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -684,7 +745,7 @@
                 },
                 "User{n}": {
                     "start": "0000000B00030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -692,7 +753,7 @@
                 "GlobalRange": "0000080200000001",
                 "Range{n}": {
                     "start": "0000080200030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -700,7 +761,7 @@
                 "GlobalRange_Key": "0000080500000001",
                 "Range{n}_Key": {
                     "start": "0000080500030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -708,7 +769,7 @@
                 "GlobalRange_Key": "0000080600000001",
                 "Range{n}_Key": {
                     "start": "0000080600030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             }
@@ -735,6 +796,12 @@
     },
     "Pyrite_2": {
         "Admin": {
+            "TableID": {
+                "DataRemovalMechanism": "0000110100000000"
+            },
+            "Table": {
+                "DataRemovalMechanism": "0000000100001101"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -753,7 +820,7 @@
                 "SID": "0000000900000006",
                 "Admin{n}": {
                     "start": "0000000900000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
@@ -762,13 +829,19 @@
                 "MSID": "0000000B00008402",
                 "Admin{n}": {
                     "start": "0000000B00000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
             "SP": {
                 "Admin": "0000020500000001",
                 "Locking": "0000020500000002"
+            },
+            "TPerInfo": {
+                "TPerInfo": "0000020100030001"
+            },
+            "DataRemovalMechanism": {
+                "DataRemovalMechanism": "0000110100000001"
             }
         },
         "Locking": {
@@ -844,7 +917,7 @@
                 "SID": "0000000900000006",
                 "Admin{n}": {
                     "start": "0000000900000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
@@ -853,13 +926,16 @@
                 "MSID": "0000000B00008402",
                 "Admin{n}": {
                     "start": "0000000B00000201",
-                    "count": 256,
+                    "count": 255,
                     "display_start": 1
                 }
             },
             "SP": {
                 "Admin": "0000020500000001",
                 "Locking": "0000020500000002"
+            },
+            "TPerInfo": {
+                "TPerInfo": "0000020100030001"
             }
         },
         "Locking": {
@@ -880,45 +956,45 @@
                 "Authority_Set_Enabled": "0000000800039001",
                 "User{n}_Set_CommonName": {
                     "start": "0000000800044001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "C_PIN_Admins_Get_All_NOPIN": "000000080003A000",
                 "C_PIN_Admins_Set_PIN": "000000080003A001",
                 "C_PIN_User{n}_Set_PIN": {
                     "start": "000000080003A801",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "K_AES_Mode": "000000080003BFFF",
                 "K_AES_128_GlobalRange_GenKey": "000000080003B000",
                 "K_AES_128_Range{n}_GenKey": {
                     "start": "000000080003B001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "K_AES_256_GlobalRange_GenKey": "000000080003B800",
                 "K_AES_256_Range{n}_GenKey": {
                     "start": "000000080003B801",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlobalRange_Get_RangeStartToActiveKey": "000000080003D000",
                 "Locking_Range{n}_Get_RangeStartToActiveKey": {
                     "start": "000000080003D001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlobalRange_Set_RdLocked": "000000080003E000",
                 "Locking_Range{n}_Set_RdLocked": {
                     "start": "000000080003E001",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlobalRange_Set_WrLocked": "000000080003E800",
                 "Locking_Range{n}_Set_WrLocked": {
                     "start": "000000080003E801",
-                    "count": 256,
+                    "count": 2046,
                     "display_start": 1
                 },
                 "Locking_GlblRng_Admins_Set": "000000080003F000",
@@ -939,7 +1015,7 @@
                 "Users": "0000000900030000",
                 "User{n}": {
                     "start": "0000000900030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -951,7 +1027,7 @@
                 },
                 "User{n}": {
                     "start": "0000000B00030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -959,7 +1035,7 @@
                 "GlobalRange": "0000080200000001",
                 "Range{n}": {
                     "start": "0000080200030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -967,7 +1043,7 @@
                 "GlobalRange_Key": "0000080500000001",
                 "Range{n}_Key": {
                     "start": "0000080500030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             },
@@ -975,7 +1051,7 @@
                 "GlobalRange_Key": "0000080600000001",
                 "Range{n}_Key": {
                     "start": "0000080600030001",
-                    "count": 2048,
+                    "count": 2046,
                     "display_start": 1
                 }
             }
