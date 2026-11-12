@@ -32,7 +32,9 @@ const INVOKING_ID_TABLE: &str = "InvokingID";
 const SM_METHOD_ID_TABLE: &str = "SMMethodID";
 
 /// The security provider whose tables are shared among all SPs, and which has no UID.
-const SHARED_SECURITY_PROVIDER: &str = "Shared";
+pub const SHARED_SECURITY_PROVIDER: &str = "Shared";
+/// The name of the feature that defines the tables shared by all SSCs.
+pub const CORE_FEATURE: &str = "Core";
 /// The security provider and table that list the UIDs of the SPs within a feature.
 const SP_TABLE: (&str, &str) = ("Admin", "SP");
 
@@ -193,17 +195,24 @@ impl SecurityProvider {
         name: String,
         uid: Option<u64>,
         source: schema_ast::SecurityProvider,
-        table_ids: &TableIdTable,
+        core_table_id: &TableIdTable,
     ) -> Result<Self, SemanticError> {
         let schema_ast::SecurityProvider { table_id, general, invoking_id, sm_method_id, tables } = source;
+
+        let single_table_id = table_id.as_ref().map(single_uids).unwrap_or_default();
+        let table_uid_by_name = |name: &str| {
+            single_table_id
+                .get(name)
+                .or(core_table_id.get(name))
+                .cloned()
+                .ok_or_else(|| SemanticError::UnknownTable(name.to_owned()))
+        };
 
         let special_tables = [
             (GENERAL_TABLE, general),
             (INVOKING_ID_TABLE, invoking_id),
             (SM_METHOD_ID_TABLE, sm_method_id),
         ];
-        let table_uid =
-            |name: &str| table_ids.get(name).copied().ok_or_else(|| SemanticError::UnknownTable(name.to_owned()));
 
         Ok(Self {
             name,
@@ -214,12 +223,14 @@ impl SecurityProvider {
             special_tables: special_tables
                 .into_iter()
                 .filter_map(|(name, table)| Some((name, table?)))
-                .map(|(name, table)| Table::try_from(name.to_owned(), Some(table_uid(name)?), table, OBJECT_STEP_UNIT))
+                .map(|(name, table)| {
+                    Table::try_from(name.to_owned(), Some(table_uid_by_name(name)?), table, OBJECT_STEP_UNIT)
+                })
                 .collect::<Result<_, _>>()?,
             object_tables: tables
                 .into_iter()
                 .map(|(name, table)| {
-                    let uid = table_uid(&name)?;
+                    let uid = table_uid_by_name(&name)?;
                     Table::try_from(name, Some(uid), table, OBJECT_STEP_UNIT)
                 })
                 .collect::<Result<_, _>>()?,
@@ -236,7 +247,7 @@ impl Feature {
     pub fn try_from(
         name: String,
         source: schema_ast::Feature,
-        table_ids: &TableIdTable,
+        core_table_id: &TableIdTable,
     ) -> Result<Self, SemanticError> {
         let sp_uids = source
             .security_providers
@@ -257,7 +268,7 @@ impl Feature {
                     })?;
                     Some(*uid)
                 };
-                SecurityProvider::try_from(sp_name, uid, security_provider, table_ids)
+                SecurityProvider::try_from(sp_name, uid, security_provider, core_table_id)
             })
             .collect::<Result<_, _>>()?;
         Ok(Self { name, security_providers })
@@ -270,18 +281,18 @@ pub struct UidRegistry {
 
 impl UidRegistry {
     pub fn try_from(source: schema_ast::UidRegistry) -> Result<Self, SemanticError> {
-        let table_ids: TableIdTable = source
+        let core_table_id: TableIdTable = source
             .features
-            .values()
-            .flat_map(|feature| feature.security_providers.values())
-            .filter_map(|security_provider| security_provider.table_id.as_ref())
-            .flat_map(single_uids)
-            .collect();
+            .get(CORE_FEATURE)
+            .and_then(|feature| feature.security_providers.get(SHARED_SECURITY_PROVIDER))
+            .and_then(|security_provider| security_provider.table_id.as_ref())
+            .map(single_uids)
+            .unwrap_or_default();
         Ok(Self {
             features: source
                 .features
                 .into_iter()
-                .map(|(name, feature)| Feature::try_from(name, feature, &table_ids))
+                .map(|(name, feature)| Feature::try_from(name, feature, &core_table_id))
                 .collect::<Result<_, _>>()?,
         })
     }
@@ -422,7 +433,7 @@ mod tests {
 
     #[test]
     fn unknown_security_provider() {
-        let json = r#"{ "F": {
+        let json = r#"{ "Core": {
             "Shared": { "TableID": { "SP": "0000020500000000" } },
             "Admin": { "SP": { "Admin": "0000020500000001" } },
             "Unlisted": {}
@@ -430,9 +441,38 @@ mod tests {
         assert_that!(
             convert(json),
             some(matches_pattern!(SemanticError::UnknownSecurityProvider {
-                feature: eq("F"),
+                feature: eq("Core"),
                 security_provider: eq("Unlisted"),
             }))
         );
+    }
+
+    #[test]
+    fn table_id_of_own_security_provider() {
+        // Both SPs define a table with the same name but a different UID.
+        let json = r#"{
+            "Core": { "Shared": { "TableID": { "SP": "0000020500000000" } } },
+            "F": {
+                "Admin": { "SP": { "Admin": "0000020500000001", "Locking": "0000020500000002" } },
+                "Locking": { "TableID": { "Own": "0000100100000000" }, "Own": {} }
+            },
+            "G": {
+                "Admin": { "SP": { "Admin": "0000020500000001", "Locking": "0000020500000002" } },
+                "Locking": { "TableID": { "Own": "0000800100000000" }, "Own": {} }
+            }
+        }"#;
+        assert_that!(convert(json), none());
+    }
+
+    #[test]
+    fn table_id_of_other_security_provider() {
+        let json = r#"{
+            "Core": { "Shared": { "TableID": { "SP": "0000020500000000" } } },
+            "F": {
+                "Admin": { "SP": { "Admin": "0000020500000001", "Locking": "0000020500000002" }, "Own": {} },
+                "Locking": { "TableID": { "Own": "0000100100000000" } }
+            }
+        }"#;
+        assert_that!(convert(json), some(matches_pattern!(SemanticError::UnknownTable(eq("Own")))));
     }
 }

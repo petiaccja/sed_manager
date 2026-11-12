@@ -137,9 +137,11 @@ mod tests {
     }
 
     #[rstest]
-    #[case("DataStore5_Get_All".to_owned(), Some(self::data_store::locking::ace::DATA_STORE_GET_ALL.get(5).unwrap().to_uid()))]
-    #[case("DataStore5_Set_All".to_owned(), Some(self::data_store::locking::ace::DATA_STORE_SET_ALL.get(5).unwrap().to_uid()))]
-    #[case("DataStore2048_Get_All".to_owned(), None)]
+    #[case("DataStore2_Get_All".to_owned(), Some(self::data_store::locking::ace::DATA_STORE_GET_ALL.get(0).unwrap().to_uid()))]
+    #[case("DataStore5_Set_All".to_owned(), Some(self::data_store::locking::ace::DATA_STORE_SET_ALL.get(3).unwrap().to_uid()))]
+    #[case("DataStore128_Get_All".to_owned(), Some(self::data_store::locking::ace::DATA_STORE_GET_ALL.get(126).unwrap().to_uid()))]
+    #[case("DataStore129_Get_All".to_owned(), None)]
+    #[case("DataStore1_Get_All".to_owned(), None)]
     #[case("DataStore5_Set_All_Extra".to_owned(), None)]
     #[case("DataStore_Get_All".to_owned(), None)]
     fn lookup_object_table_multiple_ranges(#[case] name: String, #[case] uid: Option<Uid>) {
@@ -150,13 +152,42 @@ mod tests {
     }
 
     #[rstest]
-    #[case("DataStore0".to_owned(), Some(self::core::shared::table_id::DATA_STORE.get(0).unwrap()))]
-    #[case("DataStore255".to_owned(), Some(self::core::shared::table_id::DATA_STORE.get(255).unwrap()))]
-    #[case("DataStore256".to_owned(), None)]
+    #[case("DataStore2".to_owned(), Some(self::data_store::locking::table_id::DATA_STORE.get(0).unwrap()))]
+    #[case("DataStore128".to_owned(), Some(self::data_store::locking::table_id::DATA_STORE.get(126).unwrap()))]
+    #[case("DataStore129".to_owned(), None)]
+    #[case("DataStore1".to_owned(), None)]
+    #[case("DataStore".to_owned(), None)]
     fn lookup_table_id_range(#[case] name: String, #[case] uid: Option<TableRef>) {
-        assert_eq!(self::core::shared::table_id::LOOKUP.by_name(&name), uid);
+        assert_eq!(self::data_store::locking::table_id::LOOKUP.by_name(&name), uid);
         if let Some(uid) = uid {
-            assert_eq!(self::core::shared::table_id::LOOKUP.by_uid(uid), Some(name));
+            assert_eq!(self::data_store::locking::table_id::LOOKUP.by_uid(uid), Some(name));
         }
+    }
+
+    #[rstest]
+    #[case::own_table(&self::opal_2::locking::LOOKUP, "DataStore", Some(self::opal_2::locking::table_id::DATA_STORE))]
+    #[case::own_range(&self::data_store::locking::LOOKUP, "DataStore7", Some(self::data_store::locking::table_id::DATA_STORE.get(5).unwrap()))]
+    #[case::core_table(&self::opal_2::locking::LOOKUP, "Locking", Some(self::core::shared::table_id::LOCKING))]
+    #[case::other_sp(&self::opal_2::admin::LOOKUP, "DataStore", None)]
+    #[case::differs_by_ssc(&self::enterprise::locking::LOOKUP, "DataStore", Some(self::enterprise::locking::table_id::DATA_STORE))]
+    fn lookup_security_provider_table_id(
+        #[case] lookup: &SecurityProviderLookup,
+        #[case] name: impl AsRef<str>,
+        #[case] uid: Option<TableRef>,
+    ) {
+        assert_eq!(lookup.table_id_by_name(name.as_ref()), uid);
+    }
+
+    #[rstest]
+    #[case::ssc(&self::opal_2::LOOKUP, "Locking::Table::DataStore", Some(self::opal_2::locking::table::DATA_STORE.to_uid()))]
+    #[case::feature(&self::data_store::LOOKUP, "Locking::Table::DataStore2", Some(self::data_store::locking::table::DATA_STORE.get(0).unwrap().to_uid()))]
+    #[case::enterprise(&self::enterprise::LOOKUP, "Locking::Table::DataStore", Some(self::enterprise::locking::table::DATA_STORE.to_uid()))]
+    #[case::not_in_core(&self::core::LOOKUP, "Table::DataStore", None)]
+    fn lookup_data_store_table(
+        #[case] lookup: &FeatureLookup,
+        #[case] path: impl AsRef<Path>,
+        #[case] uid: Option<Uid>,
+    ) {
+        assert_eq!(lookup.by_path(path), uid);
     }
 }

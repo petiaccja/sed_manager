@@ -7,7 +7,9 @@ pub mod core {
     use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap, SpRef};
     pub mod shared {
         use ::sed_packet::TableRef;
-        use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
+        use crate::lookup::{
+            TableLookup, TableIdLookup, SecurityProviderLookup, SortedMap,
+        };
         pub mod table_id {
             use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
             use crate::lookup::{
@@ -79,9 +81,13 @@ pub mod core {
         const TABLE_LOOKUPS: [(TableRef, &dyn TableLookup); 1usize] = [
             (invoking_id::THIS_TABLE, &invoking_id::LOOKUP),
         ];
+        const TABLE_ID_LOOKUPS: [&TableIdLookup; 2usize] = [
+            &table_id::LOOKUP,
+            &super::super::core::shared::table_id::LOOKUP,
+        ];
         pub const LOOKUP: SecurityProviderLookup<'static> = SecurityProviderLookup {
             name: "Shared",
-            table_ids: &super::super::core::shared::table_id::LOOKUP,
+            table_id_lookups: &TABLE_ID_LOOKUPS,
             table_lookups: SortedMap { items: &TABLE_LOOKUPS },
         };
     }
@@ -96,7 +102,9 @@ pub mod feature_x {
     use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap, SpRef};
     pub mod admin {
         use ::sed_packet::TableRef;
-        use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
+        use crate::lookup::{
+            TableLookup, TableIdLookup, SecurityProviderLookup, SortedMap,
+        };
         pub mod sp {
             use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
             use crate::lookup::{
@@ -133,15 +141,20 @@ pub mod feature_x {
         const TABLE_LOOKUPS: [(TableRef, &dyn TableLookup); 1usize] = [
             (sp::THIS_TABLE, &sp::LOOKUP),
         ];
+        const TABLE_ID_LOOKUPS: [&TableIdLookup; 1usize] = [
+            &super::super::core::shared::table_id::LOOKUP,
+        ];
         pub const LOOKUP: SecurityProviderLookup<'static> = SecurityProviderLookup {
             name: "Admin",
-            table_ids: &super::super::core::shared::table_id::LOOKUP,
+            table_id_lookups: &TABLE_ID_LOOKUPS,
             table_lookups: SortedMap { items: &TABLE_LOOKUPS },
         };
     }
     pub mod spy {
         use ::sed_packet::TableRef;
-        use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
+        use crate::lookup::{
+            TableLookup, TableIdLookup, SecurityProviderLookup, SortedMap,
+        };
         pub mod table_w {
             use ::sed_packet::{ObjectRef, TableRef, Uid, UidRange};
             use crate::lookup::{
@@ -233,9 +246,12 @@ pub mod feature_x {
             (table_z::THIS_TABLE, &table_z::LOOKUP),
             (table_w::THIS_TABLE, &table_w::LOOKUP),
         ];
+        const TABLE_ID_LOOKUPS: [&TableIdLookup; 1usize] = [
+            &super::super::core::shared::table_id::LOOKUP,
+        ];
         pub const LOOKUP: SecurityProviderLookup<'static> = SecurityProviderLookup {
             name: "SPY",
-            table_ids: &super::super::core::shared::table_id::LOOKUP,
+            table_id_lookups: &TABLE_ID_LOOKUPS,
             table_lookups: SortedMap { items: &TABLE_LOOKUPS },
         };
     }

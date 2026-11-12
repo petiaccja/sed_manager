@@ -61,7 +61,7 @@ impl Tper {
         tper.ssc = ssc;
         if let Some(locking) = tper.locking.as_mut() {
             locking.resize_mbr();
-            locking.resize_data_stores();
+            locking.resize_data_store();
         }
         tper
     }
@@ -103,7 +103,7 @@ impl Tper {
     pub fn resize_byte_tables(&mut self) {
         if let Some(locking) = &mut self.locking {
             locking.resize_mbr();
-            locking.resize_data_stores();
+            locking.resize_data_store();
         }
     }
 
@@ -288,10 +288,10 @@ mod tests {
     fn read_opal_2_preconfig() {
         let mut expected = Tper::default();
         expected.locking.as_mut().unwrap().mbr.clear();
-        expected.locking.as_mut().unwrap().data_store = vec![vec![]];
+        expected.locking.as_mut().unwrap().data_store = None;
         let mut loaded = Tper::from_preconfig(Ssc::OpalV2);
         loaded.locking.as_mut().unwrap().mbr.clear();
-        loaded.locking.as_mut().unwrap().data_store = vec![vec![]];
+        loaded.locking.as_mut().unwrap().data_store = None;
         expect_tper_eq(&loaded, &expected);
     }
 

@@ -189,13 +189,7 @@
                 "MBRControl": "0000000100000803",
                 "MBR": "0000000100000804",
                 "K_AES_128": "0000000100000805",
-                "K_AES_256": "0000000100000806",
-                "DataStore{n}": {
-                    "start": "0000000100001001",
-                    "count": 256,
-                    "step": 2,
-                    "display_start": 0
-                }
+                "K_AES_256": "0000000100000806"
             },
             "TableID": {
                 "General": "FFFFFFFD00000000",
@@ -246,13 +240,7 @@
                 "MBRControl": "0000080300000000",
                 "MBR": "0000080400000000",
                 "K_AES_128": "0000080500000000",
-                "K_AES_256": "0000080600000000",
-                "DataStore{n}": {
-                    "start": "0000100100000000",
-                    "count": 256,
-                    "step": 2,
-                    "display_start": 0
-                }
+                "K_AES_256": "0000080600000000"
             },
             "Template": {
                 "Base": "0000020400000001",
@@ -276,18 +264,32 @@
             }
         },
         "Locking": {
+            "TableID": {
+                "DataStore{n}": {
+                    "start": "0000100200000000",
+                    "count": 127,
+                    "display_start": 2
+                }
+            },
+            "Table": {
+                "DataStore{n}": {
+                    "start": "0000000100001002",
+                    "count": 127,
+                    "display_start": 2
+                }
+            },
             "ACE": {
                 "DataStore{n}_Get_All": {
-                    "start": "000000080003FC00",
-                    "count": 2048,
+                    "start": "000000080003FC02",
+                    "count": 127,
                     "step": 2,
-                    "display_start": 0
+                    "display_start": 2
                 },
                 "DataStore{n}_Set_All": {
-                    "start": "000000080003FC01",
-                    "count": 2048,
+                    "start": "000000080003FC03",
+                    "count": 127,
                     "step": 2,
-                    "display_start": 0
+                    "display_start": 2
                 }
             }
         }
@@ -318,6 +320,12 @@
             }
         },
         "Locking": {
+            "TableID": {
+                "DataStore": "0000800100000000"
+            },
+            "Table": {
+                "DataStore": "0000000100008001"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "BandMaster{n}": {
@@ -426,6 +434,12 @@
             }
         },
         "KeyPerIO": {
+            "TableID": {
+                "DataStore": "0000100100000000"
+            },
+            "Table": {
+                "DataStore": "0000000100001001"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -489,6 +503,12 @@
             }
         },
         "Locking": {
+            "TableID": {
+                "DataStore": "0000100100000000"
+            },
+            "Table": {
+                "DataStore": "0000000100001001"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -576,6 +596,12 @@
             }
         },
         "Locking": {
+            "TableID": {
+                "DataStore": "0000100100000000"
+            },
+            "Table": {
+                "DataStore": "0000000100001001"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -746,6 +772,12 @@
             }
         },
         "Locking": {
+            "TableID": {
+                "DataStore": "0000100100000000"
+            },
+            "Table": {
+                "DataStore": "0000000100001001"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",
@@ -831,6 +863,12 @@
             }
         },
         "Locking": {
+            "TableID": {
+                "DataStore": "0000100100000000"
+            },
+            "Table": {
+                "DataStore": "0000000100001001"
+            },
             "ACE": {
                 "Anybody": "0000000800000001",
                 "Admin": "0000000800000002",

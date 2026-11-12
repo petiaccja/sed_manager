@@ -39,7 +39,7 @@ pub fn preconfig() -> Locking {
         mbr_control: mbr_control(),
         table: table(),
         mbr: vec![0u8; MBR_SIZE as usize],
-        data_store: vec![vec![0u8; DATA_STORE_SIZE as usize]],
+        data_store: Some(vec![0u8; DATA_STORE_SIZE as usize]),
     }
 }
 

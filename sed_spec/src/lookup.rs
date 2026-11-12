@@ -131,7 +131,8 @@ where
 
 pub struct SecurityProviderLookup<'a> {
     pub name: &'a str,
-    pub table_ids: &'a TableIdLookup<'a>,
+    /// The `TableID` tables used to resolve table names, in order of precedence.
+    pub table_id_lookups: &'a [&'a TableIdLookup<'a>],
     pub table_lookups: SortedMap<'a, TableRef, &'a dyn TableLookup>,
 }
 
@@ -143,8 +144,12 @@ impl<'a> SecurityProviderLookup<'a> {
         {
             return None;
         }
-        let table_ref = self.table_ids.by_name(path.table()?)?;
+        let table_ref = self.table_id_by_name(path.table()?)?;
         self.by_path_with_table(path.object(), table_ref)
+    }
+
+    pub fn table_id_by_name(&self, name: &str) -> Option<TableRef> {
+        self.table_id_lookups.iter().find_map(|table_ids| table_ids.by_name(name))
     }
 
     pub fn by_path_with_table(&self, name: &str, table: TableRef) -> Option<Uid> {

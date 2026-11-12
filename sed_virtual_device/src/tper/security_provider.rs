@@ -64,12 +64,10 @@ pub trait SecurityProvider {
     fn mbr_mut(&mut self) -> Option<&mut Vec<u8>> {
         None
     }
-    fn data_store(&self, index: usize) -> Option<&Vec<u8>> {
-        let _ = index;
+    fn data_store(&self) -> Option<&Vec<u8>> {
         None
     }
-    fn data_store_mut(&mut self, index: usize) -> Option<&mut Vec<u8>> {
-        let _ = index;
+    fn data_store_mut(&mut self) -> Option<&mut Vec<u8>> {
         None
     }
 

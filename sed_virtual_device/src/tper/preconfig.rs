@@ -78,9 +78,10 @@ mod tests {
     #[case::ssc("$Admin::C_PIN::SID", opal_2::admin::c_pin::SID.to_uid())]
     #[case::feature_psid("$Admin::Authority::PSID", psid::admin::authority::PSID.to_uid())]
     #[case::feature_data_store(
-        "$Locking::ACE::DataStore1_Get_All",
-        data_store::locking::ace::DATA_STORE_GET_ALL.get(1).unwrap().to_uid()
+        "$Locking::ACE::DataStore2_Get_All",
+        data_store::locking::ace::DATA_STORE_GET_ALL.get(0).unwrap().to_uid()
     )]
+    #[case::ssc_table("$Locking::Table::DataStore", opal_2::locking::table::DATA_STORE.to_uid())]
     #[case::core("$Authority::Anybody", uid_registry::core::shared::authority::ANYBODY.to_uid())]
     fn resolve_string_value(#[case] path: &str, #[case] uid: Uid) {
         let resolved = resolve_paths(json!(path), Ssc::OpalV2).unwrap();

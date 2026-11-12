@@ -10,7 +10,7 @@ use sed_spec::{
         AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl, SecurityProviderRef,
         TableDesc,
     },
-    uid_registry::core::shared::table,
+    uid_registry::{core::shared::table, enterprise, opal_2},
 };
 
 use crate::tper::security_provider::{SecurityProvider, Table};
@@ -27,33 +27,34 @@ pub struct Locking {
     pub locking_info_ext: Table<LockingInfoExt>,
     pub mbr_control: Table<MbrControl>,
     pub table: Table<TableDesc>,
-    #[serde(skip_serializing, default = "empty_mbr")]
+    #[serde(skip_serializing, default = "empty_byte_table")]
     pub mbr: Vec<u8>,
-    #[serde(skip_serializing, default = "empty_data_stores")]
-    pub data_store: Vec<Vec<u8>>,
+    #[serde(skip_serializing)]
+    pub data_store: Option<Vec<u8>>,
 }
 
 impl Locking {
     /// Resizes the MBR table so that its size matches the one indicated
     /// in the `Table` table.
     pub fn resize_mbr(&mut self) {
-        if let Some(mbr) = self.table.get(&table::MBR) {
-            self.mbr.resize(mbr.rows.unwrap_or(134217728) as usize, 0);
+        if let Some(desc) = self.table.get(&table::MBR) {
+            self.mbr.resize(desc.rows.unwrap_or(128 * 1048576) as usize, 0);
         }
     }
 
-    /// Resizes the DataStore tables so that their size matches the ones
-    /// indicated in the `Table` table.
-    pub fn resize_data_stores(&mut self) {
-        let mut index = 0;
-        while let Some(data_store) = table::DATA_STORE.get(index).and_then(|data_store| self.table.get(&data_store)) {
-            let rows = data_store.rows.unwrap_or(0) as usize;
-            if let Some(data_store) = self.data_store.get_mut(index) {
-                data_store.resize(rows, 0);
+    /// Resizes the DataStore table so that its size matches the one indicated
+    /// in the `Table` table.
+    pub fn resize_data_store(&mut self) {
+        if let Some(desc) = self
+            .table
+            .get(&opal_2::locking::table::DATA_STORE)
+            .or(self.table.get(&enterprise::locking::table::DATA_STORE))
+        {
+            if let Some(data_store) = &mut self.data_store {
+                data_store.resize(desc.rows.unwrap_or(10 * 1048576) as usize, 0);
             } else {
-                self.data_store.push(vec![0; rows]);
+                self.data_store = Some(vec![0; 10 * 1048576])
             }
-            index += 1;
         }
     }
 }
@@ -139,12 +140,12 @@ impl SecurityProvider for Locking {
         Some(&mut self.mbr)
     }
 
-    fn data_store(&self, index: usize) -> Option<&Vec<u8>> {
-        self.data_store.get(index)
+    fn data_store(&self) -> Option<&Vec<u8>> {
+        self.data_store.as_ref()
     }
 
-    fn data_store_mut(&mut self, index: usize) -> Option<&mut Vec<u8>> {
-        self.data_store.get_mut(index)
+    fn data_store_mut(&mut self) -> Option<&mut Vec<u8>> {
+        self.data_store.as_mut()
     }
 
     fn as_any(&self) -> &dyn Any {
@@ -156,10 +157,6 @@ impl SecurityProvider for Locking {
     }
 }
 
-fn empty_mbr() -> Vec<u8> {
+fn empty_byte_table() -> Vec<u8> {
     Vec::default()
-}
-
-fn empty_data_stores() -> Vec<Vec<u8>> {
-    vec![Vec::default()]
 }

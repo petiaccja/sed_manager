@@ -25,9 +25,15 @@ use sed_spec::types::LifeCycleState;
 use sed_spec::uid_registry::core::shared::authority::ANYBODY;
 use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
 use sed_spec::uid_registry::core::shared::table_id;
+use sed_spec::uid_registry::{enterprise, opal_2};
 
 use crate::internal_error::Expect;
 use crate::tper::{Locking, SecurityProvider, Table, Tper};
+
+const DATA_STORE_IDS: [TableRef; 2] = [
+    opal_2::locking::table_id::DATA_STORE,
+    enterprise::locking::table_id::DATA_STORE,
+];
 
 #[derive(Debug)]
 pub enum Session {
@@ -334,8 +340,8 @@ impl Session {
 
             let table = if table == table_id::MBR {
                 sp.mbr().ok_or(MethodStatus::InvalidParameter)
-            } else if let Some(index) = table_id::DATA_STORE.index_of(table) {
-                sp.data_store(index).ok_or(MethodStatus::InvalidParameter)
+            } else if DATA_STORE_IDS.contains(&table) {
+                sp.data_store().ok_or(MethodStatus::InvalidParameter)
             } else {
                 Err(MethodStatus::InvalidParameter)
             }?;
@@ -527,8 +533,8 @@ impl Session {
         let table_uid = TableRef::try_from(invoking_id).map_err(|_| MethodStatus::InvalidParameter)?;
         let table = if table_uid == table_id::MBR {
             sp.mbr_mut().ok_or(MethodStatus::InvalidParameter)
-        } else if let Some(index) = table_id::DATA_STORE.index_of(table_uid) {
-            sp.data_store_mut(index).ok_or(MethodStatus::InvalidParameter)
+        } else if DATA_STORE_IDS.contains(&table_uid) {
+            sp.data_store_mut().ok_or(MethodStatus::InvalidParameter)
         } else {
             Err(MethodStatus::InvalidParameter)
         }?;
