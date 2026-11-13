@@ -102,6 +102,20 @@ mod tests {
     }
 
     #[rstest]
+    #[case("TableID::ACE".to_owned(), Some(self::core::shared::table_id::ACE.into()))]
+    #[case("TableID::NoSuchTable".to_owned(), None)]
+    #[case("Locking::TableID::DataStore".to_owned(), Some(self::opal_2::locking::table_id::DATA_STORE.into()))]
+    #[case("Locking::TableID::Authority".to_owned(), Some(self::core::shared::table_id::AUTHORITY.into()))]
+    fn lookup_table_id(#[case] path: String, #[case] uid: Option<Uid>) {
+        let lookup = if path.starts_with("Locking::") {
+            self::opal_2::LOOKUP
+        } else {
+            self::core::LOOKUP
+        };
+        assert_eq!(lookup.by_path(&path), uid);
+    }
+
+    #[rstest]
     #[case("Authority::Anybody", Some(self::core::shared::authority::ANYBODY.to_uid()))]
     #[case("Shared::Authority::Anybody", Some(self::core::shared::authority::ANYBODY.to_uid()))]
     #[case("Invalid::Authority::Anybody", None)]

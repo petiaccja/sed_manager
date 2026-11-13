@@ -34,15 +34,28 @@ pub fn resolve_paths(value: Value, ssc: Ssc) -> Result<Value, NameResolutionErro
     })
 }
 
-/// Resolves the string if it's a path (i.e. starts with `$`), otherwise returns it unchanged.
+/// Resolves the string if it's a path (i.e. starts with `$`), otherwise returns
+/// it unchanged. Multi-segment paths (e.g. `"$Foo.$Bar"`) are resolved per
+/// segment.
 fn resolve_if_path(raw: String, ssc: Ssc) -> Result<String, NameResolutionError> {
-    match raw.strip_prefix('$') {
-        Some(path) => resolve(path, ssc),
-        None => Ok(raw),
+    if raw.starts_with('$') {
+        resolve_segmented_path(&raw, ssc)
+    } else {
+        Ok(raw)
     }
 }
 
-fn resolve(path: &str, ssc: Ssc) -> Result<String, NameResolutionError> {
+fn resolve_segmented_path(path: &str, ssc: Ssc) -> Result<String, NameResolutionError> {
+    path.split('.')
+        .map(|segment| match segment.strip_prefix('$') {
+            Some(path) => resolve_single_path(path, ssc),
+            None => Ok(segment.to_owned()),
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map(|segments| segments.join("."))
+}
+
+fn resolve_single_path(path: &str, ssc: Ssc) -> Result<String, NameResolutionError> {
     let ssc_lookup = match ssc {
         Ssc::Enterprise => enterprise::LOOKUP,
         Ssc::OpalV1 => opal_2::LOOKUP, // Checked and aligns with Opal 2.
@@ -86,6 +99,14 @@ mod tests {
     fn resolve_string_value(#[case] path: &str, #[case] uid: Uid) {
         let resolved = resolve_paths(json!(path), Ssc::OpalV2).unwrap();
         assert_that!(resolved, eq(&json!(uid.to_string())));
+    }
+
+    #[test]
+    fn resolve_multi_segment() {
+        let sid = opal_2::admin::c_pin::SID.to_uid().to_string();
+        let get = uid_registry::core::shared::method_id::GET.to_uid().to_string();
+        let resolved = resolve_paths(json!({ "$Admin::C_PIN::SID.$MethodID::Get": 0 }), Ssc::OpalV2).unwrap();
+        assert_that!(resolved, eq(&json!({ format!("{sid}.{get}"): 0 })));
     }
 
     #[test]

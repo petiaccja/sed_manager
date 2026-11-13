@@ -144,7 +144,13 @@ impl<'a> SecurityProviderLookup<'a> {
         {
             return None;
         }
-        let table_ref = self.table_id_by_name(path.table()?)?;
+        let table_name = path.table()?;
+        // The `TableID` lists are used for resolving table names rather than
+        // being regular tables, so they need special handling.
+        if table_name == "TableID" {
+            return self.table_id_by_name(path.object()).map(Into::into);
+        }
+        let table_ref = self.table_id_by_name(table_name)?;
         self.by_path_with_table(path.object(), table_ref)
     }
 
