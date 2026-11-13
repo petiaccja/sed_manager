@@ -3,590 +3,269 @@
     "uid": "$Admin::SP::Admin",
     "access_control": {
       "$InvokingID::ThisSP.$MethodID::Authenticate": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$InvokingID::ThisSP.$MethodID::Random": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Table.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Table.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::AccessControl.$MethodID::GetACL": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::ACE.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::ACE.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Authority.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Authority.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::Authority::Makers.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::Authority::Admin1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::Authority::Admin2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::Authority::Admin3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::Authority::Admin4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::C_PIN.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::SID.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_SID_Get_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::SID.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_SID_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin1.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_SID_Get_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin2.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_SID_Get_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin3.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_SID_Get_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin4.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_SID_Get_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::Admin4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::MSID.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_MSID_Get_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::C_PIN::PSID.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::C_PIN_Get_PSID_NoPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::SP.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::SP.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::SP::Admin.$MethodID::Revert": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::SP_SID",
           "$Admin::ACE::Admin",
           "$Admin::ACE::SP_PSID"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Admin::SP::Locking.$MethodID::Revert": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::SP_SID",
           "$Admin::ACE::Admin"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::SP.$MethodID::Activate": {
-        "common_name": "",
         "acl": [
           "$Admin::ACE::SP_SID"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Admin::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       }
     },
     "ace": {
       "$Admin::ACE::Anybody": {
         "uid": "$Admin::ACE::Anybody",
         "name": "ACE_Anybody",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::Anybody"
@@ -617,7 +296,6 @@
       "$Admin::ACE::Admin": {
         "uid": "$Admin::ACE::Admin",
         "name": "ACE_Admin",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::Admins"
@@ -648,7 +326,6 @@
       "$Admin::ACE::C_PIN_SID_Get_NOPIN": {
         "uid": "$Admin::ACE::C_PIN_SID_Get_NOPIN",
         "name": "ACE_C_PIN_SID_Get_NOPIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::Admins"
@@ -671,7 +348,6 @@
       "$Admin::ACE::C_PIN_SID_Set_PIN": {
         "uid": "$Admin::ACE::C_PIN_SID_Set_PIN",
         "name": "ACE_C_PIN_SID_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::SID"
@@ -684,7 +360,6 @@
       "$Admin::ACE::C_PIN_MSID_Get_PIN": {
         "uid": "$Admin::ACE::C_PIN_MSID_Get_PIN",
         "name": "ACE_C_PIN_MSID_Get_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::Anybody"
@@ -698,7 +373,6 @@
       "$Admin::ACE::SP_PSID": {
         "uid": "$Admin::ACE::SP_PSID",
         "name": "ACE_SP_PSID",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::PSID"
@@ -718,7 +392,6 @@
       "$Admin::ACE::C_PIN_Get_PSID_NoPIN": {
         "uid": "$Admin::ACE::C_PIN_Get_PSID_NoPIN",
         "name": "ACE_C_PIN_Get_PSID_NoPIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::Anybody"
@@ -735,7 +408,6 @@
       "$Admin::ACE::Set_Enabled": {
         "uid": "$Admin::ACE::Set_Enabled",
         "name": "ACE_Set_Enabled",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::SID"
@@ -748,7 +420,6 @@
       "$Admin::ACE::SP_SID": {
         "uid": "$Admin::ACE::SP_SID",
         "name": "ACE_SP_SID",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::SID"
@@ -768,7 +439,6 @@
       "$Admin::ACE::C_PIN_Admins_Set_PIN": {
         "uid": "$Admin::ACE::C_PIN_Admins_Set_PIN",
         "name": "ACE_C_PIN_Admins_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Admin::Authority::Admins"
@@ -789,7 +459,6 @@
       "$Admin::Authority::Anybody": {
         "uid": "$Admin::Authority::Anybody",
         "name": "Anybody",
-        "common_name": null,
         "is_class": false,
         "class": "$General::Null",
         "enabled": true,
@@ -799,18 +468,11 @@
         "operation": "None",
         "credential": "$General::Null",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::Admins": {
         "uid": "$Admin::Authority::Admins",
         "name": "Admins",
-        "common_name": null,
         "is_class": true,
         "class": "$General::Null",
         "enabled": true,
@@ -820,18 +482,11 @@
         "operation": "None",
         "credential": "$General::Null",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::Makers": {
         "uid": "$Admin::Authority::Makers",
         "name": "Makers",
-        "common_name": null,
         "is_class": true,
         "class": "$General::Null",
         "enabled": true,
@@ -841,18 +496,11 @@
         "operation": "None",
         "credential": "$General::Null",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::SID": {
         "uid": "$Admin::Authority::SID",
         "name": "SID",
-        "common_name": null,
         "is_class": false,
         "class": "$General::Null",
         "enabled": true,
@@ -862,18 +510,11 @@
         "operation": "Password",
         "credential": "$Admin::C_PIN::SID",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::Admin1": {
         "uid": "$Admin::Authority::Admin1",
         "name": "Admin1",
-        "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
@@ -883,18 +524,11 @@
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin1",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::Admin2": {
         "uid": "$Admin::Authority::Admin2",
         "name": "Admin2",
-        "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
@@ -904,18 +538,11 @@
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin2",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::Admin3": {
         "uid": "$Admin::Authority::Admin3",
         "name": "Admin3",
-        "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
@@ -925,18 +552,11 @@
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin3",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::Admin4": {
         "uid": "$Admin::Authority::Admin4",
         "name": "Admin4",
-        "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
@@ -946,13 +566,7 @@
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin4",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Admin::Authority::PSID": {
         "uid": "$Admin::Authority::PSID",
@@ -967,20 +581,13 @@
         "operation": "Password",
         "credential": "$Admin::C_PIN::PSID",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       }
     },
     "c_pin": {
       "$Admin::C_PIN::SID": {
         "uid": "$Admin::C_PIN::SID",
         "name": "C_PIN_SID",
-        "common_name": null,
         "pin": [
           112,
           97,
@@ -999,7 +606,6 @@
       "$Admin::C_PIN::Admin1": {
         "uid": "$Admin::C_PIN::Admin1",
         "name": "C_PIN_Admin1",
-        "common_name": null,
         "pin": [],
         "char_set": "$General::Null",
         "try_limit": 0,
@@ -1009,7 +615,6 @@
       "$Admin::C_PIN::Admin2": {
         "uid": "$Admin::C_PIN::Admin2",
         "name": "C_PIN_Admin2",
-        "common_name": null,
         "pin": [],
         "char_set": "$General::Null",
         "try_limit": 0,
@@ -1019,7 +624,6 @@
       "$Admin::C_PIN::Admin3": {
         "uid": "$Admin::C_PIN::Admin3",
         "name": "C_PIN_Admin3",
-        "common_name": null,
         "pin": [],
         "char_set": "$General::Null",
         "try_limit": 0,
@@ -1029,7 +633,6 @@
       "$Admin::C_PIN::Admin4": {
         "uid": "$Admin::C_PIN::Admin4",
         "name": "C_PIN_Admin4",
-        "common_name": null,
         "pin": [],
         "char_set": "$General::Null",
         "try_limit": 0,
@@ -1039,7 +642,6 @@
       "$Admin::C_PIN::MSID": {
         "uid": "$Admin::C_PIN::MSID",
         "name": "C_PIN_MSID",
-        "common_name": null,
         "pin": [
           112,
           97,
@@ -1049,11 +651,7 @@
           111,
           114,
           100
-        ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        ]
       },
       "$Admin::C_PIN::PSID": {
         "uid": "$Admin::C_PIN::PSID",
@@ -1079,20 +677,12 @@
       "$Admin::SP::Admin": {
         "uid": "$Admin::SP::Admin",
         "name": "Admin",
-        "org": null,
-        "effective_auth": null,
-        "date_of_issue": null,
-        "bytes": null,
         "life_cycle_state": "Manufactured",
         "frozen": false
       },
       "$Admin::SP::Locking": {
         "uid": "$Admin::SP::Locking",
         "name": "Locking",
-        "org": null,
-        "effective_auth": null,
-        "date_of_issue": null,
-        "bytes": null,
         "life_cycle_state": "ManufacturedInactive",
         "frozen": false
       }
@@ -1101,102 +691,42 @@
       "$Table::Table": {
         "uid": "$Table::Table",
         "name": "Table",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::AccessControl": {
         "uid": "$Table::AccessControl",
         "name": "AccessControl",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::ACE": {
         "uid": "$Table::ACE",
         "name": "ACE",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::Authority": {
         "uid": "$Table::Authority",
         "name": "Authority",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::C_PIN": {
         "uid": "$Table::C_PIN",
         "name": "C_PIN",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::SP": {
         "uid": "$Table::SP",
         "name": "SP",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       }
@@ -1206,2706 +736,1235 @@
     "uid": "$Admin::SP::Locking",
     "access_control": {
       "$InvokingID::ThisSP.$MethodID::Authenticate": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$InvokingID::ThisSP.$MethodID::RevertSP": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Admin"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$InvokingID::ThisSP.$MethodID::Random": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Table.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Table.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::ACE.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::ACE.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Get_All"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::ACE_Get_All.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Authority_Get_All.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User1_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User2_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User3_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User4_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User5_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User6_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User7_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::C_PIN_User8_Set_PIN.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_GlobalRange_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range1_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range2_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range3_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range4_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range5_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range6_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range7_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::K_AES_256_Range8_GenKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range1_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range2_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range3_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range4_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range5_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range6_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range7_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range8_Get_RangeStartToActiveKey.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_GlobalRange_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range1_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range2_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range3_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range4_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range5_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range6_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range7_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range8_Set_RdLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_GlobalRange_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range1_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range2_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range3_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range4_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range5_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range6_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range7_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::Locking_Range8_Set_WrLocked.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::MBRControl_Set_DoneToDOR.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::DataStore_Get_All.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::DataStore_Set_All.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User1_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User2_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User3_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User4_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User5_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User6_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User7_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::ACE::User8_Set_CommonName.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::ACE_Set_BooleanExpression"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Authority.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Authority.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Get_All",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::Admin1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::Admin2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::Admin3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Admins_Set_CommonName",
           "$Locking::ACE::Authority_Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::Admin4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Admins_Set_CommonName",
           "$Locking::ACE::Authority_Set_Enabled"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User1_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User2_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User3_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User4_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User5.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User5_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User6.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User6_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User7.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User7_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Authority::User8.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::User8_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::C_PIN.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin1.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin2.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin3.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin4.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::Admin4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User1.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User1_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User2.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User2_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User3.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User3_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User4.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User4_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User5.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User5.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User5_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User6.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User6.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User6_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User7.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User7.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User7_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User8.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::C_PIN::User8.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::C_PIN_User8_Set_PIN"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::LockingInfo.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::Locking.$MethodID::Next": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::GlobalRange.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::GlobalRange.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_GlblRng_Admins_Set",
           "$Locking::ACE::Locking_GlobalRange_Set_RdLocked",
           "$Locking::ACE::Locking_GlobalRange_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range1.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range1_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range1.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range1_Set_RdLocked",
           "$Locking::ACE::Locking_Range1_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range2.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range2_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range2.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range2_Set_RdLocked",
           "$Locking::ACE::Locking_Range2_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range3.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range3_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range3.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range3_Set_RdLocked",
           "$Locking::ACE::Locking_Range3_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range4.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range4_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range4.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range4_Set_RdLocked",
           "$Locking::ACE::Locking_Range4_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range5.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range5_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range5.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range5_Set_RdLocked",
           "$Locking::ACE::Locking_Range5_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range6.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range6_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range6.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range6_Set_RdLocked",
           "$Locking::ACE::Locking_Range6_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range7.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range7_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range7.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range7_Set_RdLocked",
           "$Locking::ACE::Locking_Range7_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range8.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Range8_Get_RangeStartToActiveKey",
           "$Locking::ACE::Anybody_Get_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::Locking::Range8.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Locking_Admins_RangeStartToLOR",
           "$Locking::ACE::Locking_Range8_Set_RdLocked",
           "$Locking::ACE::Locking_Range8_Set_WrLocked",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::MBRControl.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::MBRControl.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::MBRControl_Admins_Set",
           "$Locking::ACE::MBRControl_Set_DoneToDOR"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::MBR.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Anybody"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$TableID::MBR.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::Admin"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::GlobalRange_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::GlobalRange_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_GlobalRange_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range1_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range1_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range1_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range2_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range2_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range2_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range3_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range3_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range3_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range4_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range4_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range4_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range5_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range5_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range5_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range6_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range6_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range6_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range7_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range7_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range7_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range8_Key.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_Mode"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::K_AES_256::Range8_Key.$MethodID::GenKey": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::K_AES_256_Range8_GenKey"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::TableID::DataStore.$MethodID::Get": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::DataStore_Get_All"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       },
       "$Locking::TableID::DataStore.$MethodID::Set": {
-        "common_name": "",
         "acl": [
           "$Locking::ACE::DataStore_Set_All"
         ],
-        "log": "None",
-        "add_ace_acl": [],
-        "remove_ace_acl": [],
         "get_acl_acl": [
           "$Locking::ACE::Anybody"
-        ],
-        "delete_method_acl": [],
-        "add_ace_log": "None",
-        "remove_ace_log": "None",
-        "get_acl_log": "None",
-        "delete_method_log": "None",
-        "log_to": "$LogList::Log"
+        ]
       }
     },
     "ace": {
       "$Locking::ACE::Anybody": {
         "uid": "$Locking::ACE::Anybody",
         "name": "ACE_Anybody",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Anybody"
@@ -3937,7 +1996,6 @@
       "$Locking::ACE::Admin": {
         "uid": "$Locking::ACE::Admin",
         "name": "ACE_Admin",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -3969,7 +2027,6 @@
       "$Locking::ACE::Anybody_Get_CommonName": {
         "uid": "$Locking::ACE::Anybody_Get_CommonName",
         "name": "ACE_Anybody_Get_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Anybody"
@@ -3983,7 +2040,6 @@
       "$Locking::ACE::Admins_Set_CommonName": {
         "uid": "$Locking::ACE::Admins_Set_CommonName",
         "name": "ACE_Admins_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -3996,7 +2052,6 @@
       "$Locking::ACE::ACE_Get_All": {
         "uid": "$Locking::ACE::ACE_Get_All",
         "name": "ACE_ACE_Get_All",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4013,7 +2068,6 @@
       "$Locking::ACE::ACE_Set_BooleanExpression": {
         "uid": "$Locking::ACE::ACE_Set_BooleanExpression",
         "name": "ACE_ACE_Set_BooleanExpression",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4026,7 +2080,6 @@
       "$Locking::ACE::Authority_Get_All": {
         "uid": "$Locking::ACE::Authority_Get_All",
         "name": "ACE_Authority_Get_All",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4057,7 +2110,6 @@
       "$Locking::ACE::Authority_Set_Enabled": {
         "uid": "$Locking::ACE::Authority_Set_Enabled",
         "name": "ACE_Authority_Set_Enabled",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4070,7 +2122,6 @@
       "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN": {
         "uid": "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN",
         "name": "ACE_C_PIN_Admins_Get_All_NOPIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4087,7 +2138,6 @@
       "$Locking::ACE::C_PIN_Admins_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_Admins_Set_PIN",
         "name": "ACE_C_PIN_Admins_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4100,7 +2150,6 @@
       "$Locking::ACE::C_PIN_User1_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User1_Set_PIN",
         "name": "ACE_C_PIN_User1_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4119,7 +2168,6 @@
       "$Locking::ACE::C_PIN_User2_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User2_Set_PIN",
         "name": "ACE_C_PIN_User2_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4138,7 +2186,6 @@
       "$Locking::ACE::C_PIN_User3_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User3_Set_PIN",
         "name": "ACE_C_PIN_User3_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4157,7 +2204,6 @@
       "$Locking::ACE::C_PIN_User4_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User4_Set_PIN",
         "name": "ACE_C_PIN_User4_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4176,7 +2222,6 @@
       "$Locking::ACE::C_PIN_User5_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User5_Set_PIN",
         "name": "ACE_C_PIN_User5_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4195,7 +2240,6 @@
       "$Locking::ACE::C_PIN_User6_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User6_Set_PIN",
         "name": "ACE_C_PIN_User6_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4214,7 +2258,6 @@
       "$Locking::ACE::C_PIN_User7_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User7_Set_PIN",
         "name": "ACE_C_PIN_User7_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4233,7 +2276,6 @@
       "$Locking::ACE::C_PIN_User8_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User8_Set_PIN",
         "name": "ACE_C_PIN_User8_Set_PIN",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4252,7 +2294,6 @@
       "$Locking::ACE::K_AES_256_GlobalRange_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_GlobalRange_GenKey",
         "name": "ACE_K_AES_256_GlobalRange_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4269,7 +2310,6 @@
       "$Locking::ACE::K_AES_256_Range1_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range1_GenKey",
         "name": "ACE_K_AES_256_Range1_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4286,7 +2326,6 @@
       "$Locking::ACE::K_AES_256_Range2_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range2_GenKey",
         "name": "ACE_K_AES_256_Range2_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4303,7 +2342,6 @@
       "$Locking::ACE::K_AES_256_Range3_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range3_GenKey",
         "name": "ACE_K_AES_256_Range3_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4320,7 +2358,6 @@
       "$Locking::ACE::K_AES_256_Range4_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range4_GenKey",
         "name": "ACE_K_AES_256_Range4_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4337,7 +2374,6 @@
       "$Locking::ACE::K_AES_256_Range5_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range5_GenKey",
         "name": "ACE_K_AES_256_Range5_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4354,7 +2390,6 @@
       "$Locking::ACE::K_AES_256_Range6_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range6_GenKey",
         "name": "ACE_K_AES_256_Range6_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4371,7 +2406,6 @@
       "$Locking::ACE::K_AES_256_Range7_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range7_GenKey",
         "name": "ACE_K_AES_256_Range7_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4388,7 +2422,6 @@
       "$Locking::ACE::K_AES_256_Range8_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range8_GenKey",
         "name": "ACE_K_AES_256_Range8_GenKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4405,7 +2438,6 @@
       "$Locking::ACE::K_AES_Mode": {
         "uid": "$Locking::ACE::K_AES_Mode",
         "name": "ACE_K_AES_Mode",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Anybody"
@@ -4418,7 +2450,6 @@
       "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_GlobalRange_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4438,7 +2469,6 @@
       "$Locking::ACE::Locking_Range1_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range1_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range1_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4458,7 +2488,6 @@
       "$Locking::ACE::Locking_Range2_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range2_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range2_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4478,7 +2507,6 @@
       "$Locking::ACE::Locking_Range3_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range3_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range3_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4498,7 +2526,6 @@
       "$Locking::ACE::Locking_Range4_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range4_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range4_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4518,7 +2545,6 @@
       "$Locking::ACE::Locking_Range5_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range5_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range5_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4538,7 +2564,6 @@
       "$Locking::ACE::Locking_Range6_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range6_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range6_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4558,7 +2583,6 @@
       "$Locking::ACE::Locking_Range7_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range7_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range7_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4578,7 +2602,6 @@
       "$Locking::ACE::Locking_Range8_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range8_Get_RangeStartToActiveKey",
         "name": "ACE_Locking_Range8_Get_RangeStartToActiveKey",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4598,7 +2621,6 @@
       "$Locking::ACE::Locking_GlobalRange_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_GlobalRange_Set_RdLocked",
         "name": "ACE_Locking_GlobalRange_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4611,7 +2633,6 @@
       "$Locking::ACE::Locking_Range1_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range1_Set_RdLocked",
         "name": "ACE_Locking_Range1_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4624,7 +2645,6 @@
       "$Locking::ACE::Locking_Range2_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range2_Set_RdLocked",
         "name": "ACE_Locking_Range2_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4637,7 +2657,6 @@
       "$Locking::ACE::Locking_Range3_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range3_Set_RdLocked",
         "name": "ACE_Locking_Range3_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4650,7 +2669,6 @@
       "$Locking::ACE::Locking_Range4_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range4_Set_RdLocked",
         "name": "ACE_Locking_Range4_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4663,7 +2681,6 @@
       "$Locking::ACE::Locking_Range5_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range5_Set_RdLocked",
         "name": "ACE_Locking_Range5_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4676,7 +2693,6 @@
       "$Locking::ACE::Locking_Range6_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range6_Set_RdLocked",
         "name": "ACE_Locking_Range6_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4689,7 +2705,6 @@
       "$Locking::ACE::Locking_Range7_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range7_Set_RdLocked",
         "name": "ACE_Locking_Range7_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4702,7 +2717,6 @@
       "$Locking::ACE::Locking_Range8_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range8_Set_RdLocked",
         "name": "ACE_Locking_Range8_Set_RdLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4715,7 +2729,6 @@
       "$Locking::ACE::Locking_GlobalRange_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_GlobalRange_Set_WrLocked",
         "name": "ACE_Locking_GlobalRange_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4728,7 +2741,6 @@
       "$Locking::ACE::Locking_Range1_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range1_Set_WrLocked",
         "name": "ACE_Locking_Range1_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4741,7 +2753,6 @@
       "$Locking::ACE::Locking_Range2_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range2_Set_WrLocked",
         "name": "ACE_Locking_Range2_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4754,7 +2765,6 @@
       "$Locking::ACE::Locking_Range3_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range3_Set_WrLocked",
         "name": "ACE_Locking_Range3_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4767,7 +2777,6 @@
       "$Locking::ACE::Locking_Range4_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range4_Set_WrLocked",
         "name": "ACE_Locking_Range4_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4780,7 +2789,6 @@
       "$Locking::ACE::Locking_Range5_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range5_Set_WrLocked",
         "name": "ACE_Locking_Range5_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4793,7 +2801,6 @@
       "$Locking::ACE::Locking_Range6_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range6_Set_WrLocked",
         "name": "ACE_Locking_Range6_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4806,7 +2813,6 @@
       "$Locking::ACE::Locking_Range7_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range7_Set_WrLocked",
         "name": "ACE_Locking_Range7_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4819,7 +2825,6 @@
       "$Locking::ACE::Locking_Range8_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range8_Set_WrLocked",
         "name": "ACE_Locking_Range8_Set_WrLocked",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4832,7 +2837,6 @@
       "$Locking::ACE::Locking_GlblRng_Admins_Set": {
         "uid": "$Locking::ACE::Locking_GlblRng_Admins_Set",
         "name": "ACE_Locking_GlblRng_Admins_Set",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4849,7 +2853,6 @@
       "$Locking::ACE::Locking_Admins_RangeStartToLOR": {
         "uid": "$Locking::ACE::Locking_Admins_RangeStartToLOR",
         "name": "ACE_Locking_Admins_RangeStartToLOR",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4868,7 +2871,6 @@
       "$Locking::ACE::MBRControl_Admins_Set": {
         "uid": "$Locking::ACE::MBRControl_Admins_Set",
         "name": "ACE_MBRControl_Admins_Set",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4883,7 +2885,6 @@
       "$Locking::ACE::MBRControl_Set_DoneToDOR": {
         "uid": "$Locking::ACE::MBRControl_Set_DoneToDOR",
         "name": "ACE_MBRControl_Set_DoneToDOR",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4897,7 +2898,6 @@
       "$Locking::ACE::DataStore_Get_All": {
         "uid": "$Locking::ACE::DataStore_Get_All",
         "name": "ACE_DataStore_Get_All",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4910,7 +2910,6 @@
       "$Locking::ACE::DataStore_Set_All": {
         "uid": "$Locking::ACE::DataStore_Set_All",
         "name": "ACE_DataStore_Set_All",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4923,7 +2922,6 @@
       "$Locking::ACE::User1_Set_CommonName": {
         "uid": "$Locking::ACE::User1_Set_CommonName",
         "name": "ACE_User1_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4936,7 +2934,6 @@
       "$Locking::ACE::User2_Set_CommonName": {
         "uid": "$Locking::ACE::User2_Set_CommonName",
         "name": "ACE_User2_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4949,7 +2946,6 @@
       "$Locking::ACE::User3_Set_CommonName": {
         "uid": "$Locking::ACE::User3_Set_CommonName",
         "name": "ACE_User3_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4962,7 +2958,6 @@
       "$Locking::ACE::User4_Set_CommonName": {
         "uid": "$Locking::ACE::User4_Set_CommonName",
         "name": "ACE_User4_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4975,7 +2970,6 @@
       "$Locking::ACE::User5_Set_CommonName": {
         "uid": "$Locking::ACE::User5_Set_CommonName",
         "name": "ACE_User5_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -4988,7 +2982,6 @@
       "$Locking::ACE::User6_Set_CommonName": {
         "uid": "$Locking::ACE::User6_Set_CommonName",
         "name": "ACE_User6_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -5001,7 +2994,6 @@
       "$Locking::ACE::User7_Set_CommonName": {
         "uid": "$Locking::ACE::User7_Set_CommonName",
         "name": "ACE_User7_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -5014,7 +3006,6 @@
       "$Locking::ACE::User8_Set_CommonName": {
         "uid": "$Locking::ACE::User8_Set_CommonName",
         "name": "ACE_User8_Set_CommonName",
-        "common_name": null,
         "boolean_expr": [
           {
             "Authority": "$Locking::Authority::Admins"
@@ -5039,13 +3030,7 @@
         "operation": "None",
         "credential": "$General::Null",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::Admins": {
         "uid": "$Locking::Authority::Admins",
@@ -5060,13 +3045,7 @@
         "operation": "None",
         "credential": "$General::Null",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::Admin1": {
         "uid": "$Locking::Authority::Admin1",
@@ -5081,13 +3060,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin1",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::Admin2": {
         "uid": "$Locking::Authority::Admin2",
@@ -5102,13 +3075,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin2",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::Admin3": {
         "uid": "$Locking::Authority::Admin3",
@@ -5123,13 +3090,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin3",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::Admin4": {
         "uid": "$Locking::Authority::Admin4",
@@ -5144,13 +3105,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin4",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::Users": {
         "uid": "$Locking::Authority::Users",
@@ -5165,13 +3120,7 @@
         "operation": "None",
         "credential": "$General::Null",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User1": {
         "uid": "$Locking::Authority::User1",
@@ -5186,13 +3135,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User1",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User2": {
         "uid": "$Locking::Authority::User2",
@@ -5207,13 +3150,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User2",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User3": {
         "uid": "$Locking::Authority::User3",
@@ -5228,13 +3165,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User3",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User4": {
         "uid": "$Locking::Authority::User4",
@@ -5249,13 +3180,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User4",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User5": {
         "uid": "$Locking::Authority::User5",
@@ -5270,13 +3195,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User5",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User6": {
         "uid": "$Locking::Authority::User6",
@@ -5291,13 +3210,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User6",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User7": {
         "uid": "$Locking::Authority::User7",
@@ -5312,13 +3225,7 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User7",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       },
       "$Locking::Authority::User8": {
         "uid": "$Locking::Authority::User8",
@@ -5333,20 +3240,13 @@
         "operation": "Password",
         "credential": "$Locking::C_PIN::User8",
         "response_sign": "$General::Null",
-        "response_exch": "$General::Null",
-        "clock_start": null,
-        "clock_end": null,
-        "limit": null,
-        "uses": null,
-        "log": null,
-        "log_to": null
+        "response_exch": "$General::Null"
       }
     },
     "c_pin": {
       "$Locking::C_PIN::Admin1": {
         "uid": "$Locking::C_PIN::Admin1",
         "name": "C_PIN_Admin1",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5373,7 +3273,6 @@
       "$Locking::C_PIN::Admin2": {
         "uid": "$Locking::C_PIN::Admin2",
         "name": "C_PIN_Admin2",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5400,7 +3299,6 @@
       "$Locking::C_PIN::Admin3": {
         "uid": "$Locking::C_PIN::Admin3",
         "name": "C_PIN_Admin3",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5427,7 +3325,6 @@
       "$Locking::C_PIN::Admin4": {
         "uid": "$Locking::C_PIN::Admin4",
         "name": "C_PIN_Admin4",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5454,7 +3351,6 @@
       "$Locking::C_PIN::User1": {
         "uid": "$Locking::C_PIN::User1",
         "name": "C_PIN_User1",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5480,7 +3376,6 @@
       "$Locking::C_PIN::User2": {
         "uid": "$Locking::C_PIN::User2",
         "name": "C_PIN_User2",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5506,7 +3401,6 @@
       "$Locking::C_PIN::User3": {
         "uid": "$Locking::C_PIN::User3",
         "name": "C_PIN_User3",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5532,7 +3426,6 @@
       "$Locking::C_PIN::User4": {
         "uid": "$Locking::C_PIN::User4",
         "name": "C_PIN_User4",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5558,7 +3451,6 @@
       "$Locking::C_PIN::User5": {
         "uid": "$Locking::C_PIN::User5",
         "name": "C_PIN_User5",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5584,7 +3476,6 @@
       "$Locking::C_PIN::User6": {
         "uid": "$Locking::C_PIN::User6",
         "name": "C_PIN_User6",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5610,7 +3501,6 @@
       "$Locking::C_PIN::User7": {
         "uid": "$Locking::C_PIN::User7",
         "name": "C_PIN_User7",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5636,7 +3526,6 @@
       "$Locking::C_PIN::User8": {
         "uid": "$Locking::C_PIN::User8",
         "name": "C_PIN_User8",
-        "common_name": null,
         "pin": [
           100,
           101,
@@ -5664,7 +3553,6 @@
       "$Locking::K_AES_256::GlobalRange_Key": {
         "uid": "$Locking::K_AES_256::GlobalRange_Key",
         "name": "K_AES_256_GlobalRange_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -5736,7 +3624,6 @@
       "$Locking::K_AES_256::Range1_Key": {
         "uid": "$Locking::K_AES_256::Range1_Key",
         "name": "K_AES_256_Range1_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -5808,7 +3695,6 @@
       "$Locking::K_AES_256::Range2_Key": {
         "uid": "$Locking::K_AES_256::Range2_Key",
         "name": "K_AES_256_Range2_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -5880,7 +3766,6 @@
       "$Locking::K_AES_256::Range3_Key": {
         "uid": "$Locking::K_AES_256::Range3_Key",
         "name": "K_AES_256_Range3_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -5952,7 +3837,6 @@
       "$Locking::K_AES_256::Range4_Key": {
         "uid": "$Locking::K_AES_256::Range4_Key",
         "name": "K_AES_256_Range4_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -6024,7 +3908,6 @@
       "$Locking::K_AES_256::Range5_Key": {
         "uid": "$Locking::K_AES_256::Range5_Key",
         "name": "K_AES_256_Range5_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -6096,7 +3979,6 @@
       "$Locking::K_AES_256::Range6_Key": {
         "uid": "$Locking::K_AES_256::Range6_Key",
         "name": "K_AES_256_Range6_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -6168,7 +4050,6 @@
       "$Locking::K_AES_256::Range7_Key": {
         "uid": "$Locking::K_AES_256::Range7_Key",
         "name": "K_AES_256_Range7_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -6240,7 +4121,6 @@
       "$Locking::K_AES_256::Range8_Key": {
         "uid": "$Locking::K_AES_256::Range8_Key",
         "name": "K_AES_256_Range8_Key",
-        "common_name": null,
         "key": [
           0,
           0,
@@ -6324,16 +4204,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::GlobalRange_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::GlobalRange_Key"
       },
       "$Locking::Locking::Range1": {
         "uid": "$Locking::Locking::Range1",
@@ -6348,16 +4219,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range1_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range1_Key"
       },
       "$Locking::Locking::Range2": {
         "uid": "$Locking::Locking::Range2",
@@ -6372,16 +4234,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range2_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range2_Key"
       },
       "$Locking::Locking::Range3": {
         "uid": "$Locking::Locking::Range3",
@@ -6396,16 +4249,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range3_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range3_Key"
       },
       "$Locking::Locking::Range4": {
         "uid": "$Locking::Locking::Range4",
@@ -6420,16 +4264,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range4_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range4_Key"
       },
       "$Locking::Locking::Range5": {
         "uid": "$Locking::Locking::Range5",
@@ -6444,16 +4279,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range5_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range5_Key"
       },
       "$Locking::Locking::Range6": {
         "uid": "$Locking::Locking::Range6",
@@ -6468,16 +4294,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range6_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range6_Key"
       },
       "$Locking::Locking::Range7": {
         "uid": "$Locking::Locking::Range7",
@@ -6492,16 +4309,7 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range7_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range7_Key"
       },
       "$Locking::Locking::Range8": {
         "uid": "$Locking::Locking::Range8",
@@ -6516,27 +4324,14 @@
         "lock_on_reset": [
           "PowerCycle"
         ],
-        "active_key": "$Locking::K_AES_256::Range8_Key",
-        "next_key": null,
-        "reencrypt_state": null,
-        "reencrypt_request": null,
-        "adv_key_mode": null,
-        "verify_mode": null,
-        "cont_on_reset": null,
-        "last_reencrypt_lba": null,
-        "last_reenc_stat": null,
-        "general_status": null
+        "active_key": "$Locking::K_AES_256::Range8_Key"
       }
     },
     "locking_info_ext": {
       "$LockingInfo::LockingInfo": {
         "uid": "$LockingInfo::LockingInfo",
-        "name": null,
-        "version": null,
         "encryption_support": "MediaEncryption",
         "max_ranges": 8,
-        "max_re_encryptions": null,
-        "keys_available_cfg": null,
         "alignment_required": true,
         "logical_block_size": 512,
         "alignment_granularity": 8,
@@ -6557,187 +4352,79 @@
       "$Table::Table": {
         "uid": "$Table::Table",
         "name": "Table",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::AccessControl": {
         "uid": "$Table::AccessControl",
         "name": "AccessControl",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::ACE": {
         "uid": "$Table::ACE",
         "name": "ACE",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::Authority": {
         "uid": "$Table::Authority",
         "name": "Authority",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::C_PIN": {
         "uid": "$Table::C_PIN",
         "name": "C_PIN",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::LockingInfo": {
         "uid": "$Table::LockingInfo",
         "name": "LockingInfo",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::Locking": {
         "uid": "$Table::Locking",
         "name": "Locking",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::MBRControl": {
         "uid": "$Table::MBRControl",
         "name": "MBRControl",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Table::MBR": {
         "uid": "$Table::MBR",
         "name": "MBR",
-        "common_name": null,
-        "template_id": null,
         "kind": "Byte",
-        "column": null,
-        "num_columns": null,
         "rows": 134217728,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 1,
         "recommended_access_granularity": 1
       },
       "$Table::K_AES_256": {
         "uid": "$Table::K_AES_256",
         "name": "K_AES_256",
-        "common_name": null,
-        "template_id": null,
         "kind": "Object",
-        "column": null,
-        "num_columns": null,
-        "rows": null,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 0,
         "recommended_access_granularity": 0
       },
       "$Locking::Table::DataStore": {
         "uid": "$Locking::Table::DataStore",
         "name": "DataStore",
-        "common_name": null,
-        "template_id": null,
         "kind": "Byte",
-        "column": null,
-        "num_columns": null,
         "rows": 10485760,
-        "rows_free": null,
-        "row_bytes": null,
-        "last_id": null,
-        "min_size": null,
-        "max_size": null,
         "mandatory_write_granularity": 1,
         "recommended_access_granularity": 1
       }
