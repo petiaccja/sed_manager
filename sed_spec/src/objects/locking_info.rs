@@ -45,7 +45,7 @@ pub struct LockingInfoExt {
     pub max_re_encryptions: Option<u32>,
     pub keys_available_cfg: Option<KeysAvailableCondition>,
     // The alignment fields below are available only for Opal 2, Opalite, Pyrite, and Ruby.
-    pub alignmnet_required: Option<bool>,
+    pub alignment_required: Option<bool>,
     pub logical_block_size: Option<u32>,
     pub alignment_granularity: Option<u64>,
     pub lowest_aligned_lba: Option<u64>,

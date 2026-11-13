@@ -686,7 +686,7 @@ fn locking_info_ext() -> Table<LockingInfoExt> {
         max_ranges: Some(RANGES.len() as u32),
         max_re_encryptions: None,
         keys_available_cfg: None,
-        alignmnet_required: Some(true),
+        alignment_required: Some(true),
         logical_block_size: Some(512),
         alignment_granularity: Some(8),
         lowest_aligned_lba: Some(0),

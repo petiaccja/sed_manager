@@ -10,7 +10,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -26,7 +28,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -42,7 +46,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -58,7 +64,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -74,7 +82,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -90,7 +100,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -106,7 +118,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -122,7 +136,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -138,7 +154,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Admin::Authority::Makers.$MethodID::Set": {
+        "common_name": "",
+        "acl": [
+          "$Admin::ACE::Set_Enabled"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -154,7 +190,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -170,7 +208,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -186,7 +226,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -202,7 +244,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -218,7 +262,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -234,7 +280,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -250,7 +298,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -266,7 +316,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -282,7 +334,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -298,7 +352,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -314,7 +370,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -330,7 +388,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -346,7 +406,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -362,7 +424,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -378,7 +442,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -394,7 +460,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Admin::C_PIN::PSID.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Admin::ACE::C_PIN_Get_PSID_NoPIN"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -410,7 +496,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -426,7 +514,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -434,7 +524,7 @@
         "delete_method_log": "None",
         "log_to": "$LogList::Log"
       },
-      "$TableID::SP.$MethodID::Revert": {
+      "$Admin::SP::Admin.$MethodID::Revert": {
         "common_name": "",
         "acl": [
           "$Admin::ACE::SP_SID",
@@ -444,7 +534,28 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Admin::SP::Locking.$MethodID::Revert": {
+        "common_name": "",
+        "acl": [
+          "$Admin::ACE::SP_SID",
+          "$Admin::ACE::Admin"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -460,7 +571,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Admin::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -472,7 +585,7 @@
     "ace": {
       "$Admin::ACE::Anybody": {
         "uid": "$Admin::ACE::Anybody",
-        "name": null,
+        "name": "ACE_Anybody",
         "common_name": null,
         "boolean_expr": [
           {
@@ -480,43 +593,30 @@
           }
         ],
         "columns": [
-          16,
           0,
-          3,
-          6,
-          2,
-          9,
-          18,
-          24,
-          17,
-          30,
-          26,
-          5,
-          4,
-          12,
-          14,
-          27,
           1,
-          15,
-          25,
-          31,
-          29,
-          28,
-          19,
-          8,
-          11,
-          13,
-          20,
-          22,
-          10,
-          23,
+          2,
+          3,
+          4,
+          5,
+          6,
           7,
-          21
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
         ]
       },
       "$Admin::ACE::Admin": {
         "uid": "$Admin::ACE::Admin",
-        "name": null,
+        "name": "ACE_Admin",
         "common_name": null,
         "boolean_expr": [
           {
@@ -524,43 +624,30 @@
           }
         ],
         "columns": [
-          5,
-          28,
-          4,
-          3,
-          12,
-          19,
-          29,
-          17,
-          25,
           0,
-          22,
-          11,
-          9,
-          31,
-          7,
-          20,
-          23,
-          27,
-          13,
-          16,
-          26,
-          15,
-          18,
-          14,
           1,
-          21,
-          6,
-          24,
-          10,
           2,
+          3,
+          4,
+          5,
+          6,
+          7,
           8,
-          30
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
         ]
       },
       "$Admin::ACE::C_PIN_SID_Get_NOPIN": {
         "uid": "$Admin::ACE::C_PIN_SID_Get_NOPIN",
-        "name": null,
+        "name": "ACE_C_PIN_SID_Get_NOPIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -575,15 +662,15 @@
         ],
         "columns": [
           0,
-          5,
           4,
+          5,
           6,
           7
         ]
       },
       "$Admin::ACE::C_PIN_SID_Set_PIN": {
         "uid": "$Admin::ACE::C_PIN_SID_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_SID_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -596,7 +683,7 @@
       },
       "$Admin::ACE::C_PIN_MSID_Get_PIN": {
         "uid": "$Admin::ACE::C_PIN_MSID_Get_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_MSID_Get_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -604,13 +691,13 @@
           }
         ],
         "columns": [
-          3,
-          0
+          0,
+          3
         ]
       },
       "$Admin::ACE::SP_PSID": {
         "uid": "$Admin::ACE::SP_PSID",
-        "name": null,
+        "name": "ACE_SP_PSID",
         "common_name": null,
         "boolean_expr": [
           {
@@ -618,19 +705,36 @@
           }
         ],
         "columns": [
-          2,
           0,
-          5,
-          7,
+          1,
+          2,
           3,
           4,
-          1,
-          6
+          5,
+          6,
+          7
+        ]
+      },
+      "$Admin::ACE::C_PIN_Get_PSID_NoPIN": {
+        "uid": "$Admin::ACE::C_PIN_Get_PSID_NoPIN",
+        "name": "ACE_C_PIN_Get_PSID_NoPIN",
+        "common_name": null,
+        "boolean_expr": [
+          {
+            "Authority": "$Admin::Authority::Anybody"
+          }
+        ],
+        "columns": [
+          0,
+          4,
+          5,
+          6,
+          7
         ]
       },
       "$Admin::ACE::Set_Enabled": {
         "uid": "$Admin::ACE::Set_Enabled",
-        "name": null,
+        "name": "ACE_Set_Enabled",
         "common_name": null,
         "boolean_expr": [
           {
@@ -643,7 +747,7 @@
       },
       "$Admin::ACE::SP_SID": {
         "uid": "$Admin::ACE::SP_SID",
-        "name": null,
+        "name": "ACE_SP_SID",
         "common_name": null,
         "boolean_expr": [
           {
@@ -651,19 +755,19 @@
           }
         ],
         "columns": [
-          7,
           0,
-          4,
-          5,
+          1,
           2,
           3,
+          4,
+          5,
           6,
-          1
+          7
         ]
       },
       "$Admin::ACE::C_PIN_Admins_Set_PIN": {
         "uid": "$Admin::ACE::C_PIN_Admins_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_Admins_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -688,14 +792,14 @@
         "common_name": null,
         "is_class": false,
         "class": "$General::Null",
-        "enabled": null,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
-        "operation": null,
-        "credential": null,
-        "response_sign": null,
-        "response_exch": null,
+        "enabled": true,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
+        "operation": "None",
+        "credential": "$General::Null",
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -709,14 +813,14 @@
         "common_name": null,
         "is_class": true,
         "class": "$General::Null",
-        "enabled": null,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
-        "operation": null,
-        "credential": null,
-        "response_sign": null,
-        "response_exch": null,
+        "enabled": true,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
+        "operation": "None",
+        "credential": "$General::Null",
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -730,14 +834,14 @@
         "common_name": null,
         "is_class": true,
         "class": "$General::Null",
-        "enabled": null,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
-        "operation": null,
-        "credential": null,
-        "response_sign": null,
-        "response_exch": null,
+        "enabled": true,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
+        "operation": "None",
+        "credential": "$General::Null",
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -751,14 +855,14 @@
         "common_name": null,
         "is_class": false,
         "class": "$General::Null",
-        "enabled": null,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "enabled": true,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Admin::C_PIN::SID",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -768,18 +872,18 @@
       },
       "$Admin::Authority::Admin1": {
         "uid": "$Admin::Authority::Admin1",
-        "name": "Admin0",
+        "name": "Admin1",
         "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin1",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -789,18 +893,18 @@
       },
       "$Admin::Authority::Admin2": {
         "uid": "$Admin::Authority::Admin2",
-        "name": "Admin1",
+        "name": "Admin2",
         "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin2",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -810,18 +914,18 @@
       },
       "$Admin::Authority::Admin3": {
         "uid": "$Admin::Authority::Admin3",
-        "name": "Admin2",
+        "name": "Admin3",
         "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin3",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -831,18 +935,18 @@
       },
       "$Admin::Authority::Admin4": {
         "uid": "$Admin::Authority::Admin4",
-        "name": "Admin3",
+        "name": "Admin4",
         "common_name": null,
         "is_class": false,
         "class": "$Admin::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Admin::C_PIN::Admin4",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -853,17 +957,17 @@
       "$Admin::Authority::PSID": {
         "uid": "$Admin::Authority::PSID",
         "name": "PSID",
-        "common_name": null,
+        "common_name": "PhysicalDriveOwner",
         "is_class": false,
         "class": "$General::Null",
-        "enabled": null,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "enabled": true,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Admin::C_PIN::PSID",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -875,7 +979,7 @@
     "c_pin": {
       "$Admin::C_PIN::SID": {
         "uid": "$Admin::C_PIN::SID",
-        "name": null,
+        "name": "C_PIN_SID",
         "common_name": null,
         "pin": [
           112,
@@ -887,118 +991,54 @@
           114,
           100
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Admin::C_PIN::Admin1": {
         "uid": "$Admin::C_PIN::Admin1",
-        "name": null,
+        "name": "C_PIN_Admin1",
         "common_name": null,
-        "pin": [
-          114,
-          97,
-          110,
-          100,
-          111,
-          109,
-          95,
-          112,
-          97,
-          115,
-          115,
-          119,
-          111,
-          114,
-          100
-        ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "pin": [],
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Admin::C_PIN::Admin2": {
         "uid": "$Admin::C_PIN::Admin2",
-        "name": null,
+        "name": "C_PIN_Admin2",
         "common_name": null,
-        "pin": [
-          114,
-          97,
-          110,
-          100,
-          111,
-          109,
-          95,
-          112,
-          97,
-          115,
-          115,
-          119,
-          111,
-          114,
-          100
-        ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "pin": [],
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Admin::C_PIN::Admin3": {
         "uid": "$Admin::C_PIN::Admin3",
-        "name": null,
+        "name": "C_PIN_Admin3",
         "common_name": null,
-        "pin": [
-          114,
-          97,
-          110,
-          100,
-          111,
-          109,
-          95,
-          112,
-          97,
-          115,
-          115,
-          119,
-          111,
-          114,
-          100
-        ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "pin": [],
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Admin::C_PIN::Admin4": {
         "uid": "$Admin::C_PIN::Admin4",
-        "name": null,
+        "name": "C_PIN_Admin4",
         "common_name": null,
-        "pin": [
-          114,
-          97,
-          110,
-          100,
-          111,
-          109,
-          95,
-          112,
-          97,
-          115,
-          115,
-          119,
-          111,
-          114,
-          100
-        ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "pin": [],
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Admin::C_PIN::MSID": {
         "uid": "$Admin::C_PIN::MSID",
-        "name": null,
+        "name": "C_PIN_MSID",
         "common_name": null,
         "pin": [
           112,
@@ -1017,8 +1057,8 @@
       },
       "$Admin::C_PIN::PSID": {
         "uid": "$Admin::C_PIN::PSID",
-        "name": null,
-        "common_name": null,
+        "name": "C_PIN_PSID",
+        "common_name": "PhysicalDriveOwner",
         "pin": [
           114,
           101,
@@ -1029,10 +1069,10 @@
           114,
           121
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       }
     },
     "sp": {
@@ -1044,7 +1084,7 @@
         "date_of_issue": null,
         "bytes": null,
         "life_cycle_state": "Manufactured",
-        "frozen": null
+        "frozen": false
       },
       "$Admin::SP::Locking": {
         "uid": "$Admin::SP::Locking",
@@ -1054,14 +1094,135 @@
         "date_of_issue": null,
         "bytes": null,
         "life_cycle_state": "ManufacturedInactive",
-        "frozen": null
+        "frozen": false
       }
     },
-    "table": {}
+    "table": {
+      "$Table::Table": {
+        "uid": "$Table::Table",
+        "name": "Table",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::AccessControl": {
+        "uid": "$Table::AccessControl",
+        "name": "AccessControl",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::ACE": {
+        "uid": "$Table::ACE",
+        "name": "ACE",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::Authority": {
+        "uid": "$Table::Authority",
+        "name": "Authority",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::C_PIN": {
+        "uid": "$Table::C_PIN",
+        "name": "C_PIN",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::SP": {
+        "uid": "$Table::SP",
+        "name": "SP",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      }
+    }
   },
   "locking": {
     "uid": "$Admin::SP::Locking",
     "access_control": {
+      "$InvokingID::ThisSP.$MethodID::Authenticate": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
       "$InvokingID::ThisSP.$MethodID::RevertSP": {
         "common_name": "",
         "acl": [
@@ -1070,7 +1231,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1086,7 +1249,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1102,7 +1267,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1118,7 +1285,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1134,7 +1303,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1150,7 +1321,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1166,7 +1339,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1182,7 +1357,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1198,7 +1375,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1214,7 +1393,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1230,7 +1411,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1246,7 +1429,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1262,7 +1447,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1278,7 +1465,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1294,7 +1483,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1310,7 +1501,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1326,7 +1519,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1342,7 +1537,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1358,7 +1555,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1374,7 +1573,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1390,7 +1591,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1406,7 +1609,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1422,7 +1627,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1438,7 +1645,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1454,7 +1663,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1470,7 +1681,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1486,7 +1699,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1502,7 +1717,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1518,7 +1735,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1534,7 +1753,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1550,7 +1771,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1566,7 +1789,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1582,7 +1807,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1598,7 +1825,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1614,7 +1843,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1630,7 +1861,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1646,7 +1879,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1662,7 +1897,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1678,7 +1915,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1694,7 +1933,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1710,7 +1951,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1726,7 +1969,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1742,7 +1987,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1758,7 +2005,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1774,7 +2023,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1790,7 +2041,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1806,7 +2059,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1822,7 +2077,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1838,7 +2095,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1854,7 +2113,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1870,7 +2131,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1886,7 +2149,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1902,7 +2167,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1918,7 +2185,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1934,7 +2203,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1950,7 +2221,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1966,7 +2239,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1982,7 +2257,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -1998,7 +2275,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2014,7 +2293,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2030,7 +2311,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2046,7 +2329,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2062,7 +2347,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2078,7 +2365,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2095,7 +2384,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2106,13 +2397,14 @@
       "$Locking::Authority::Admin1.$MethodID::Set": {
         "common_name": "",
         "acl": [
-          "$Locking::ACE::Admins_Set_CommonName",
-          "$Locking::ACE::Authority_Set_Enabled"
+          "$Locking::ACE::Admins_Set_CommonName"
         ],
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2123,12 +2415,15 @@
       "$Locking::Authority::Admin2.$MethodID::Set": {
         "common_name": "",
         "acl": [
+          "$Locking::ACE::Authority_Set_Enabled",
           "$Locking::ACE::Admins_Set_CommonName"
         ],
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2145,7 +2440,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2162,7 +2459,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2179,7 +2478,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2196,7 +2497,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2213,7 +2516,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2230,7 +2535,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2247,7 +2554,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2264,7 +2573,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2281,7 +2592,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2298,7 +2611,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2314,7 +2629,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2330,7 +2647,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2346,7 +2665,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2362,7 +2683,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2378,7 +2701,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2394,7 +2719,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2410,7 +2737,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2426,7 +2755,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2442,7 +2773,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2458,7 +2791,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2474,7 +2809,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2490,7 +2827,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2506,7 +2845,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2522,7 +2863,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2538,7 +2881,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2554,7 +2899,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2570,7 +2917,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2586,7 +2935,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2602,7 +2953,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2618,7 +2971,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2634,7 +2989,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2650,7 +3007,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2666,7 +3025,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2682,7 +3043,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2698,7 +3061,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2714,7 +3079,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2730,7 +3097,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2747,7 +3116,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2766,7 +3137,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2783,7 +3156,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2802,7 +3177,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2819,7 +3196,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2838,7 +3217,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2855,7 +3236,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2874,7 +3257,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2891,7 +3276,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2910,7 +3297,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2927,7 +3316,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2946,7 +3337,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2963,7 +3356,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2982,7 +3377,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -2999,7 +3396,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3018,7 +3417,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3035,7 +3436,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3054,7 +3457,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3070,7 +3475,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3087,7 +3494,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3103,7 +3512,9 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3119,7 +3530,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::GlobalRange_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3135,7 +3566,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range1_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3151,7 +3602,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range2_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3167,7 +3638,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range3_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3183,7 +3674,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range4_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3199,7 +3710,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range5_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3215,7 +3746,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range6_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3231,7 +3782,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range7_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3247,7 +3818,27 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::K_AES_256::Range8_Key.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::K_AES_Mode"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3263,7 +3854,45 @@
         "log": "None",
         "add_ace_acl": [],
         "remove_ace_acl": [],
-        "get_acl_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::TableID::DataStore.$MethodID::Get": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::DataStore_Get_All"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
+        "delete_method_acl": [],
+        "add_ace_log": "None",
+        "remove_ace_log": "None",
+        "get_acl_log": "None",
+        "delete_method_log": "None",
+        "log_to": "$LogList::Log"
+      },
+      "$Locking::TableID::DataStore.$MethodID::Set": {
+        "common_name": "",
+        "acl": [
+          "$Locking::ACE::DataStore_Set_All"
+        ],
+        "log": "None",
+        "add_ace_acl": [],
+        "remove_ace_acl": [],
+        "get_acl_acl": [
+          "$Locking::ACE::Anybody"
+        ],
         "delete_method_acl": [],
         "add_ace_log": "None",
         "remove_ace_log": "None",
@@ -3275,7 +3904,7 @@
     "ace": {
       "$Locking::ACE::Anybody": {
         "uid": "$Locking::ACE::Anybody",
-        "name": null,
+        "name": "ACE_Anybody",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3283,43 +3912,31 @@
           }
         ],
         "columns": [
-          26,
-          17,
-          18,
-          20,
-          30,
-          3,
-          2,
-          28,
+          0,
           1,
-          31,
+          2,
+          3,
+          4,
+          5,
           6,
           7,
-          25,
-          5,
-          0,
-          21,
-          15,
-          27,
-          4,
-          12,
-          22,
-          10,
           8,
-          11,
           9,
-          19,
-          29,
+          10,
+          11,
+          12,
+          13,
           14,
-          24,
+          15,
           16,
-          23,
-          13
+          17,
+          18,
+          19
         ]
       },
       "$Locking::ACE::Admin": {
         "uid": "$Locking::ACE::Admin",
-        "name": null,
+        "name": "ACE_Admin",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3327,43 +3944,31 @@
           }
         ],
         "columns": [
-          25,
-          31,
-          20,
-          14,
-          26,
+          0,
           1,
-          23,
-          24,
-          30,
-          13,
+          2,
+          3,
+          4,
+          5,
+          6,
           7,
           8,
-          12,
-          16,
-          6,
           9,
           10,
           11,
-          21,
-          0,
-          2,
-          22,
+          12,
+          13,
+          14,
           15,
-          27,
-          5,
-          29,
-          3,
+          16,
+          17,
           18,
-          19,
-          28,
-          4,
-          17
+          19
         ]
       },
       "$Locking::ACE::Anybody_Get_CommonName": {
         "uid": "$Locking::ACE::Anybody_Get_CommonName",
-        "name": null,
+        "name": "ACE_Anybody_Get_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3371,13 +3976,13 @@
           }
         ],
         "columns": [
-          2,
-          0
+          0,
+          2
         ]
       },
       "$Locking::ACE::Admins_Set_CommonName": {
         "uid": "$Locking::ACE::Admins_Set_CommonName",
-        "name": null,
+        "name": "ACE_Admins_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3390,7 +3995,7 @@
       },
       "$Locking::ACE::ACE_Get_All": {
         "uid": "$Locking::ACE::ACE_Get_All",
-        "name": null,
+        "name": "ACE_ACE_Get_All",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3407,7 +4012,7 @@
       },
       "$Locking::ACE::ACE_Set_BooleanExpression": {
         "uid": "$Locking::ACE::ACE_Set_BooleanExpression",
-        "name": null,
+        "name": "ACE_ACE_Set_BooleanExpression",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3420,7 +4025,7 @@
       },
       "$Locking::ACE::Authority_Get_All": {
         "uid": "$Locking::ACE::Authority_Get_All",
-        "name": null,
+        "name": "ACE_Authority_Get_All",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3428,30 +4033,30 @@
           }
         ],
         "columns": [
-          5,
-          3,
-          11,
-          10,
           0,
+          1,
+          2,
+          3,
           4,
-          13,
-          12,
-          9,
-          15,
+          5,
           6,
           7,
-          2,
-          16,
           8,
-          1,
-          17,
+          9,
+          10,
+          11,
+          12,
+          13,
           14,
+          15,
+          16,
+          17,
           18
         ]
       },
       "$Locking::ACE::Authority_Set_Enabled": {
         "uid": "$Locking::ACE::Authority_Set_Enabled",
-        "name": null,
+        "name": "ACE_Authority_Set_Enabled",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3464,7 +4069,7 @@
       },
       "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN": {
         "uid": "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN",
-        "name": null,
+        "name": "ACE_C_PIN_Admins_Get_All_NOPIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3472,16 +4077,16 @@
           }
         ],
         "columns": [
+          0,
           4,
           5,
           6,
-          7,
-          0
+          7
         ]
       },
       "$Locking::ACE::C_PIN_Admins_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_Admins_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_Admins_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3494,7 +4099,7 @@
       },
       "$Locking::ACE::C_PIN_User1_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User1_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User1_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3513,7 +4118,7 @@
       },
       "$Locking::ACE::C_PIN_User2_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User2_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User2_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3532,7 +4137,7 @@
       },
       "$Locking::ACE::C_PIN_User3_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User3_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User3_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3551,7 +4156,7 @@
       },
       "$Locking::ACE::C_PIN_User4_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User4_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User4_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3570,7 +4175,7 @@
       },
       "$Locking::ACE::C_PIN_User5_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User5_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User5_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3589,7 +4194,7 @@
       },
       "$Locking::ACE::C_PIN_User6_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User6_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User6_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3608,7 +4213,7 @@
       },
       "$Locking::ACE::C_PIN_User7_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User7_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User7_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3627,7 +4232,7 @@
       },
       "$Locking::ACE::C_PIN_User8_Set_PIN": {
         "uid": "$Locking::ACE::C_PIN_User8_Set_PIN",
-        "name": null,
+        "name": "ACE_C_PIN_User8_Set_PIN",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3646,7 +4251,7 @@
       },
       "$Locking::ACE::K_AES_256_GlobalRange_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_GlobalRange_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_GlobalRange_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3655,15 +4260,15 @@
         ],
         "columns": [
           0,
-          3,
-          2,
           1,
+          2,
+          3,
           4
         ]
       },
       "$Locking::ACE::K_AES_256_Range1_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range1_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range1_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3671,16 +4276,16 @@
           }
         ],
         "columns": [
+          0,
           1,
           2,
           3,
-          4,
-          0
+          4
         ]
       },
       "$Locking::ACE::K_AES_256_Range2_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range2_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range2_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3688,16 +4293,16 @@
           }
         ],
         "columns": [
+          0,
           1,
           2,
           3,
-          0,
           4
         ]
       },
       "$Locking::ACE::K_AES_256_Range3_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range3_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range3_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3706,15 +4311,15 @@
         ],
         "columns": [
           0,
-          2,
-          4,
           1,
-          3
+          2,
+          3,
+          4
         ]
       },
       "$Locking::ACE::K_AES_256_Range4_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range4_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range4_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3722,16 +4327,16 @@
           }
         ],
         "columns": [
-          2,
-          4,
-          3,
+          0,
           1,
-          0
+          2,
+          3,
+          4
         ]
       },
       "$Locking::ACE::K_AES_256_Range5_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range5_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range5_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3739,16 +4344,16 @@
           }
         ],
         "columns": [
-          4,
           0,
-          3,
           1,
-          2
+          2,
+          3,
+          4
         ]
       },
       "$Locking::ACE::K_AES_256_Range6_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range6_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range6_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3756,16 +4361,16 @@
           }
         ],
         "columns": [
-          3,
           0,
+          1,
           2,
-          4,
-          1
+          3,
+          4
         ]
       },
       "$Locking::ACE::K_AES_256_Range7_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range7_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range7_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3774,15 +4379,15 @@
         ],
         "columns": [
           0,
-          2,
           1,
-          4,
-          3
+          2,
+          3,
+          4
         ]
       },
       "$Locking::ACE::K_AES_256_Range8_GenKey": {
         "uid": "$Locking::ACE::K_AES_256_Range8_GenKey",
-        "name": null,
+        "name": "ACE_K_AES_256_Range8_GenKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3791,15 +4396,15 @@
         ],
         "columns": [
           0,
-          3,
-          4,
+          1,
           2,
-          1
+          3,
+          4
         ]
       },
       "$Locking::ACE::K_AES_Mode": {
         "uid": "$Locking::ACE::K_AES_Mode",
-        "name": null,
+        "name": "ACE_K_AES_Mode",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3807,12 +4412,12 @@
           }
         ],
         "columns": [
-          0
+          4
         ]
       },
       "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_GlobalRange_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3821,18 +4426,18 @@
         ],
         "columns": [
           3,
-          6,
           4,
-          10,
-          7,
           5,
+          6,
+          7,
           8,
-          9
+          9,
+          10
         ]
       },
       "$Locking::ACE::Locking_Range1_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range1_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range1_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3840,19 +4445,19 @@
           }
         ],
         "columns": [
-          6,
-          7,
-          9,
           3,
           4,
+          5,
+          6,
+          7,
           8,
-          10,
-          5
+          9,
+          10
         ]
       },
       "$Locking::ACE::Locking_Range2_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range2_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range2_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3860,19 +4465,19 @@
           }
         ],
         "columns": [
-          10,
+          3,
+          4,
           5,
           6,
-          4,
           7,
+          8,
           9,
-          3,
-          8
+          10
         ]
       },
       "$Locking::ACE::Locking_Range3_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range3_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range3_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3880,19 +4485,19 @@
           }
         ],
         "columns": [
+          3,
+          4,
           5,
-          8,
           6,
           7,
+          8,
           9,
-          4,
-          10,
-          3
+          10
         ]
       },
       "$Locking::ACE::Locking_Range4_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range4_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range4_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3900,19 +4505,19 @@
           }
         ],
         "columns": [
+          3,
+          4,
+          5,
+          6,
+          7,
           8,
           9,
-          5,
-          10,
-          7,
-          3,
-          6,
-          4
+          10
         ]
       },
       "$Locking::ACE::Locking_Range5_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range5_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range5_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3920,19 +4525,19 @@
           }
         ],
         "columns": [
-          9,
-          6,
-          4,
           3,
-          10,
+          4,
+          5,
+          6,
           7,
           8,
-          5
+          9,
+          10
         ]
       },
       "$Locking::ACE::Locking_Range6_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range6_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range6_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3940,19 +4545,19 @@
           }
         ],
         "columns": [
-          10,
           3,
           4,
-          9,
+          5,
           6,
           7,
           8,
-          5
+          9,
+          10
         ]
       },
       "$Locking::ACE::Locking_Range7_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range7_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range7_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3960,19 +4565,19 @@
           }
         ],
         "columns": [
-          10,
-          4,
-          6,
           3,
-          7,
+          4,
           5,
+          6,
+          7,
           8,
-          9
+          9,
+          10
         ]
       },
       "$Locking::ACE::Locking_Range8_Get_RangeStartToActiveKey": {
         "uid": "$Locking::ACE::Locking_Range8_Get_RangeStartToActiveKey",
-        "name": null,
+        "name": "ACE_Locking_Range8_Get_RangeStartToActiveKey",
         "common_name": null,
         "boolean_expr": [
           {
@@ -3980,19 +4585,19 @@
           }
         ],
         "columns": [
-          6,
-          7,
-          9,
-          10,
+          3,
           4,
           5,
-          3,
-          8
+          6,
+          7,
+          8,
+          9,
+          10
         ]
       },
       "$Locking::ACE::Locking_GlobalRange_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_GlobalRange_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_GlobalRange_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4005,7 +4610,7 @@
       },
       "$Locking::ACE::Locking_Range1_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range1_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range1_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4018,7 +4623,7 @@
       },
       "$Locking::ACE::Locking_Range2_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range2_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range2_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4031,7 +4636,7 @@
       },
       "$Locking::ACE::Locking_Range3_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range3_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range3_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4044,7 +4649,7 @@
       },
       "$Locking::ACE::Locking_Range4_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range4_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range4_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4057,7 +4662,7 @@
       },
       "$Locking::ACE::Locking_Range5_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range5_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range5_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4070,7 +4675,7 @@
       },
       "$Locking::ACE::Locking_Range6_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range6_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range6_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4083,7 +4688,7 @@
       },
       "$Locking::ACE::Locking_Range7_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range7_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range7_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4096,7 +4701,7 @@
       },
       "$Locking::ACE::Locking_Range8_Set_RdLocked": {
         "uid": "$Locking::ACE::Locking_Range8_Set_RdLocked",
-        "name": null,
+        "name": "ACE_Locking_Range8_Set_RdLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4109,7 +4714,7 @@
       },
       "$Locking::ACE::Locking_GlobalRange_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_GlobalRange_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_GlobalRange_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4122,7 +4727,7 @@
       },
       "$Locking::ACE::Locking_Range1_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range1_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range1_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4135,7 +4740,7 @@
       },
       "$Locking::ACE::Locking_Range2_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range2_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range2_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4148,7 +4753,7 @@
       },
       "$Locking::ACE::Locking_Range3_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range3_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range3_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4161,7 +4766,7 @@
       },
       "$Locking::ACE::Locking_Range4_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range4_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range4_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4174,7 +4779,7 @@
       },
       "$Locking::ACE::Locking_Range5_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range5_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range5_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4187,7 +4792,7 @@
       },
       "$Locking::ACE::Locking_Range6_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range6_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range6_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4200,7 +4805,7 @@
       },
       "$Locking::ACE::Locking_Range7_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range7_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range7_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4213,7 +4818,7 @@
       },
       "$Locking::ACE::Locking_Range8_Set_WrLocked": {
         "uid": "$Locking::ACE::Locking_Range8_Set_WrLocked",
-        "name": null,
+        "name": "ACE_Locking_Range8_Set_WrLocked",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4226,7 +4831,7 @@
       },
       "$Locking::ACE::Locking_GlblRng_Admins_Set": {
         "uid": "$Locking::ACE::Locking_GlblRng_Admins_Set",
-        "name": null,
+        "name": "ACE_Locking_GlblRng_Admins_Set",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4235,15 +4840,15 @@
         ],
         "columns": [
           5,
-          9,
           6,
+          7,
           8,
-          7
+          9
         ]
       },
       "$Locking::ACE::Locking_Admins_RangeStartToLOR": {
         "uid": "$Locking::ACE::Locking_Admins_RangeStartToLOR",
-        "name": null,
+        "name": "ACE_Locking_Admins_RangeStartToLOR",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4251,10 +4856,10 @@
           }
         ],
         "columns": [
-          5,
-          4,
-          6,
           3,
+          4,
+          5,
+          6,
           7,
           8,
           9
@@ -4262,7 +4867,22 @@
       },
       "$Locking::ACE::MBRControl_Admins_Set": {
         "uid": "$Locking::ACE::MBRControl_Admins_Set",
-        "name": null,
+        "name": "ACE_MBRControl_Admins_Set",
+        "common_name": null,
+        "boolean_expr": [
+          {
+            "Authority": "$Locking::Authority::Admins"
+          }
+        ],
+        "columns": [
+          1,
+          2,
+          3
+        ]
+      },
+      "$Locking::ACE::MBRControl_Set_DoneToDOR": {
+        "uid": "$Locking::ACE::MBRControl_Set_DoneToDOR",
+        "name": "ACE_MBRControl_Set_DoneToDOR",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4271,27 +4891,12 @@
         ],
         "columns": [
           2,
-          3,
-          1
-        ]
-      },
-      "$Locking::ACE::MBRControl_Set_DoneToDOR": {
-        "uid": "$Locking::ACE::MBRControl_Set_DoneToDOR",
-        "name": null,
-        "common_name": null,
-        "boolean_expr": [
-          {
-            "Authority": "$Locking::Authority::Admins"
-          }
-        ],
-        "columns": [
-          3,
-          2
+          3
         ]
       },
       "$Locking::ACE::DataStore_Get_All": {
         "uid": "$Locking::ACE::DataStore_Get_All",
-        "name": null,
+        "name": "ACE_DataStore_Get_All",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4304,7 +4909,7 @@
       },
       "$Locking::ACE::DataStore_Set_All": {
         "uid": "$Locking::ACE::DataStore_Set_All",
-        "name": null,
+        "name": "ACE_DataStore_Set_All",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4317,7 +4922,7 @@
       },
       "$Locking::ACE::User1_Set_CommonName": {
         "uid": "$Locking::ACE::User1_Set_CommonName",
-        "name": null,
+        "name": "ACE_User1_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4330,7 +4935,7 @@
       },
       "$Locking::ACE::User2_Set_CommonName": {
         "uid": "$Locking::ACE::User2_Set_CommonName",
-        "name": null,
+        "name": "ACE_User2_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4343,7 +4948,7 @@
       },
       "$Locking::ACE::User3_Set_CommonName": {
         "uid": "$Locking::ACE::User3_Set_CommonName",
-        "name": null,
+        "name": "ACE_User3_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4356,7 +4961,7 @@
       },
       "$Locking::ACE::User4_Set_CommonName": {
         "uid": "$Locking::ACE::User4_Set_CommonName",
-        "name": null,
+        "name": "ACE_User4_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4369,7 +4974,7 @@
       },
       "$Locking::ACE::User5_Set_CommonName": {
         "uid": "$Locking::ACE::User5_Set_CommonName",
-        "name": null,
+        "name": "ACE_User5_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4382,7 +4987,7 @@
       },
       "$Locking::ACE::User6_Set_CommonName": {
         "uid": "$Locking::ACE::User6_Set_CommonName",
-        "name": null,
+        "name": "ACE_User6_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4395,7 +5000,7 @@
       },
       "$Locking::ACE::User7_Set_CommonName": {
         "uid": "$Locking::ACE::User7_Set_CommonName",
-        "name": null,
+        "name": "ACE_User7_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4408,7 +5013,7 @@
       },
       "$Locking::ACE::User8_Set_CommonName": {
         "uid": "$Locking::ACE::User8_Set_CommonName",
-        "name": null,
+        "name": "ACE_User8_Set_CommonName",
         "common_name": null,
         "boolean_expr": [
           {
@@ -4428,13 +5033,13 @@
         "is_class": false,
         "class": "$General::Null",
         "enabled": true,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
-        "operation": null,
-        "credential": null,
-        "response_sign": null,
-        "response_exch": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
+        "operation": "None",
+        "credential": "$General::Null",
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4449,13 +5054,13 @@
         "is_class": true,
         "class": "$General::Null",
         "enabled": true,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
-        "operation": null,
-        "credential": null,
-        "response_sign": null,
-        "response_exch": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
+        "operation": "None",
+        "credential": "$General::Null",
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4465,18 +5070,18 @@
       },
       "$Locking::Authority::Admin1": {
         "uid": "$Locking::Authority::Admin1",
-        "name": "Admin0",
+        "name": "Admin1",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Admins",
         "enabled": true,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin1",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4486,18 +5091,18 @@
       },
       "$Locking::Authority::Admin2": {
         "uid": "$Locking::Authority::Admin2",
-        "name": "Admin1",
+        "name": "Admin2",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin2",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4507,18 +5112,18 @@
       },
       "$Locking::Authority::Admin3": {
         "uid": "$Locking::Authority::Admin3",
-        "name": "Admin2",
+        "name": "Admin3",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin3",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4528,18 +5133,18 @@
       },
       "$Locking::Authority::Admin4": {
         "uid": "$Locking::Authority::Admin4",
-        "name": "Admin3",
+        "name": "Admin4",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Admins",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::Admin4",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4554,13 +5159,13 @@
         "is_class": true,
         "class": "$General::Null",
         "enabled": true,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
-        "operation": null,
-        "credential": null,
-        "response_sign": null,
-        "response_exch": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
+        "operation": "None",
+        "credential": "$General::Null",
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4570,18 +5175,18 @@
       },
       "$Locking::Authority::User1": {
         "uid": "$Locking::Authority::User1",
-        "name": "User0",
+        "name": "User1",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User1",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4591,18 +5196,18 @@
       },
       "$Locking::Authority::User2": {
         "uid": "$Locking::Authority::User2",
-        "name": "User1",
+        "name": "User2",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User2",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4612,18 +5217,18 @@
       },
       "$Locking::Authority::User3": {
         "uid": "$Locking::Authority::User3",
-        "name": "User2",
+        "name": "User3",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User3",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4633,18 +5238,18 @@
       },
       "$Locking::Authority::User4": {
         "uid": "$Locking::Authority::User4",
-        "name": "User3",
+        "name": "User4",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User4",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4654,18 +5259,18 @@
       },
       "$Locking::Authority::User5": {
         "uid": "$Locking::Authority::User5",
-        "name": "User4",
+        "name": "User5",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User5",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4675,18 +5280,18 @@
       },
       "$Locking::Authority::User6": {
         "uid": "$Locking::Authority::User6",
-        "name": "User5",
+        "name": "User6",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User6",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4696,18 +5301,18 @@
       },
       "$Locking::Authority::User7": {
         "uid": "$Locking::Authority::User7",
-        "name": "User6",
+        "name": "User7",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User7",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4717,18 +5322,18 @@
       },
       "$Locking::Authority::User8": {
         "uid": "$Locking::Authority::User8",
-        "name": "User7",
+        "name": "User8",
         "common_name": "",
         "is_class": false,
         "class": "$Locking::Authority::Users",
         "enabled": false,
-        "secure": null,
-        "hash_and_sign": null,
-        "present_certificate": null,
+        "secure": "None",
+        "hash_and_sign": "None",
+        "present_certificate": false,
         "operation": "Password",
         "credential": "$Locking::C_PIN::User8",
-        "response_sign": null,
-        "response_exch": null,
+        "response_sign": "$General::Null",
+        "response_exch": "$General::Null",
         "clock_start": null,
         "clock_end": null,
         "limit": null,
@@ -4740,7 +5345,7 @@
     "c_pin": {
       "$Locking::C_PIN::Admin1": {
         "uid": "$Locking::C_PIN::Admin1",
-        "name": null,
+        "name": "C_PIN_Admin1",
         "common_name": null,
         "pin": [
           100,
@@ -4760,14 +5365,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::Admin2": {
         "uid": "$Locking::C_PIN::Admin2",
-        "name": null,
+        "name": "C_PIN_Admin2",
         "common_name": null,
         "pin": [
           100,
@@ -4787,14 +5392,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::Admin3": {
         "uid": "$Locking::C_PIN::Admin3",
-        "name": null,
+        "name": "C_PIN_Admin3",
         "common_name": null,
         "pin": [
           100,
@@ -4814,14 +5419,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::Admin4": {
         "uid": "$Locking::C_PIN::Admin4",
-        "name": null,
+        "name": "C_PIN_Admin4",
         "common_name": null,
         "pin": [
           100,
@@ -4841,14 +5446,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User1": {
         "uid": "$Locking::C_PIN::User1",
-        "name": null,
+        "name": "C_PIN_User1",
         "common_name": null,
         "pin": [
           100,
@@ -4867,14 +5472,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User2": {
         "uid": "$Locking::C_PIN::User2",
-        "name": null,
+        "name": "C_PIN_User2",
         "common_name": null,
         "pin": [
           100,
@@ -4893,14 +5498,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User3": {
         "uid": "$Locking::C_PIN::User3",
-        "name": null,
+        "name": "C_PIN_User3",
         "common_name": null,
         "pin": [
           100,
@@ -4919,14 +5524,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User4": {
         "uid": "$Locking::C_PIN::User4",
-        "name": null,
+        "name": "C_PIN_User4",
         "common_name": null,
         "pin": [
           100,
@@ -4945,14 +5550,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User5": {
         "uid": "$Locking::C_PIN::User5",
-        "name": null,
+        "name": "C_PIN_User5",
         "common_name": null,
         "pin": [
           100,
@@ -4971,14 +5576,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User6": {
         "uid": "$Locking::C_PIN::User6",
-        "name": null,
+        "name": "C_PIN_User6",
         "common_name": null,
         "pin": [
           100,
@@ -4997,14 +5602,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User7": {
         "uid": "$Locking::C_PIN::User7",
-        "name": null,
+        "name": "C_PIN_User7",
         "common_name": null,
         "pin": [
           100,
@@ -5023,14 +5628,14 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       },
       "$Locking::C_PIN::User8": {
         "uid": "$Locking::C_PIN::User8",
-        "name": null,
+        "name": "C_PIN_User8",
         "common_name": null,
         "pin": [
           100,
@@ -5049,16 +5654,16 @@
           112,
           119
         ],
-        "char_set": null,
-        "try_limit": null,
-        "tries": null,
-        "persistence": null
+        "char_set": "$General::Null",
+        "try_limit": 0,
+        "tries": 0,
+        "persistence": false
       }
     },
     "k_aes_256": {
       "$Locking::K_AES_256::GlobalRange_Key": {
         "uid": "$Locking::K_AES_256::GlobalRange_Key",
-        "name": null,
+        "name": "K_AES_256_GlobalRange_Key",
         "common_name": null,
         "key": [
           0,
@@ -5126,11 +5731,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range1_Key": {
         "uid": "$Locking::K_AES_256::Range1_Key",
-        "name": null,
+        "name": "K_AES_256_Range1_Key",
         "common_name": null,
         "key": [
           0,
@@ -5198,11 +5803,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range2_Key": {
         "uid": "$Locking::K_AES_256::Range2_Key",
-        "name": null,
+        "name": "K_AES_256_Range2_Key",
         "common_name": null,
         "key": [
           0,
@@ -5270,11 +5875,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range3_Key": {
         "uid": "$Locking::K_AES_256::Range3_Key",
-        "name": null,
+        "name": "K_AES_256_Range3_Key",
         "common_name": null,
         "key": [
           0,
@@ -5342,11 +5947,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range4_Key": {
         "uid": "$Locking::K_AES_256::Range4_Key",
-        "name": null,
+        "name": "K_AES_256_Range4_Key",
         "common_name": null,
         "key": [
           0,
@@ -5414,11 +6019,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range5_Key": {
         "uid": "$Locking::K_AES_256::Range5_Key",
-        "name": null,
+        "name": "K_AES_256_Range5_Key",
         "common_name": null,
         "key": [
           0,
@@ -5486,11 +6091,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range6_Key": {
         "uid": "$Locking::K_AES_256::Range6_Key",
-        "name": null,
+        "name": "K_AES_256_Range6_Key",
         "common_name": null,
         "key": [
           0,
@@ -5558,11 +6163,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range7_Key": {
         "uid": "$Locking::K_AES_256::Range7_Key",
-        "name": null,
+        "name": "K_AES_256_Range7_Key",
         "common_name": null,
         "key": [
           0,
@@ -5630,11 +6235,11 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       },
       "$Locking::K_AES_256::Range8_Key": {
         "uid": "$Locking::K_AES_256::Range8_Key",
-        "name": null,
+        "name": "K_AES_256_Range8_Key",
         "common_name": null,
         "key": [
           0,
@@ -5702,7 +6307,7 @@
           0,
           0
         ],
-        "mode": null
+        "mode": "XTS"
       }
     },
     "locking": {
@@ -5932,7 +6537,7 @@
         "max_ranges": 8,
         "max_re_encryptions": null,
         "keys_available_cfg": null,
-        "alignmnet_required": true,
+        "alignment_required": true,
         "logical_block_size": 512,
         "alignment_granularity": 8,
         "lowest_aligned_lba": 0
@@ -5949,6 +6554,125 @@
       }
     },
     "table": {
+      "$Table::Table": {
+        "uid": "$Table::Table",
+        "name": "Table",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::AccessControl": {
+        "uid": "$Table::AccessControl",
+        "name": "AccessControl",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::ACE": {
+        "uid": "$Table::ACE",
+        "name": "ACE",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::Authority": {
+        "uid": "$Table::Authority",
+        "name": "Authority",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::C_PIN": {
+        "uid": "$Table::C_PIN",
+        "name": "C_PIN",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::LockingInfo": {
+        "uid": "$Table::LockingInfo",
+        "name": "LockingInfo",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Table::Locking": {
+        "uid": "$Table::Locking",
+        "name": "Locking",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
       "$Table::MBRControl": {
         "uid": "$Table::MBRControl",
         "name": "MBRControl",
@@ -5962,7 +6686,9 @@
         "row_bytes": null,
         "last_id": null,
         "min_size": null,
-        "max_size": null
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
       },
       "$Table::MBR": {
         "uid": "$Table::MBR",
@@ -5977,7 +6703,43 @@
         "row_bytes": null,
         "last_id": null,
         "min_size": null,
-        "max_size": null
+        "max_size": null,
+        "mandatory_write_granularity": 1,
+        "recommended_access_granularity": 1
+      },
+      "$Table::K_AES_256": {
+        "uid": "$Table::K_AES_256",
+        "name": "K_AES_256",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Object",
+        "column": null,
+        "num_columns": null,
+        "rows": null,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 0,
+        "recommended_access_granularity": 0
+      },
+      "$Locking::Table::DataStore": {
+        "uid": "$Locking::Table::DataStore",
+        "name": "DataStore",
+        "common_name": null,
+        "template_id": null,
+        "kind": "Byte",
+        "column": null,
+        "num_columns": null,
+        "rows": 10485760,
+        "rows_free": null,
+        "row_bytes": null,
+        "last_id": null,
+        "min_size": null,
+        "max_size": null,
+        "mandatory_write_granularity": 1,
+        "recommended_access_granularity": 1
       }
     }
   }

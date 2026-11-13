@@ -27,6 +27,8 @@ pub struct TableDesc {
     pub last_id: Option<Uid>,
     pub min_size: Option<u32>,
     pub max_size: Option<u32>,
+    pub mandatory_write_granularity: Option<u32>,
+    pub recommended_access_granularity: Option<u32>,
 }
 
 impl ObjectUid for TableDesc {

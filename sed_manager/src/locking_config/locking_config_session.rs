@@ -133,8 +133,8 @@ impl LockingConfigSession {
         let maybe_locking_info: Result<LockingInfoExt, _> =
             self.session.get_object(locking_info::LOCKING_INFO, 7..11).await;
         match maybe_locking_info {
-            Ok(LockingInfoExt { alignmnet_required, alignment_granularity, lowest_aligned_lba, .. }) => Ok(Alignment {
-                alignment_required: alignmnet_required.unwrap_or(Alignment::default().alignment_required),
+            Ok(LockingInfoExt { alignment_required, alignment_granularity, lowest_aligned_lba, .. }) => Ok(Alignment {
+                alignment_required: alignment_required.unwrap_or(Alignment::default().alignment_required),
                 alignment_granularity: alignment_granularity
                     .unwrap_or(Alignment::default().alignment_granularity)
                     .max(1),
