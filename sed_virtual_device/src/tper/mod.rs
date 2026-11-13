@@ -5,9 +5,7 @@
 
 mod admin;
 mod locking;
-mod opal_2;
 mod preconfig;
-mod preconfig_shared;
 mod security_provider;
 
 use std::marker::PhantomData;
@@ -15,7 +13,7 @@ use std::str::FromStr;
 
 pub use admin::Admin;
 pub use locking::Locking;
-pub use preconfig_shared::{INITIAL_SID_PASSWORD, PSID_PASSWORD};
+pub use preconfig::{INITIAL_SID_PASSWORD, PSID_PASSWORD};
 pub use security_provider::{SecurityProvider, Table};
 use sed_packet::discovery::{
     BlockSIDAuthDescriptor, Discovery, FeatureDescriptor, GeometryDescriptor, LockingDescriptor, OpalV2Descriptor,
@@ -36,8 +34,7 @@ use sed_spec::uid_registry::opal_2::admin::sp;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Tper {
-    #[serde(skip, default = "default_ssc")]
-    ssc: Ssc,
+    pub ssc: Ssc,
     pub admin: Admin,
     pub locking: Option<Locking>,
 }
@@ -83,17 +80,17 @@ impl Tper {
     }
 
     pub fn restore_preconfig(&mut self, sp: SecurityProviderRef) -> Result<Vec<SecurityProviderRef>, MethodStatus> {
+        let preconfig = Self::from_preconfig(self.ssc);
         match sp {
             sp::ADMIN => {
-                self.admin = opal_2::preconfig_admin::preconfig();
-                self.locking = Some(opal_2::preconfig_locking::preconfig());
+                *self = preconfig;
                 Ok(vec![sp::ADMIN, sp::LOCKING])
             }
             sp::LOCKING => {
                 if let Some(locking_sp) = self.admin.sp.get_mut(&sp::LOCKING) {
                     locking_sp.life_cycle_state = Some(LifeCycleState::ManufacturedInactive);
                 }
-                self.locking = Some(opal_2::preconfig_locking::preconfig());
+                self.locking = preconfig.locking;
                 Ok(vec![sp::LOCKING])
             }
             _ => Err(MethodStatus::InvalidParameter),
@@ -212,20 +209,6 @@ impl Tper {
     }
 }
 
-impl Default for Tper {
-    fn default() -> Self {
-        Self {
-            ssc: default_ssc(),
-            admin: opal_2::preconfig_admin::preconfig(),
-            locking: Some(opal_2::preconfig_locking::preconfig()),
-        }
-    }
-}
-
-fn default_ssc() -> Ssc {
-    Ssc::OpalV2
-}
-
 #[cfg(test)]
 mod tests {
     use googletest::prelude::*;
@@ -282,17 +265,6 @@ mod tests {
             (Some(actual), Some(expected)) => expect_locking_eq(actual, expected),
             (actual, expected) => expect_that!(actual.is_some(), eq(expected.is_some())),
         }
-    }
-
-    #[gtest]
-    fn read_opal_2_preconfig() {
-        let mut expected = Tper::default();
-        expected.locking.as_mut().unwrap().mbr.clear();
-        expected.locking.as_mut().unwrap().data_store = None;
-        let mut loaded = Tper::from_preconfig(Ssc::OpalV2);
-        loaded.locking.as_mut().unwrap().mbr.clear();
-        loaded.locking.as_mut().unwrap().data_store = None;
-        expect_tper_eq(&loaded, &expected);
     }
 
     /// The state without the byte tables, which are not serialized.

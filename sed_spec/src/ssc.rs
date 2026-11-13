@@ -7,6 +7,7 @@ use sed_packet::discovery::SscFeatureDescriptor;
 
 /// One of the security subsystem classes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Ssc {
     Enterprise,
     OpalV1,

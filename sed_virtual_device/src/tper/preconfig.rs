@@ -3,11 +3,15 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
+use sed_packet::MaxBytes;
 use sed_spec::{
     ssc::Ssc,
     uid_registry::{core, data_store, enterprise, kpio, opal_2, opalite, psid, pyrite_2, ruby},
 };
 use serde_json::{Map, Value};
+
+pub const INITIAL_SID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"password");
+pub const PSID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"recovery");
 
 #[derive(Debug, thiserror::Error)]
 pub enum NameResolutionError {

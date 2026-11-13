@@ -14,7 +14,7 @@ use sed_spec::methods::{
     PropertiesMethod, StartSession, SyncSession, extract_method,
 };
 use sed_spec::objects::CPinRef;
-use sed_spec::types::LifeCycleState;
+use sed_spec::types::{AuthMethod, LifeCycleState};
 use sed_spec::uid_registry::core::shared::authority::ANYBODY;
 use sed_spec::uid_registry::core::shared::invoking_id::SESSION_MANAGER;
 
@@ -176,13 +176,20 @@ impl ManagementSession {
                 let authority_uid = authority.unwrap_or(ANYBODY);
                 let authorities = sp.authority();
                 let authority = authorities.get(&authority_uid).ok_or(MethodStatus::InvalidParameter)?;
-                if let Some(credential) = authority.credential {
-                    let credential: CPinRef = credential.try_into().expect("internal error: invalid credential ref");
+                if authority.operation == Some(AuthMethod::Password) {
+                    let credential: CPinRef = authority
+                        .credential
+                        .expect("internal error: password-authority missing credential")
+                        .try_into()
+                        .expect("internal error: invalid credential ref");
                     let c_pins = sp.c_pin();
                     let credential = c_pins.get(&credential).expect_object("C_PIN", credential);
                     if &credential.pin != password {
                         return Err(MethodStatus::NotAuthorized);
                     }
+                } else if authority.operation.is_some() && authority.operation != Some(AuthMethod::None) {
+                    // Unimplemented auth methods will just be denied.
+                    return Err(MethodStatus::NotAuthorized);
                 }
                 let tsn = self.next_tsn.fetch_add(1, Ordering::Relaxed);
                 let session_id = SessionId { hsn: params.host_session_id, tsn };

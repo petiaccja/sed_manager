@@ -17,6 +17,7 @@ use sed_packet::packet::{COM_PACKET_HEADER_LEN, ComPacket, PACKET_HEADER_LEN, SU
 use sed_packet::session_id::SessionId;
 use sed_spec::methods::{Limit, MethodStatus, OptionalLimit, Properties};
 use sed_spec::objects::{AuthorityRef, SecurityProviderRef};
+use sed_spec::ssc::Ssc;
 use sorbit::ser_de::{FromBytes, ToBytes as _};
 use tracing::instrument;
 
@@ -230,7 +231,7 @@ impl Default for VirtualDevice {
     ///
     /// The device's configuration is the preconfiguration for the Opal 2.0 SSC.
     fn default() -> Self {
-        let tper = Tper::default();
+        let tper = Tper::from_preconfig(Ssc::OpalV2);
         let capabilities = CAPABILITIES;
 
         Self::new(capabilities, tper)
@@ -258,7 +259,7 @@ impl VirtualDeviceBuilder {
     }
 
     pub fn opal_2(self) -> VirtualDevice {
-        let tper = Tper::default();
+        let tper = Tper::from_preconfig(Ssc::OpalV2);
         VirtualDevice::new(self.capabilities, tper)
     }
 }

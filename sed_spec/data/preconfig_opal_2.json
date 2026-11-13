@@ -1,4 +1,5 @@
 {
+    "ssc": "OpalV2",
     "admin": {
         "uid": "$Admin::SP::Admin",
         "access_control": {
