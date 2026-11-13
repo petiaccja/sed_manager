@@ -116,7 +116,6 @@ impl Type for AuthorityRef {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(untagged))]
 pub enum MediaKeyRef {
     Aes128(KAes128Ref),
     Aes256(KAes256Ref),
@@ -150,6 +149,33 @@ impl TryFrom<Uid> for MediaKeyRef {
         KAes128Ref::try_from(value)
             .map(Self::Aes128)
             .or_else(|_| KAes256Ref::try_from(value).map(Self::Aes256))
+    }
+}
+
+/// Serialized as a plain UID in all formats. Untagged enums are not supported
+/// by non-self-describing formats like postcard, and the variant is implied by
+/// the UID's table anyway.
+#[cfg(feature = "serde")]
+impl serde::Serialize for MediaKeyRef {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        Uid::from(*self).serialize(serializer)
+    }
+}
+
+/// The null UID is accepted and deserialized as AES-128, as it carries no
+/// information about the key's type.
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for MediaKeyRef {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error as _;
+        Self::try_from(Uid::deserialize(deserializer)?)
+            .map_err(|uid| D::Error::custom(format!("{uid} is not a media key")))
     }
 }
 

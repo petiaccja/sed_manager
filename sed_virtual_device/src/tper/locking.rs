@@ -27,9 +27,11 @@ pub struct Locking {
     pub locking_info_ext: Table<LockingInfoExt>,
     pub mbr_control: Table<MbrControl>,
     pub table: Table<TableDesc>,
-    #[serde(skip_serializing, default = "empty_byte_table")]
+    // The byte tables are not serialized to keep snapshots of the virtual
+    // device small. They are restored by `Tper::resize_byte_tables`.
+    #[serde(skip)]
     pub mbr: Vec<u8>,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     pub data_store: Option<Vec<u8>>,
 }
 
@@ -155,8 +157,4 @@ impl SecurityProvider for Locking {
     fn as_any_mut(&mut self) -> &mut dyn Any {
         self
     }
-}
-
-fn empty_byte_table() -> Vec<u8> {
-    Vec::default()
 }

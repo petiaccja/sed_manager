@@ -71,6 +71,7 @@ rstest = "0.26.1"
 googletest = "0.14.2"
 tempfile = "3.27.0"
 insta = "1.49.0"
+postcard = { version = "1.1.3", default-features = false, features = ["alloc"] }
 
 # -- Tracing
 # The opentelemetry dependencies have to be pinned to the same version.

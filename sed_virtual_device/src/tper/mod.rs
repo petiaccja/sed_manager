@@ -295,6 +295,36 @@ mod tests {
         expect_tper_eq(&loaded, &expected);
     }
 
+    /// The state without the byte tables, which are not serialized.
+    fn serializable_state(ssc: Ssc) -> Tper {
+        let mut tper = Tper::from_preconfig(ssc);
+        if let Some(locking) = tper.locking.as_mut() {
+            locking.mbr = Vec::new();
+            locking.data_store = None;
+        }
+        tper
+    }
+
+    #[rstest]
+    #[case::opal_2(Ssc::OpalV2)]
+    #[gtest]
+    fn serde_json_roundtrip(#[case] ssc: Ssc) {
+        let tper = serializable_state(ssc);
+        let json = serde_json::to_string(&tper).unwrap();
+        let deserialized: Tper = serde_json::from_str(&json).unwrap();
+        expect_tper_eq(&deserialized, &tper);
+    }
+
+    #[rstest]
+    #[case::opal_2(Ssc::OpalV2)]
+    #[gtest]
+    fn serde_postcard_roundtrip(#[case] ssc: Ssc) {
+        let tper = serializable_state(ssc);
+        let bytes = postcard::to_allocvec(&tper).unwrap();
+        let deserialized: Tper = postcard::from_bytes(&bytes).unwrap();
+        expect_tper_eq(&deserialized, &tper);
+    }
+
     #[rstest]
     #[case::opal_2(Ssc::OpalV2)]
     fn from_preconfig(#[case] ssc: Ssc) {
