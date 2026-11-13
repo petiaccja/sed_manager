@@ -11,7 +11,7 @@ use crate::types::SymmetricModeMedia;
 use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(default))]
 #[object(table=table_id::K_AES_128)]
 pub struct KAes128 {
     pub uid: Option<KAes128Ref>,

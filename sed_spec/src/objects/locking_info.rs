@@ -34,7 +34,7 @@ impl ObjectUid for LockingInfo {
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(default))]
 #[object(table=table_id::LOCKING_INFO)]
 pub struct LockingInfoExt {
     pub uid: Option<LockingInfoRef>,
