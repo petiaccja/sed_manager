@@ -21,7 +21,7 @@ use sed_packet::discovery::{
 };
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::SecurityProviderRef;
-use sed_spec::preconfig::OPAL_2;
+use sed_spec::preconfig::{ENTERPRISE, OPAL_2};
 use sed_spec::ssc::Ssc;
 use sed_spec::types::LifeCycleState;
 use sed_spec::uid_registry::opal_2::admin::c_pin;
@@ -42,7 +42,7 @@ pub struct Tper {
 impl Tper {
     pub fn from_preconfig(ssc: Ssc) -> Self {
         let raw_json_str = match ssc {
-            Ssc::Enterprise => todo!(),
+            Ssc::Enterprise => ENTERPRISE,
             Ssc::OpalV1 => todo!(),
             Ssc::OpalV2 => OPAL_2,
             Ssc::Opalite => todo!(),
@@ -278,6 +278,7 @@ mod tests {
     }
 
     #[rstest]
+    #[case::enterprise(Ssc::Enterprise)]
     #[case::opal_2(Ssc::OpalV2)]
     #[gtest]
     fn serde_json_roundtrip(#[case] ssc: Ssc) {
@@ -288,6 +289,7 @@ mod tests {
     }
 
     #[rstest]
+    #[case::enterprise(Ssc::Enterprise)]
     #[case::opal_2(Ssc::OpalV2)]
     #[gtest]
     fn serde_postcard_roundtrip(#[case] ssc: Ssc) {
@@ -298,6 +300,7 @@ mod tests {
     }
 
     #[rstest]
+    #[case::enterprise(Ssc::Enterprise)]
     #[case::opal_2(Ssc::OpalV2)]
     fn from_preconfig(#[case] ssc: Ssc) {
         let tper = Tper::from_preconfig(ssc);

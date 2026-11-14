@@ -1,0 +1,1483 @@
+{
+    "ssc": "Enterprise",
+    "admin": {
+        "uid": "$Admin::SP::Admin",
+        "access_control": {
+            "$InvokingID::ThisSP.$MethodID::Authenticate": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::Authority.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Makers"],
+                "get_acl_acl": ["$Admin::ACE::Makers"]
+            },
+            "$Admin::Authority::Anybody.$MethodID::Get": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$Admin::Authority::Makers.$MethodID::Get": {
+                "acl": ["$Admin::ACE::Makers"],
+                "get_acl_acl": ["$Admin::ACE::Makers"]
+            },
+            "$Admin::Authority::SID.$MethodID::Get": {
+                "acl": ["$Admin::ACE::SID"],
+                "get_acl_acl": ["$Admin::ACE::SID"]
+            },
+            "$TableID::C_PIN.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Makers"],
+                "get_acl_acl": ["$Admin::ACE::Makers"]
+            },
+            "$Admin::C_PIN::SID.$MethodID::Set": {
+                "acl": ["$Admin::ACE::SID_SetSelf"],
+                "get_acl_acl": ["$Admin::ACE::SID"]
+            },
+            "$Admin::C_PIN::MSID.$MethodID::Get": {
+                "acl": ["$Admin::ACE::MSID_Get"],
+                "get_acl_acl": ["$Admin::ACE::SID"]
+            },
+            "$Admin::Authority::Makers.$MethodID::Set": {
+                "acl": ["$Admin::ACE::SID_SetMakers"],
+                "get_acl_acl": ["$Admin::ACE::SID"]
+            },
+            "$InvokingID::ThisSP.$MethodID::Random": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            }
+        },
+        "ace": {
+            "$Admin::ACE::Anybody": {
+                "uid": "$Admin::ACE::Anybody",
+                "name": "Anybody",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::Anybody"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18
+                ]
+            },
+            "$Admin::ACE::Makers": {
+                "uid": "$Admin::ACE::Makers",
+                "name": "Makers",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::Makers"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18
+                ]
+            },
+            "$Admin::ACE::SID": {
+                "uid": "$Admin::ACE::SID",
+                "name": "SID",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::SID"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18
+                ]
+            },
+            "$Admin::ACE::SID_SetSelf": {
+                "uid": "$Admin::ACE::SID_SetSelf",
+                "name": "SID_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::SID"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Admin::ACE::MSID_Get": {
+                "uid": "$Admin::ACE::MSID_Get",
+                "name": "MSID_Get",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::Anybody"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Admin::ACE::SID_SetMakers": {
+                "uid": "$Admin::ACE::SID_SetMakers",
+                "name": "SID_SetMakers",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::SID"
+                    }
+                ],
+                "columns": [5]
+            }
+        },
+        "authority": {
+            "$Admin::Authority::Anybody": {
+                "uid": "$Admin::Authority::Anybody",
+                "name": "Anybody",
+                "common_name": "Anybody",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Admin::Authority::Makers": {
+                "uid": "$Admin::Authority::Makers",
+                "name": "Makers",
+                "common_name": "Maker",
+                "is_class": true,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Admin::Authority::MakerSymK": {
+                "uid": "$Admin::Authority::MakerSymK",
+                "name": "MakerSymK",
+                "common_name": "Maker",
+                "is_class": false,
+                "class": "$Admin::Authority::Makers",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "SymK",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Admin::Authority::SID": {
+                "uid": "$Admin::Authority::SID",
+                "name": "SID",
+                "common_name": "TPerOwner",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Admin::C_PIN::SID",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            }
+        },
+        "c_pin": {
+            "$Admin::C_PIN::SID": {
+                "uid": "$Admin::C_PIN::SID",
+                "name": "SID",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Admin::C_PIN::MSID": {
+                "uid": "$Admin::C_PIN::MSID",
+                "name": "MSID",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            }
+        },
+        "sp": {
+            "$Admin::SP::Admin": {
+                "uid": "$Admin::SP::Admin",
+                "name": "Admin",
+                "life_cycle_state": "Manufactured",
+                "frozen": false
+            },
+            "$Admin::SP::Locking": {
+                "uid": "$Admin::SP::Locking",
+                "name": "Locking",
+                "life_cycle_state": "Manufactured",
+                "frozen": false
+            }
+        },
+        "table": {
+            "$Table::Table": {
+                "uid": "$Table::Table",
+                "name": "Table",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::AccessControl": {
+                "uid": "$Table::AccessControl",
+                "name": "AccessControl",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::ACE": {
+                "uid": "$Table::ACE",
+                "name": "ACE",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::Authority": {
+                "uid": "$Table::Authority",
+                "name": "Authority",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::C_PIN": {
+                "uid": "$Table::C_PIN",
+                "name": "C_PIN",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::SP": {
+                "uid": "$Table::SP",
+                "name": "SP",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            }
+        }
+    },
+    "locking": {
+        "uid": "$Admin::SP::Locking",
+        "access_control": {
+            "$InvokingID::ThisSP.$MethodID::Authenticate": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::Authority.$MethodID::Next": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::AnyMaster"]
+            },
+            "$Locking::Authority::Anybody.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::Authority::BandMasters.$MethodID::Get": {
+                "acl": ["$Locking::ACE::AnyMaster"],
+                "get_acl_acl": ["$Locking::ACE::AnyMaster"]
+            },
+            "$Locking::Authority::EraseMaster.$MethodID::Get": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::EraseMaster"]
+            },
+            "$Locking::Authority::BandMaster0.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster0"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster0"]
+            },
+            "$Locking::Authority::BandMaster1.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster1"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster1"]
+            },
+            "$Locking::Authority::BandMaster2.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster2"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster2"]
+            },
+            "$Locking::Authority::BandMaster3.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster3"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster3"]
+            },
+            "$Locking::Authority::BandMaster4.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster4"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster4"]
+            },
+            "$Locking::Authority::BandMaster5.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster5"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster5"]
+            },
+            "$Locking::Authority::BandMaster6.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster6"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster6"]
+            },
+            "$Locking::Authority::BandMaster7.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster7"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster7"]
+            },
+            "$Locking::Authority::BandMaster8.$MethodID::Get": {
+                "acl": ["$Locking::ACE::BandMaster8"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster8"]
+            },
+            "$TableID::C_PIN.$MethodID::Next": {
+                "acl": ["$Locking::ACE::AnyMaster"],
+                "get_acl_acl": ["$Locking::ACE::AnyMaster"]
+            },
+            "$Locking::C_PIN::EraseMaster.$MethodID::Set": {
+                "acl": ["$Locking::ACE::EraseMaster_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::EraseMaster"]
+            },
+            "$Locking::C_PIN::BandMaster0.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster0_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster0"]
+            },
+            "$Locking::C_PIN::BandMaster1.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster1_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster1"]
+            },
+            "$Locking::C_PIN::BandMaster2.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster2_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster2"]
+            },
+            "$Locking::C_PIN::BandMaster3.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster3_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster3"]
+            },
+            "$Locking::C_PIN::BandMaster4.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster4_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster4"]
+            },
+            "$Locking::C_PIN::BandMaster5.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster5_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster5"]
+            },
+            "$Locking::C_PIN::BandMaster6.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster6_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster6"]
+            },
+            "$Locking::C_PIN::BandMaster7.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster7_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster7"]
+            },
+            "$Locking::C_PIN::BandMaster8.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster8_SetSelf"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster8"]
+            },
+            "$LockingInfo::LockingInfo.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::AnyMaster"]
+            },
+            "$TableID::Locking.$MethodID::Next": {
+                "acl": ["$Locking::ACE::AnyMaster"],
+                "get_acl_acl": ["$Locking::ACE::AnyMaster"]
+            },
+            "$Locking::Locking::GlobalRange.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster0_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster0"]
+            },
+            "$Locking::Locking::Band1.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster1_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster1"]
+            },
+            "$Locking::Locking::Band2.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster2_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster2"]
+            },
+            "$Locking::Locking::Band3.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster3_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster3"]
+            },
+            "$Locking::Locking::Band4.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster4_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster4"]
+            },
+            "$Locking::Locking::Band5.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster5_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster5"]
+            },
+            "$Locking::Locking::Band6.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster6_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster6"]
+            },
+            "$Locking::Locking::Band7.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster7_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster7"]
+            },
+            "$Locking::Locking::Band8.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMaster8_SetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster8"]
+            },
+            "$Locking::Locking::GlobalRange.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster0"]
+            },
+            "$Locking::Locking::Band1.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster1"]
+            },
+            "$Locking::Locking::Band2.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster2"]
+            },
+            "$Locking::Locking::Band3.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster3"]
+            },
+            "$Locking::Locking::Band4.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster4"]
+            },
+            "$Locking::Locking::Band5.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster5"]
+            },
+            "$Locking::Locking::Band6.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster6"]
+            },
+            "$Locking::Locking::Band7.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster7"]
+            },
+            "$Locking::Locking::Band8.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody_GetBand"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster8"]
+            },
+            "$Locking::Locking::GlobalRange.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster0"]
+            },
+            "$Locking::Locking::Band1.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster1"]
+            },
+            "$Locking::Locking::Band2.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster2"]
+            },
+            "$Locking::Locking::Band3.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster3"]
+            },
+            "$Locking::Locking::Band4.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster4"]
+            },
+            "$Locking::Locking::Band5.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster5"]
+            },
+            "$Locking::Locking::Band6.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster6"]
+            },
+            "$Locking::Locking::Band7.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster7"]
+            },
+            "$Locking::Locking::Band8.$MethodID::Erase": {
+                "acl": ["$Locking::ACE::EraseMaster"],
+                "get_acl_acl": ["$Locking::ACE::BandMaster8"]
+            },
+            "$Locking::TableID::DataStore.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::TableID::DataStore.$MethodID::Set": {
+                "acl": ["$Locking::ACE::BandMasters"],
+                "get_acl_acl": ["$Locking::ACE::BandMasters"]
+            },
+            "$InvokingID::ThisSP.$MethodID::Random": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::GlobalRange_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band1_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band2_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band3_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band4_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band5_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band6_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band7_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::K_AES_256::Band8_Key.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Get_K_AES_Mode"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            }
+        },
+        "ace": {
+            "$Locking::ACE::Anybody": {
+                "uid": "$Locking::ACE::Anybody",
+                "name": "Anybody",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Anybody"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster0": {
+                "uid": "$Locking::ACE::BandMaster0",
+                "name": "BandMaster0",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster0"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster0_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster0_SetSelf",
+                "name": "BandMaster0_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster0"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster0_SetBand": {
+                "uid": "$Locking::ACE::BandMaster0_SetBand",
+                "name": "BandMaster0_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster0"
+                    }
+                ],
+                "columns": [5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster1": {
+                "uid": "$Locking::ACE::BandMaster1",
+                "name": "BandMaster1",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster1"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster1_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster1_SetSelf",
+                "name": "BandMaster1_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster1"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster1_SetBand": {
+                "uid": "$Locking::ACE::BandMaster1_SetBand",
+                "name": "BandMaster1_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster1"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster2": {
+                "uid": "$Locking::ACE::BandMaster2",
+                "name": "BandMaster2",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster2"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster2_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster2_SetSelf",
+                "name": "BandMaster2_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster2"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster2_SetBand": {
+                "uid": "$Locking::ACE::BandMaster2_SetBand",
+                "name": "BandMaster2_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster2"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster3": {
+                "uid": "$Locking::ACE::BandMaster3",
+                "name": "BandMaster3",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster3"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster3_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster3_SetSelf",
+                "name": "BandMaster3_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster3"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster3_SetBand": {
+                "uid": "$Locking::ACE::BandMaster3_SetBand",
+                "name": "BandMaster3_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster3"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster4": {
+                "uid": "$Locking::ACE::BandMaster4",
+                "name": "BandMaster4",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster4"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster4_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster4_SetSelf",
+                "name": "BandMaster4_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster4"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster4_SetBand": {
+                "uid": "$Locking::ACE::BandMaster4_SetBand",
+                "name": "BandMaster4_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster4"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster5": {
+                "uid": "$Locking::ACE::BandMaster5",
+                "name": "BandMaster5",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster5"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster5_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster5_SetSelf",
+                "name": "BandMaster5_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster5"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster5_SetBand": {
+                "uid": "$Locking::ACE::BandMaster5_SetBand",
+                "name": "BandMaster5_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster5"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster6": {
+                "uid": "$Locking::ACE::BandMaster6",
+                "name": "BandMaster6",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster6"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster6_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster6_SetSelf",
+                "name": "BandMaster6_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster6"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster6_SetBand": {
+                "uid": "$Locking::ACE::BandMaster6_SetBand",
+                "name": "BandMaster6_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster6"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster7": {
+                "uid": "$Locking::ACE::BandMaster7",
+                "name": "BandMaster7",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster7"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster7_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster7_SetSelf",
+                "name": "BandMaster7_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster7"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster7_SetBand": {
+                "uid": "$Locking::ACE::BandMaster7_SetBand",
+                "name": "BandMaster7_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster7"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::BandMaster8": {
+                "uid": "$Locking::ACE::BandMaster8",
+                "name": "BandMaster8",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster8"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMaster8_SetSelf": {
+                "uid": "$Locking::ACE::BandMaster8_SetSelf",
+                "name": "BandMaster8_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster8"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::BandMaster8_SetBand": {
+                "uid": "$Locking::ACE::BandMaster8_SetBand",
+                "name": "BandMaster8_SetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMaster8"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::EraseMaster": {
+                "uid": "$Locking::ACE::EraseMaster",
+                "name": "EraseMaster",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::EraseMaster"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::EraseMaster_SetSelf": {
+                "uid": "$Locking::ACE::EraseMaster_SetSelf",
+                "name": "EraseMaster_SetSelf",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::EraseMaster"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::AnyMaster": {
+                "uid": "$Locking::ACE::AnyMaster",
+                "name": "AnyMaster",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMasters"
+                    },
+                    {
+                        "Authority": "$Locking::Authority::EraseMaster"
+                    },
+                    {
+                        "BooleanOp": "Or"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::BandMasters": {
+                "uid": "$Locking::ACE::BandMasters",
+                "name": "BandMasters",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::BandMasters"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::Anybody_GetBand": {
+                "uid": "$Locking::ACE::Anybody_GetBand",
+                "name": "Anybody_GetBand",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Anybody"
+                    }
+                ],
+                "columns": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            },
+            "$Locking::ACE::Get_K_AES_Mode": {
+                "uid": "$Locking::ACE::Get_K_AES_Mode",
+                "name": "Get_K_AES_Mode",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Anybody"
+                    }
+                ],
+                "columns": [4]
+            }
+        },
+        "authority": {
+            "$Locking::Authority::Anybody": {
+                "uid": "$Locking::Authority::Anybody",
+                "name": "Anybody",
+                "common_name": "Anybody",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster0": {
+                "uid": "$Locking::Authority::BandMaster0",
+                "name": "BandMaster0",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster0",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster1": {
+                "uid": "$Locking::Authority::BandMaster1",
+                "name": "BandMaster1",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster1",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster2": {
+                "uid": "$Locking::Authority::BandMaster2",
+                "name": "BandMaster2",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster2",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster3": {
+                "uid": "$Locking::Authority::BandMaster3",
+                "name": "BandMaster3",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster3",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster4": {
+                "uid": "$Locking::Authority::BandMaster4",
+                "name": "BandMaster4",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster4",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster5": {
+                "uid": "$Locking::Authority::BandMaster5",
+                "name": "BandMaster5",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster5",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster6": {
+                "uid": "$Locking::Authority::BandMaster6",
+                "name": "BandMaster6",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster6",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster7": {
+                "uid": "$Locking::Authority::BandMaster7",
+                "name": "BandMaster7",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster7",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMaster8": {
+                "uid": "$Locking::Authority::BandMaster8",
+                "name": "BandMaster8",
+                "common_name": "BandMaster",
+                "is_class": false,
+                "class": "$Locking::Authority::BandMasters",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::BandMaster8",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::EraseMaster": {
+                "uid": "$Locking::Authority::EraseMaster",
+                "name": "EraseMaster",
+                "common_name": "EraseMaster",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::EraseMaster",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::BandMasters": {
+                "uid": "$Locking::Authority::BandMasters",
+                "name": "BandMasters",
+                "common_name": "BandMasters",
+                "is_class": true,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            }
+        },
+        "c_pin": {
+            "$Locking::C_PIN::BandMaster0": {
+                "uid": "$Locking::C_PIN::BandMaster0",
+                "name": "BandMaster0",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster1": {
+                "uid": "$Locking::C_PIN::BandMaster1",
+                "name": "BandMaster1",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster2": {
+                "uid": "$Locking::C_PIN::BandMaster2",
+                "name": "BandMaster2",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster3": {
+                "uid": "$Locking::C_PIN::BandMaster3",
+                "name": "BandMaster3",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster4": {
+                "uid": "$Locking::C_PIN::BandMaster4",
+                "name": "BandMaster4",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster5": {
+                "uid": "$Locking::C_PIN::BandMaster5",
+                "name": "BandMaster5",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster6": {
+                "uid": "$Locking::C_PIN::BandMaster6",
+                "name": "BandMaster6",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster7": {
+                "uid": "$Locking::C_PIN::BandMaster7",
+                "name": "BandMaster7",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::BandMaster8": {
+                "uid": "$Locking::C_PIN::BandMaster8",
+                "name": "BandMaster8",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::EraseMaster": {
+                "uid": "$Locking::C_PIN::EraseMaster",
+                "name": "EraseMaster",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            }
+        },
+        "k_aes_256": {
+            "$Locking::K_AES_256::GlobalRange_Key": {
+                "uid": "$Locking::K_AES_256::GlobalRange_Key",
+                "name": "Global_Range_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band1_Key": {
+                "uid": "$Locking::K_AES_256::Band1_Key",
+                "name": "Band1_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band2_Key": {
+                "uid": "$Locking::K_AES_256::Band2_Key",
+                "name": "Band2_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band3_Key": {
+                "uid": "$Locking::K_AES_256::Band3_Key",
+                "name": "Band3_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band4_Key": {
+                "uid": "$Locking::K_AES_256::Band4_Key",
+                "name": "Band4_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band5_Key": {
+                "uid": "$Locking::K_AES_256::Band5_Key",
+                "name": "Band5_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band6_Key": {
+                "uid": "$Locking::K_AES_256::Band6_Key",
+                "name": "Band6_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band7_Key": {
+                "uid": "$Locking::K_AES_256::Band7_Key",
+                "name": "Band7_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            },
+            "$Locking::K_AES_256::Band8_Key": {
+                "uid": "$Locking::K_AES_256::Band8_Key",
+                "name": "Band8_AES_256",
+                "key": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0
+                ],
+                "mode": "XTS"
+            }
+        },
+        "locking": {
+            "$Locking::Locking::GlobalRange": {
+                "uid": "$Locking::Locking::GlobalRange",
+                "name": "Global_Range",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::GlobalRange_Key"
+            },
+            "$Locking::Locking::Band1": {
+                "uid": "$Locking::Locking::Band1",
+                "name": "Band1",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band1_Key"
+            },
+            "$Locking::Locking::Band2": {
+                "uid": "$Locking::Locking::Band2",
+                "name": "Band2",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band2_Key"
+            },
+            "$Locking::Locking::Band3": {
+                "uid": "$Locking::Locking::Band3",
+                "name": "Band3",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band3_Key"
+            },
+            "$Locking::Locking::Band4": {
+                "uid": "$Locking::Locking::Band4",
+                "name": "Band4",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band4_Key"
+            },
+            "$Locking::Locking::Band5": {
+                "uid": "$Locking::Locking::Band5",
+                "name": "Band5",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band5_Key"
+            },
+            "$Locking::Locking::Band6": {
+                "uid": "$Locking::Locking::Band6",
+                "name": "Band6",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band6_Key"
+            },
+            "$Locking::Locking::Band7": {
+                "uid": "$Locking::Locking::Band7",
+                "name": "Band7",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band7_Key"
+            },
+            "$Locking::Locking::Band8": {
+                "uid": "$Locking::Locking::Band8",
+                "name": "Band8",
+                "common_name": "Locking",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$Locking::K_AES_256::Band8_Key"
+            }
+        },
+        "locking_info_ext": {
+            "$LockingInfo::LockingInfo": {
+                "uid": "$LockingInfo::LockingInfo",
+                "encryption_support": "MediaEncryption",
+                "max_ranges": 8
+            }
+        },
+        "mbr_control": {},
+        "table": {
+            "$Table::Table": {
+                "uid": "$Table::Table",
+                "name": "Table",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::AccessControl": {
+                "uid": "$Table::AccessControl",
+                "name": "AccessControl",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::ACE": {
+                "uid": "$Table::ACE",
+                "name": "ACE",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::Authority": {
+                "uid": "$Table::Authority",
+                "name": "Authority",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::C_PIN": {
+                "uid": "$Table::C_PIN",
+                "name": "C_PIN",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::LockingInfo": {
+                "uid": "$Table::LockingInfo",
+                "name": "LockingInfo",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::Locking": {
+                "uid": "$Table::Locking",
+                "name": "Locking",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::K_AES_256": {
+                "uid": "$Table::K_AES_256",
+                "name": "K_AES_256",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Locking::Table::DataStore": {
+                "uid": "$Locking::Table::DataStore",
+                "name": "DataStore",
+                "kind": "Byte",
+                "rows": 10485760,
+                "mandatory_write_granularity": 1,
+                "recommended_access_granularity": 1
+            }
+        }
+    }
+}
