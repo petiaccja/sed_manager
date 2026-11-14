@@ -8,10 +8,13 @@ use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{
     Authority, AuthorityRef, AuthorityRefExt as _, CPinRef, CPinRefExt, SecurityProviderRef, SecurityProviderRefExt,
 };
-use sed_spec::types::LifeCycleState;
+use sed_spec::ssc::Ssc;
+use sed_spec::types::{AuthMethod, LifeCycleState};
 use sed_spec::uid_registry::core::shared::authority::SID;
 use sed_spec::uid_registry::core::shared::table_id;
 use sed_spec::uid_registry::opal_2::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
+use sed_spec::uid_registry::psid::admin::authority::PSID;
+use sed_spec::uid_registry::{enterprise, psid};
 use sed_tper::{Error as TperError, Tper, TperHandle};
 use tracing::instrument;
 
@@ -201,16 +204,120 @@ impl SetupSession {
     /// access.
     #[instrument(level = "info", skip(self), ret, err)]
     pub async fn list_authorities(&self, sp: SecurityProviderRef) -> Result<Vec<Authority>, Error> {
-        let session = self.tper.start_session(sp, None, None).await?;
-        session
-            .with(async |session| {
-                let authority_refs = session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await?;
-                let mut authorities = Vec::new();
-                for authority_ref in authority_refs {
-                    authorities.push(session.get_object(authority_ref, ..).await?);
-                }
-                Ok(authorities)
-            })
-            .await
+        if self.spec.ssc() == Ssc::Enterprise {
+            if sp == enterprise::admin::sp::ADMIN {
+                // Enterprise does not authorize `Next` on the `Authority` table as
+                // `Anybody`.
+                use enterprise::admin::authority::{ANYBODY, MAKER_SYM_K, MAKERS, SID};
+                let session = self.tper.start_session(sp, None, None).await?;
+                let psid_probe = session.with(async |session| session.get_field(PSID.uid()).await).await;
+                let psid = matches!(psid_probe, Err(TperError::FieldNotReturned { .. }) | Ok(_)).then_some(PSID);
+                let fixed = [SID, MAKERS, MAKER_SYM_K, ANYBODY];
+                Ok(fixed.into_iter().chain(psid).map(enterprise_admin_authority).collect())
+            } else {
+                // Enterprise does not authorize reading anything from the
+                // `Authority` table as `Anybody`.
+                let session = self.tper.start_session(sp, None, None).await?;
+                let authority_refs = session
+                    .with(async |session| session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await)
+                    .await?;
+                Ok(authority_refs.into_iter().map(enterprise_locking_authority).collect())
+            }
+        } else {
+            let session = self.tper.start_session(sp, None, None).await?;
+            session
+                .with(async |session| {
+                    let authority_refs = session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await?;
+                    let mut authorities = Vec::new();
+                    for authority_ref in authority_refs {
+                        authorities.push(session.get_object(authority_ref, ..).await?);
+                    }
+                    Ok(authorities)
+                })
+                .await
+        }
+    }
+}
+
+fn enterprise_admin_authority(authority_ref: AuthorityRef) -> Authority {
+    use enterprise::admin::authority::{MAKER_SYM_K, MAKERS, SID};
+    use enterprise::admin::c_pin;
+    use psid::admin::authority::PSID;
+    use psid::admin::c_pin as psid_c_pin;
+
+    fn class(uid: AuthorityRef) -> sed_packet::ObjectRef<38654705664> {
+        match uid {
+            MAKER_SYM_K => MAKERS,
+            _ => AuthorityRef::null(),
+        }
+    }
+
+    fn operation(uid: AuthorityRef) -> AuthMethod {
+        match uid {
+            SID => AuthMethod::Password,
+            PSID => AuthMethod::Password,
+            MAKER_SYM_K => AuthMethod::SymK,
+            _ => AuthMethod::None,
+        }
+    }
+
+    fn credential(uid: AuthorityRef) -> CPinRef {
+        match uid {
+            SID => c_pin::SID,
+            PSID => psid_c_pin::PSID,
+            _ => CPinRef::null(),
+        }
+    }
+
+    Authority {
+        uid: Some(authority_ref),
+        is_class: Some(authority_ref == MAKERS),
+        class: Some(class(authority_ref)),
+        enabled: Some(true),
+        operation: Some(operation(authority_ref)),
+        credential: Some(credential(authority_ref).into()),
+        ..Default::default()
+    }
+}
+
+fn enterprise_locking_authority(authority_ref: AuthorityRef) -> Authority {
+    use enterprise::locking::authority::{BAND_MASTER, BAND_MASTERS, ERASE_MASTER};
+    use enterprise::locking::c_pin;
+
+    fn class(uid: AuthorityRef) -> sed_packet::ObjectRef<38654705664> {
+        match uid {
+            _ if BAND_MASTER.contains(uid) => BAND_MASTERS,
+            _ => AuthorityRef::null(),
+        }
+    }
+
+    fn operation(uid: AuthorityRef) -> AuthMethod {
+        match uid {
+            _ if BAND_MASTER.contains(uid) => AuthMethod::Password,
+            ERASE_MASTER => AuthMethod::Password,
+            _ => AuthMethod::None,
+        }
+    }
+
+    fn credential(uid: AuthorityRef) -> CPinRef {
+        match uid {
+            _ if let Some(index) = BAND_MASTER.index_of(uid)
+                && let Some(pin) = c_pin::BAND_MASTER.get(index) =>
+            {
+                pin
+            }
+            ERASE_MASTER => c_pin::ERASE_MASTER,
+            _ => CPinRef::null(),
+        }
+    }
+
+    Authority {
+        uid: Some(authority_ref),
+        is_class: Some(authority_ref == BAND_MASTERS),
+        class: Some(class(authority_ref)),
+        enabled: Some(true),
+        operation: Some(operation(authority_ref)),
+        credential: Some(credential(authority_ref).into()),
+        ..Default::default()
     }
 }

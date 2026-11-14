@@ -11,6 +11,7 @@ use crate::types::TableKind;
 use crate::uid_registry::core::shared::table_id;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(default))]
 #[object(table=table_id::TABLE)]
 pub struct TableDesc {
     pub uid: Option<TableDescRef>,
@@ -26,6 +27,8 @@ pub struct TableDesc {
     pub last_id: Option<Uid>,
     pub min_size: Option<u32>,
     pub max_size: Option<u32>,
+    pub mandatory_write_granularity: Option<u32>,
+    pub recommended_access_granularity: Option<u32>,
 }
 
 impl ObjectUid for TableDesc {

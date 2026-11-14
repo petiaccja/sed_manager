@@ -8,13 +8,15 @@ use std::collections::BTreeMap;
 
 use sed_packet::Object;
 use sed_spec::objects::{
-    AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl,
-    SecurityProvider as SecurityProviderObj, TableDesc,
+    AccessControl, Ace, Authority, CPin, KAes128, KAes256, LockingInfoExt, LockingRange, MbrControl,
+    SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
 };
 
 pub type Table<T> = BTreeMap<<T as Object>::Ref, T>;
 
 pub trait SecurityProvider {
+    fn uid(&self) -> SecurityProviderRef;
+
     // Tables all SPs have.
     fn access_control(&self) -> &Table<AccessControl>;
     fn access_control_mut(&mut self) -> &mut Table<AccessControl>;
@@ -28,6 +30,12 @@ pub trait SecurityProvider {
     fn table_mut(&mut self) -> &mut Table<TableDesc>;
 
     // Tables some SPs have.
+    fn k_aes_128(&self) -> Option<&Table<KAes128>> {
+        None
+    }
+    fn k_aes_128_mut(&mut self) -> Option<&mut Table<KAes128>> {
+        None
+    }
     fn k_aes_256(&self) -> Option<&Table<KAes256>> {
         None
     }
@@ -64,12 +72,10 @@ pub trait SecurityProvider {
     fn mbr_mut(&mut self) -> Option<&mut Vec<u8>> {
         None
     }
-    fn data_store(&self, index: usize) -> Option<&Vec<u8>> {
-        let _ = index;
+    fn data_store(&self) -> Option<&Vec<u8>> {
         None
     }
-    fn data_store_mut(&mut self, index: usize) -> Option<&mut Vec<u8>> {
-        let _ = index;
+    fn data_store_mut(&mut self) -> Option<&mut Vec<u8>> {
         None
     }
 

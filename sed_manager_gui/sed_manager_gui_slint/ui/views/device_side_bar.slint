@@ -14,6 +14,9 @@ component DeviceSideBarItem inherits IslandButton {
     has-idle-background: false;
     accessible-role: button;
     accessible-label: !identity.name.is-empty ? identity.name : identity.path;
+    accessible-action-default => {
+        root.clicked();
+    }
 
     in property <Identity> identity;
 
@@ -75,7 +78,9 @@ component DeviceSideBarTitle {
 export component DeviceSideBar {
     in property <string> title: "Devices";
     in property <[Device]> devices;
-    in-out property <int> selected;
+    // The device is selected by its path rather than its index, since the
+    // devices may get reordered (e.g. when their identities get loaded).
+    in-out property <string> selected: devices.length > 0 ? devices[0].identity.path : "";
 
     callback close-device(path: string);
 
@@ -95,13 +100,13 @@ export component DeviceSideBar {
                 alignment: start;
                 spacing: 0.2rem;
 
-                for device[index] in devices: DeviceSideBarItem {
-                    is-selected: index == selected;
+                for device in devices: DeviceSideBarItem {
+                    is-selected: device.identity.path == selected;
                     identity: device.identity;
-                    accessible-id: "device-side-bar-item-" + index;
+                    accessible-id: "device-side-bar-" + device.identity.path;
 
                     clicked => {
-                        root.selected = index
+                        root.selected = device.identity.path
                     }
                     close-device(path) => {
                         close-device(path)

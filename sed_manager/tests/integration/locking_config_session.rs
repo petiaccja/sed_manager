@@ -13,6 +13,7 @@ use sed_packet::MaxBytes;
 use sed_packet::com_id::ComIdExt;
 use sed_packet::discovery::{FeatureDescriptor, LockingDescriptor};
 use sed_spec::objects::{Authority, AuthorityRef, LockingRange, LockingRangeRef, MbrControl, MediaKeyRef};
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::core::shared::mbr_control;
 use sed_spec::uid_registry::opal_2::admin::sp;
 use sed_spec::uid_registry::opal_2::locking as opal_locking;
@@ -21,8 +22,7 @@ use sed_tper::Tper;
 use sed_virtual_device::{BASE_COM_ID, LOGICAL_SECTOR_COUNT, VirtualDevice};
 use tracing::instrument;
 
-const NEW_SID_PASSWORD: MaxBytes<32> =
-    unsafe { MaxBytes::from_const_with_len_unchecked(*b"not_default\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 0) };
+const NEW_SID_PASSWORD: MaxBytes<32> = MaxBytes::from_array(*b"not_default");
 
 async fn setup_tper() -> Tper {
     let (tper, _device) = setup().await;
@@ -31,7 +31,7 @@ async fn setup_tper() -> Tper {
 
 async fn setup() -> (Tper, Arc<VirtualDevice>) {
     let runtime = Arc::new(PolyRuntime::Tokio(TokioRuntime::current().unwrap()));
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = Tper::connect(BASE_COM_ID, ComIdExt(0), None, device.clone(), runtime);
     let spec = DeviceSpec::try_new(tper.discover_current().await.unwrap()).unwrap();
     let setup_session = SetupSession::new(&tper, spec);
@@ -88,7 +88,7 @@ async fn login() {
 #[with_tracing]
 async fn login_wrong_password() {
     let tper = setup_tper().await;
-    let wrong_password = MaxBytes::<32>::from(b"wrong_password".as_slice());
+    let wrong_password = MaxBytes::<32>::from_array(*b"wrong_password");
 
     let admin1 = locking_admin1();
     let spec = DeviceSpec::try_new(tper.discover_current().await.unwrap()).unwrap();
@@ -271,13 +271,16 @@ async fn set_locking_ranges_invalid_desired() {
     assert_that!(session.get_locking_ranges().await, ok(eq(&current)));
 }
 
-fn get_media_encryption_key(virtual_device: &VirtualDevice) -> Option<[u8; 64]> {
+fn get_media_encryption_key(virtual_device: &VirtualDevice) -> Option<heapless::Vec<u8, 64>> {
     virtual_device.inspect(|tper| {
-        let locking_sp = tper.locking_sp().unwrap();
-        let key_uid = locking_sp.locking[&range_uid(2)].active_key.unwrap();
-        match key_uid {
-            MediaKeyRef::Aes128(_k_aes_128_ref) => panic!("no K_AES_128 table in virtual device"),
-            MediaKeyRef::Aes256(k_aes_256_ref) => locking_sp.k_aes_256[&k_aes_256_ref].key,
+        let locking_sp = tper.locking.as_ref().unwrap();
+        let key_ref = locking_sp.locking[&range_uid(2)].active_key.unwrap();
+        match key_ref {
+            MediaKeyRef::Aes128(key_ref) => locking_sp.k_aes_128.as_ref().unwrap()[&key_ref]
+                .key
+                .as_ref()
+                .map(|key| heapless::Vec::<u8, 64>::from_slice(key.as_slice()).unwrap()),
+            MediaKeyRef::Aes256(key_ref) => locking_sp.k_aes_256.as_ref().unwrap()[&key_ref].key.clone(),
         }
     })
 }
@@ -295,7 +298,7 @@ async fn erase_locking_range() {
 
     session.erase_locking_range(range_uid(2)).await.unwrap();
 
-    assert_that!(get_media_encryption_key(&device), not(eq(key_before)));
+    assert_that!(get_media_encryption_key(&device), not(eq(&key_before)));
     assert_that!(session.get_locking_ranges().await, ok(eq(&ranges_before)));
 }
 
@@ -320,7 +323,7 @@ async fn erase_locking_range_no_media_encryption() {
     let result = session.erase_locking_range(range_uid(2)).await;
 
     assert_that!(result, err(eq(&Error::NotSupported)));
-    assert_that!(get_media_encryption_key(&device), eq(key_before));
+    assert_that!(get_media_encryption_key(&device), eq(&key_before));
 }
 
 #[instrument]
@@ -350,7 +353,7 @@ async fn change_password() {
     let session = login_admin1(&tper).await.unwrap();
 
     let authority = user_uid(3);
-    let new_password = MaxBytes::<32>::from(b"wrong_password".as_slice());
+    let new_password = MaxBytes::<32>::from_array(*b"wrong_password");
 
     session.change_password(authority, new_password.clone()).await.unwrap();
 
@@ -367,17 +370,17 @@ async fn set_mbr_control() {
     let mbr_control =
         MbrControl { uid: Some(mbr_control::MBR_CONTROL), enable: Some(true), done: Some(true), done_on_reset: None };
 
-    assert_that!(
-        device.inspect(|tper| tper.locking_sp().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
-        some(eq(false))
-    );
+    let get_mbr_control = |tper: &sed_virtual_device::Tper| {
+        tper.locking.as_ref().unwrap().mbr_control.as_ref().unwrap().first_key_value().unwrap().1.clone()
+    };
+
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).enable), some(eq(false)));
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).done), some(eq(false)));
 
     session.set_mbr_control(mbr_control).await.unwrap();
 
-    assert_that!(
-        device.inspect(|tper| tper.locking_sp().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
-        some(eq(true))
-    );
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).enable), some(eq(true)));
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).done), some(eq(true)));
 }
 
 #[instrument]
@@ -391,8 +394,8 @@ async fn write_mbr() {
     session.write_mbr(500, &data).await.unwrap();
 
     device.inspect(|tper| {
-        assert!(tper.locking_sp().unwrap().mbr[0..500].iter().all(|x| *x == 0));
-        assert!(tper.locking_sp().unwrap().mbr[500..987653] == data);
-        assert!(tper.locking_sp().unwrap().mbr[987653..988154].iter().all(|x| *x == 0));
+        assert!(tper.locking.as_ref().unwrap().mbr.as_ref().unwrap()[0..500].iter().all(|x| *x == 0));
+        assert!(tper.locking.as_ref().unwrap().mbr.as_ref().unwrap()[500..987653] == data);
+        assert!(tper.locking.as_ref().unwrap().mbr.as_ref().unwrap()[987653..988154].iter().all(|x| *x == 0));
     });
 }

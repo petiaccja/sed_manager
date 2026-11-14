@@ -322,7 +322,7 @@ Add `#[tarpc::service]` versions of the Stage 2 traits and serve them over an
 in-process/duplex transport (still one binary, no real IPC). This is where:
 
 - `Serialize`/`Deserialize` gets added to wire types: `MaxBytes` via
-  `smallvec`'s `serde` feature (free), `sed_spec` objects via added derives
+  `heapless`'s `serde` feature (free), `sed_spec` objects via added derives
   alongside their existing ones, `sed_manager::Error` via a flattened
   serializable variant (its one non-mechanical piece).
 - The `Endpoint<T>`/`RpcClient` factory pattern gets built and validated.
@@ -353,7 +353,7 @@ needed. Breakdown per capability:
 
 - **`CAP_SYS_RAWIO` — the ATA/SCSI passthrough path.** TCG commands to
   SATA/SAS drives (`TRUSTED SEND`/`RECEIVE` on ATA, `SECURITY PROTOCOL
-  IN`/`OUT` on SCSI) go through `SG_IO`/`HDIO_DRIVE_CMD`-style passthrough
+IN`/`OUT` on SCSI) go through `SG_IO`/`HDIO_DRIVE_CMD`-style passthrough
   ioctls. The kernel gates any command not on its small "known safe,
   read-only" whitelist behind `capable(CAP_SYS_RAWIO)` — there's no
   finer-grained capability for "security-protocol opcodes only." This is a
@@ -394,20 +394,20 @@ What's replaceable vs. inherent:
   for these two is containment, not elimination, once they're confined to
   the small daemon binary (already the plan via per-executable `setcap`
   rather than the whole GUI):
-  - `CapabilityBoundingSet=CAP_SYS_RAWIO CAP_SYS_ADMIN` in the systemd unit
-    — the process can never hold more than this, even via a later `exec`.
-  - `NoNewPrivileges=yes` — blocks privilege escalation via `exec`.
-  - `DeviceAllow=` (cgroup device controller) — allow-list only the
-    block/NVMe device major/minor classes actually needed. Real
-    kernel-enforced containment independent of the capability model: even
-    holding these capabilities, a compromised process can't touch a device
-    outside the allow-list.
-  - `SystemCallFilter=` (seccomp) — allow-list `ioctl`/`open`/`read`/
-    `write`/`close` plus whatever the RPC transport needs; deny `@mount`,
-    `@module`, `@reboot`, `@raw-io` (blocks `iopl`/`ioperm`/`pciconfig_*`,
-    which `CAP_SYS_RAWIO` would otherwise permit but this app never uses).
-  - `systemd-analyze security <unit>` once the unit exists, for a concrete
-    checklist instead of guesswork.
+    - `CapabilityBoundingSet=CAP_SYS_RAWIO CAP_SYS_ADMIN` in the systemd unit
+      — the process can never hold more than this, even via a later `exec`.
+    - `NoNewPrivileges=yes` — blocks privilege escalation via `exec`.
+    - `DeviceAllow=` (cgroup device controller) — allow-list only the
+      block/NVMe device major/minor classes actually needed. Real
+      kernel-enforced containment independent of the capability model: even
+      holding these capabilities, a compromised process can't touch a device
+      outside the allow-list.
+    - `SystemCallFilter=` (seccomp) — allow-list `ioctl`/`open`/`read`/
+      `write`/`close` plus whatever the RPC transport needs; deny `@mount`,
+      `@module`, `@reboot`, `@raw-io` (blocks `iopl`/`ioperm`/`pciconfig_*`,
+      which `CAP_SYS_RAWIO` would otherwise permit but this app never uses).
+    - `systemd-analyze security <unit>` once the unit exists, for a concrete
+      checklist instead of guesswork.
 - Confirm empirically which capability ties to which drive backend
   (`auditd`/`journalctl -k` show `capable: ... CAP_SYS_ADMIN`-style denials
   when a capability is missing) before finalizing the file-capability set —
@@ -430,7 +430,7 @@ into what's actually blocked vs. not:
 - `/dev/mem`/`/dev/kmem` reads, raw I/O port access (`iopl`/`ioperm`) —
   `CAP_SYS_RAWIO` nominally allows this, but `DeviceAllow=` excludes those
   nodes and `SystemCallFilter=` can deny the `@raw-io` group directly.
-- Any disk *not* in `DeviceAllow=` — enforced by the cgroup device
+- Any disk _not_ in `DeviceAllow=` — enforced by the cgroup device
   controller independent of capabilities held.
 - **Network exfiltration.** The daemon has no legitimate network need at
   all by design (telemetry is deliberately kept out of it; IPC is a local
@@ -440,7 +440,7 @@ into what's actually blocked vs. not:
 
 **Not contained — raw block I/O doesn't distinguish TCG commands from
 anything else.** `CAP_SYS_RAWIO`/`CAP_SYS_ADMIN` plus an open fd on a block
-device allow *any* command the passthrough interface supports, not just
+device allow _any_ command the passthrough interface supports, not just
 `SECURITY PROTOCOL IN/OUT` or `NVME_IOCTL_ADMIN_CMD`'s Security Send/Receive
 — including plain `READ`/`WRITE` at arbitrary LBAs, bypassing the
 filesystem layer (and every file permission on that disk) entirely. No OS
@@ -461,12 +461,12 @@ close; it's inherent to granting raw block I/O to a disk that also holds
 user data.
 
 **Reframing the acceptable/unacceptable line:** "the drive gets wiped" and
-"the drive's live contents get read or corrupted" are the *same*
+"the drive's live contents get read or corrupted" are the _same_
 underlying primitive (raw write and raw read through the identical
 passthrough interface), not different points on a severity scale — accepting
 one as in-scope (given a bug or user mistake could cause it anyway) means
 accepting the other too, since there's no design that keeps revert/erase
-working while preventing it. The line that *is* achievable and worth
+working while preventing it. The line that _is_ achievable and worth
 holding firmly: network-mediated exfiltration and remote-coordinated
 ransom, both blocked by denying network access entirely. A ransomware
 payload that never touches the network (encrypts in place, demands payment
@@ -543,7 +543,7 @@ What's still worth doing, in descending order of confidence:
 4. **Put the GUI+telemetry process in an AppContainer / Low-Privilege
    AppContainer** (Windows' native sandbox, used by UWP apps and Chromium's
    sandbox). Not applicable to the daemon (AppContainers can't hold admin
-   rights at all), but it's the right tool for the *unprivileged* side —
+   rights at all), but it's the right tool for the _unprivileged_ side —
    shrinks the GUI/OTLP process's blast radius below a normal user process,
    which Linux doesn't get for free either. Complementary, independent of
    the elevation question.

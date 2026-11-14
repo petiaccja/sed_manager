@@ -8,8 +8,12 @@ workspace = true
 
 [dependencies]
 sorbit.workspace = true
-smallvec.workspace = true
+heapless.workspace = true
 thiserror.workspace = true
+serde = { workspace = true, optional = true }
+
+[features]
+serde = ["dep:serde"]
 
 [dev-dependencies]
 rstest.workspace = true

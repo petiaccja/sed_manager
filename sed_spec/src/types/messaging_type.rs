@@ -6,8 +6,9 @@
 use num_enum::{FromPrimitive, IntoPrimitive};
 use sed_packet::token_stream::{Detokenize, Detokenizer, Tokenize, Tokenizer};
 
-#[allow(non_camel_case_types)]
+#[expect(non_camel_case_types)]
 #[derive(PartialEq, Eq, Clone, Copy, Debug, FromPrimitive, IntoPrimitive)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(u8)]
 pub enum MessagingType {
     None = 0,

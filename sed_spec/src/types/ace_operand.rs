@@ -11,6 +11,7 @@ use crate::types::Type;
 use crate::types::boolean_op::BooleanOp;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum AceOperand {
     Authority(AuthorityRef),
     BooleanOp(BooleanOp),

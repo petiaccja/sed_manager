@@ -65,6 +65,41 @@ pub struct AccessControlRef {
     pub method_id: MethodRef,
 }
 
+#[cfg(feature = "serde")]
+impl serde::Serialize for AccessControlRef {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            format!("{}.{}", self.invoking_id, self.method_id).serialize(serializer)
+        } else {
+            (self.invoking_id, self.method_id).serialize(serializer)
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for AccessControlRef {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error as _;
+        if deserializer.is_human_readable() {
+            const INVALID_FORMAT: &str = "access control references must be in the format `<invoking_id>.<method_id>`";
+            let s = String::deserialize(deserializer)?;
+            let (invoking_id_s, method_id_s) = s.split_once('.').ok_or(D::Error::custom(INVALID_FORMAT))?;
+            let invoking_id = invoking_id_s.parse().map_err(D::Error::custom)?;
+            let method_id: Uid = method_id_s.parse().map_err(D::Error::custom)?;
+            let method_id = MethodRef::try_from(method_id).map_err(D::Error::custom)?;
+            Ok(Self { invoking_id, method_id })
+        } else {
+            <(_, _)>::deserialize(deserializer).map(|(invoking_id, method_id)| Self { invoking_id, method_id })
+        }
+    }
+}
+
 /// A reference to any object that contains a credential.
 ///
 /// Credential object have one field which is some sort of secret or password.
@@ -114,6 +149,33 @@ impl TryFrom<Uid> for MediaKeyRef {
         KAes128Ref::try_from(value)
             .map(Self::Aes128)
             .or_else(|_| KAes256Ref::try_from(value).map(Self::Aes256))
+    }
+}
+
+/// Serialized as a plain UID in all formats. Untagged enums are not supported
+/// by non-self-describing formats like postcard, and the variant is implied by
+/// the UID's table anyway.
+#[cfg(feature = "serde")]
+impl serde::Serialize for MediaKeyRef {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        Uid::from(*self).serialize(serializer)
+    }
+}
+
+/// The null UID is accepted and deserialized as AES-128, as it carries no
+/// information about the key's type.
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for MediaKeyRef {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error as _;
+        Self::try_from(Uid::deserialize(deserializer)?)
+            .map_err(|uid| D::Error::custom(format!("{uid} is not a media key")))
     }
 }
 

@@ -157,6 +157,21 @@ impl SessionMethodParam for GenKey {
 pub struct GenKeyResult;
 
 //------------------------------------------------------------------------------
+// Erase
+//------------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq, Eq, DetokenizeStruct, TokenizeStruct)]
+pub struct Erase;
+
+impl SessionMethodParam for Erase {
+    const METHOD_ID: MethodRef = method_id::ERASE;
+    type Result = EraseResult;
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, DetokenizeStruct, TokenizeStruct)]
+pub struct EraseResult;
+
+//------------------------------------------------------------------------------
 // Revert
 //------------------------------------------------------------------------------
 

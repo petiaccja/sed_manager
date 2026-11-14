@@ -9,4 +9,5 @@ mod cycle_ownership;
 mod driver;
 mod element_handle_ext;
 mod reset_stack;
+mod shared_steps;
 mod test_utils;

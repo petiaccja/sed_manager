@@ -13,7 +13,9 @@ use sed_packet::discovery::LockingDescriptor;
 use sed_packet::token_stream::token::{Atom as _, MediumAtom};
 use sed_spec::methods::{GetBytesResult, MethodStatus, Properties, SessionProperties, SetBytes};
 use sed_spec::objects::{AuthorityRef, CPin, CPinRefExt, SecurityProviderRef};
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::core::shared::{self, method_id, table_id};
+use sed_spec::uid_registry::enterprise;
 use sed_spec::uid_registry::opal_2::admin::{self, sp};
 use sed_spec::uid_registry::opal_2::locking;
 use sed_telemetry::with_tracing;
@@ -47,7 +49,7 @@ fn spawn_session(
 #[tokio::test]
 #[with_tracing]
 async fn session_lifetime() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let runtime = Arc::new(PolyRuntime::Tokio(TokioRuntime::current().unwrap()));
     let tper = Tper::connect(BASE_COM_ID, ComIdExt(0), None, device.clone(), runtime);
     assert!(device.sessions(BASE_COM_ID, ComIdExt(0)).unwrap().is_empty());
@@ -63,7 +65,7 @@ async fn session_lifetime() {
 #[tokio::test]
 #[with_tracing]
 async fn activate() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, Some(admin::authority::SID));
     assert_that!(session.activate(sp::LOCKING).await, ok(eq(&())));
     let _ = session.close().await;
@@ -77,7 +79,7 @@ async fn activate() {
 #[tokio::test]
 #[with_tracing]
 async fn authenticate() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, None);
     assert_that!(
         session.authenticate(admin::authority::MAKERS, None).await,
@@ -95,8 +97,21 @@ async fn authenticate() {
 #[instrument]
 #[tokio::test]
 #[with_tracing]
+async fn erase() {
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::Enterprise));
+    let (session, protocol) =
+        spawn_session(&device, enterprise::admin::sp::LOCKING, Some(enterprise::locking::authority::ERASE_MASTER));
+    assert_that!(session.erase(enterprise::locking::locking::GLOBAL_RANGE).await, ok(eq(&())));
+    assert_that!(session.erase(enterprise::locking::locking::BAND.get(0).unwrap()).await, ok(eq(&())));
+    let _ = session.close().await;
+    let _ = protocol.await;
+}
+
+#[instrument]
+#[tokio::test]
+#[with_tracing]
 async fn gen_key() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(1).unwrap()));
     assert_that!(session.gen_key(locking::k_aes_256::GLOBAL_RANGE_KEY, None, None).await, ok(eq(&())));
     let _ = session.close().await;
@@ -107,7 +122,7 @@ async fn gen_key() {
 #[tokio::test]
 #[with_tracing]
 async fn get_field() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, None);
     assert_that!(session.get_field(admin::c_pin::MSID.pin()).await, ok(eq(&INITIAL_SID_PASSWORD)));
     let _ = session.close().await;
@@ -118,7 +133,7 @@ async fn get_field() {
 #[tokio::test]
 #[with_tracing]
 async fn get_object() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, None);
     let c_pin_msid = session.get_object::<CPin>(admin::c_pin::MSID, ..).await.unwrap();
     assert_that!(c_pin_msid.uid, some(eq(admin::c_pin::MSID)));
@@ -131,7 +146,7 @@ async fn get_object() {
 #[tokio::test]
 #[with_tracing]
 async fn get_bytes() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(0).unwrap()));
     assert_that!(session.get_bytes(table_id::MBR, ..6).await, ok(len(eq(6))));
     let _ = session.close().await;
@@ -142,7 +157,7 @@ async fn get_bytes() {
 #[tokio::test]
 #[with_tracing]
 async fn get_bytes_oversize() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(0).unwrap()));
 
     let max_payload_len = max_get_payload(&session.properties().inbound) as u64;
@@ -157,7 +172,7 @@ async fn get_bytes_oversize() {
 #[tokio::test]
 #[with_tracing]
 async fn get_bytes_limit_size() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(0).unwrap()));
 
     let max_payload_len = max_get_payload(&session.properties().inbound) as u64;
@@ -172,7 +187,7 @@ async fn get_bytes_limit_size() {
 #[tokio::test]
 #[with_tracing]
 async fn get_acl() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, None);
     assert_that!(session.get_acl(admin::c_pin::MSID.into(), method_id::GET).await, ok(not(is_empty())));
     let _ = session.close().await;
@@ -183,7 +198,7 @@ async fn get_acl() {
 #[tokio::test]
 #[with_tracing]
 async fn next() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, None);
     assert_that!(session.next(None, None).await, ok(eq(&vec![admin::sp::ADMIN, admin::sp::LOCKING])));
     assert_that!(session.next(Some(admin::sp::ADMIN), None).await, ok(eq(&vec![admin::sp::LOCKING])));
@@ -198,7 +213,7 @@ async fn next() {
 #[tokio::test]
 #[with_tracing]
 async fn revert() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, Some(admin::authority::SID));
     assert_that!(session.revert(sp::LOCKING).await, ok(anything()));
     let _ = session.close().await;
@@ -209,7 +224,7 @@ async fn revert() {
 #[tokio::test]
 #[with_tracing]
 async fn revert_sp() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(1).unwrap()));
     match session.revert_sp(None).await {
         Ok(_) => (),
@@ -225,7 +240,7 @@ async fn revert_sp() {
 #[tokio::test]
 #[with_tracing]
 async fn random() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, None);
     assert_that!(session.random(4).await, ok(len(eq(4))));
     let _ = session.close().await;
@@ -236,9 +251,9 @@ async fn random() {
 #[tokio::test]
 #[with_tracing]
 async fn set_field() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, Some(admin::authority::SID));
-    assert_that!(session.set_field(admin::c_pin::SID.pin(), b"asd".as_slice().into()).await, ok(anything()));
+    assert_that!(session.set_field(admin::c_pin::SID.pin(), (*b"asd").into()).await, ok(anything()));
     let _ = session.close().await;
     let _ = protocol.await;
 }
@@ -247,9 +262,9 @@ async fn set_field() {
 #[tokio::test]
 #[with_tracing]
 async fn set_object() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::ADMIN, Some(admin::authority::SID));
-    let values = CPin { pin: Some(b"asd".as_slice().into()), ..Default::default() };
+    let values = CPin { pin: Some((*b"asd").into()), ..Default::default() };
     assert_that!(session.set_object(admin::c_pin::SID, values).await, ok(anything()));
     let _ = session.close().await;
     let _ = protocol.await;
@@ -259,7 +274,7 @@ async fn set_object() {
 #[tokio::test]
 #[with_tracing]
 async fn set_bytes() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(0).unwrap()));
     assert_that!(session.set_bytes(table_id::MBR, 234, &[1, 2, 3]).await, ok(anything()));
     let _ = session.close().await;
@@ -270,7 +285,7 @@ async fn set_bytes() {
 #[tokio::test]
 #[with_tracing]
 async fn set_bytes_oversize() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(0).unwrap()));
 
     let max_method_len = session.properties().outbound.max_method_len();
@@ -289,7 +304,7 @@ async fn set_bytes_oversize() {
 #[tokio::test]
 #[with_tracing]
 async fn set_bytes_limit_size() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let (session, protocol) = spawn_session(&device, sp::LOCKING, Some(locking::authority::ADMIN.get(0).unwrap()));
 
     let max_payload = max_set_payload(&session.properties().outbound);

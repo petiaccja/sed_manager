@@ -6,7 +6,7 @@
 use std::collections::{HashMap, HashSet};
 use std::num::NonZero;
 use std::ops::{Deref as _, DerefMut as _};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
 use sed_device::{Error, Interface, StorageDevice};
@@ -17,28 +17,30 @@ use sed_packet::packet::{COM_PACKET_HEADER_LEN, ComPacket, PACKET_HEADER_LEN, SU
 use sed_packet::session_id::SessionId;
 use sed_spec::methods::{Limit, MethodStatus, OptionalLimit, Properties};
 use sed_spec::objects::{AuthorityRef, SecurityProviderRef};
+use sed_spec::ssc::Ssc;
 use sorbit::ser_de::{FromBytes, ToBytes as _};
 use tracing::instrument;
 
 use crate::com_session::ComSession;
 use crate::internal_error::Expect;
 use crate::packet_session::PacketSession;
-use crate::tper::{Opal2Tper, Tper};
+use crate::tper::Tper;
 
-pub const VIRTUAL_DEVICE_PATH: &str = "/dev/virtual_device";
+const DEFAULT_PATH: &str = "/dev/virtual_device/default";
 pub const BASE_COM_ID: ComId = ComId(3072);
 pub const NUM_COM_IDS: u16 = 1;
 pub const LOGICAL_SECTOR_COUNT: u64 = 8_589_934_592; // 4 TiB
 
 #[derive(Debug)]
 pub struct VirtualDevice {
+    path: PathBuf,
     tper: Mutex<Tper>,
     sessions: Mutex<Sessions>,
     capabilities: Properties,
 }
 
 impl VirtualDevice {
-    pub fn new(capabilities: Properties, tper: Tper) -> Self {
+    pub fn new(path: PathBuf, capabilities: Properties, tper: Tper) -> Self {
         let static_com_ids = (BASE_COM_ID.0..BASE_COM_ID.0 + NUM_COM_IDS).map(ComId);
         let com_sessions = static_com_ids
             .clone()
@@ -48,7 +50,15 @@ impl VirtualDevice {
             .map(|com_id| (com_id, PacketSession::new(com_id, ComIdExt(0), capabilities.clone())))
             .collect();
 
-        Self { tper: tper.into(), sessions: Sessions { com_sessions, packet_sessions }.into(), capabilities }
+        Self { path, tper: tper.into(), sessions: Sessions { com_sessions, packet_sessions }.into(), capabilities }
+    }
+
+    pub fn with_tper(tper: Tper) -> Self {
+        Self::new(DEFAULT_PATH.into(), CAPABILITIES, tper)
+    }
+
+    pub fn with_ssc(ssc: Ssc) -> Self {
+        Self::new(DEFAULT_PATH.into(), CAPABILITIES, Tper::from_preconfig(ssc))
     }
 
     /// Start a session on the smallest base ComID.
@@ -108,7 +118,7 @@ impl VirtualDevice {
 #[async_trait::async_trait]
 impl StorageDevice for VirtualDevice {
     fn path(&self) -> Option<&Path> {
-        Some(VIRTUAL_DEVICE_PATH.as_ref())
+        Some(&self.path)
     }
 
     fn interface(&self) -> Interface {
@@ -116,7 +126,7 @@ impl StorageDevice for VirtualDevice {
     }
 
     fn model_number(&self) -> String {
-        "Virtual Device".into()
+        format!("Virtual Device {}", self.tper.lock().expect("the virtual device panicked in another thread").ssc)
     }
 
     fn serial_number(&self) -> String {
@@ -225,18 +235,6 @@ impl StorageDevice for VirtualDevice {
     }
 }
 
-impl Default for VirtualDevice {
-    /// Create a new virtual device.
-    ///
-    /// The device's configuration is the preconfiguration for the Opal 2.0 SSC.
-    fn default() -> Self {
-        let tper = Tper::Opal2(Opal2Tper::default());
-        let capabilities = CAPABILITIES;
-
-        Self::new(capabilities, tper)
-    }
-}
-
 #[derive(Debug, Default)]
 struct Sessions {
     com_sessions: HashMap<ComId, ComSession>,
@@ -244,22 +242,32 @@ struct Sessions {
 }
 
 pub struct VirtualDeviceBuilder {
+    path: PathBuf,
+    ssc: Ssc,
     capabilities: Properties,
 }
 
 #[expect(clippy::new_without_default)]
 impl VirtualDeviceBuilder {
     pub fn new() -> Self {
-        Self { capabilities: CAPABILITIES }
+        Self { path: DEFAULT_PATH.into(), ssc: Ssc::OpalV2, capabilities: CAPABILITIES }
+    }
+
+    pub fn with_path(self, path: PathBuf) -> Self {
+        Self { path, ..self }
     }
 
     pub fn with_capabilities(self, capabilities: Properties) -> Self {
-        Self { capabilities }
+        Self { capabilities, ..self }
     }
 
-    pub fn opal_2(self) -> VirtualDevice {
-        let tper = Tper::Opal2(Opal2Tper::default());
-        VirtualDevice::new(self.capabilities, tper)
+    pub fn with_ssc(self, ssc: Ssc) -> Self {
+        Self { ssc, ..self }
+    }
+
+    pub fn build(self) -> VirtualDevice {
+        let tper = Tper::from_preconfig(self.ssc);
+        VirtualDevice::new(self.path, self.capabilities, tper)
     }
 }
 

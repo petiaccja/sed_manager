@@ -232,6 +232,27 @@ impl<const TABLE: u64> std::fmt::Display for ObjectRef<TABLE> {
     }
 }
 
+#[cfg(feature = "serde")]
+impl<const TABLE: u64> serde::Serialize for ObjectRef<TABLE> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, const TABLE: u64> serde::Deserialize<'de> for ObjectRef<TABLE> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error as _;
+        Self::try_from(Uid::deserialize(deserializer)?).map_err(D::Error::custom)
+    }
+}
+
 //------------------------------------------------------------------------------
 // Field reference
 //------------------------------------------------------------------------------

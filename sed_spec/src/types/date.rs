@@ -7,6 +7,7 @@ use sed_packet::Named;
 use sed_packet::token_stream::{Detokenize, Detokenizer, MessageError, Tokenize, Tokenizer};
 
 #[derive(PartialEq, Eq, Clone, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Date {
     year: Option<u16>,
     month: Option<u8>,

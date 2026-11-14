@@ -5,30 +5,72 @@
 
 use std::any::Any;
 
-use sed_spec::objects::{
-    AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl, SecurityProviderRef,
-    TableDesc,
+use sed_spec::{
+    objects::{
+        AccessControl, Ace, Authority, CPin, KAes128, KAes256, LockingInfoExt, LockingRange, MbrControl,
+        SecurityProviderRef, TableDesc,
+    },
+    uid_registry::{core::shared::table, enterprise, opal_2},
 };
 
 use crate::tper::security_provider::{SecurityProvider, Table};
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Locking {
     pub uid: SecurityProviderRef,
     pub access_control: Table<AccessControl>,
     pub ace: Table<Ace>,
     pub authority: Table<Authority>,
     pub c_pin: Table<CPin>,
-    pub k_aes_256: Table<KAes256>,
+    pub k_aes_128: Option<Table<KAes128>>,
+    pub k_aes_256: Option<Table<KAes256>>,
     pub locking: Table<LockingRange>,
     pub locking_info_ext: Table<LockingInfoExt>,
-    pub mbr_control: Table<MbrControl>,
+    pub mbr_control: Option<Table<MbrControl>>,
     pub table: Table<TableDesc>,
-    pub mbr: Vec<u8>,
-    pub data_store: Vec<Vec<u8>>,
+    // The byte tables are not serialized to keep snapshots of the virtual
+    // device small. They are restored by `Tper::resize_byte_tables`.
+    #[serde(skip)]
+    pub mbr: Option<Vec<u8>>,
+    #[serde(skip)]
+    pub data_store: Option<Vec<u8>>,
+}
+
+impl Locking {
+    /// Resizes the MBR table so that its size matches the one indicated
+    /// in the `Table` table.
+    pub fn resize_mbr(&mut self) {
+        if let Some(desc) = self.table.get(&table::MBR) {
+            if let Some(mbr) = self.mbr.as_mut() {
+                mbr.resize(desc.rows.unwrap_or(128 * 1048576) as usize, 0);
+            } else {
+                self.mbr = Some(vec![0; 128 * 1048576]);
+            }
+        }
+    }
+
+    /// Resizes the DataStore table so that its size matches the one indicated
+    /// in the `Table` table.
+    pub fn resize_data_store(&mut self) {
+        if let Some(desc) = self
+            .table
+            .get(&opal_2::locking::table::DATA_STORE)
+            .or(self.table.get(&enterprise::locking::table::DATA_STORE))
+        {
+            if let Some(data_store) = &mut self.data_store {
+                data_store.resize(desc.rows.unwrap_or(10 * 1048576) as usize, 0);
+            } else {
+                self.data_store = Some(vec![0; 10 * 1048576])
+            }
+        }
+    }
 }
 
 impl SecurityProvider for Locking {
+    fn uid(&self) -> SecurityProviderRef {
+        self.uid
+    }
+
     fn access_control(&self) -> &Table<AccessControl> {
         &self.access_control
     }
@@ -69,12 +111,20 @@ impl SecurityProvider for Locking {
         &mut self.table
     }
 
+    fn k_aes_128(&self) -> Option<&Table<KAes128>> {
+        self.k_aes_128.as_ref()
+    }
+
+    fn k_aes_128_mut(&mut self) -> Option<&mut Table<KAes128>> {
+        self.k_aes_128.as_mut()
+    }
+
     fn k_aes_256(&self) -> Option<&Table<KAes256>> {
-        Some(&self.k_aes_256)
+        self.k_aes_256.as_ref()
     }
 
     fn k_aes_256_mut(&mut self) -> Option<&mut Table<KAes256>> {
-        Some(&mut self.k_aes_256)
+        self.k_aes_256.as_mut()
     }
 
     fn locking(&self) -> Option<&Table<LockingRange>> {
@@ -94,27 +144,27 @@ impl SecurityProvider for Locking {
     }
 
     fn mbr_control(&self) -> Option<&Table<MbrControl>> {
-        Some(&self.mbr_control)
+        self.mbr_control.as_ref()
     }
 
     fn mbr_control_mut(&mut self) -> Option<&mut Table<MbrControl>> {
-        Some(&mut self.mbr_control)
+        self.mbr_control.as_mut()
     }
 
     fn mbr(&self) -> Option<&Vec<u8>> {
-        Some(&self.mbr)
+        self.mbr.as_ref()
     }
 
     fn mbr_mut(&mut self) -> Option<&mut Vec<u8>> {
-        Some(&mut self.mbr)
+        self.mbr.as_mut()
     }
 
-    fn data_store(&self, index: usize) -> Option<&Vec<u8>> {
-        self.data_store.get(index)
+    fn data_store(&self) -> Option<&Vec<u8>> {
+        self.data_store.as_ref()
     }
 
-    fn data_store_mut(&mut self, index: usize) -> Option<&mut Vec<u8>> {
-        self.data_store.get_mut(index)
+    fn data_store_mut(&mut self) -> Option<&mut Vec<u8>> {
+        self.data_store.as_mut()
     }
 
     fn as_any(&self) -> &dyn Any {

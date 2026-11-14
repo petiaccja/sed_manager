@@ -249,7 +249,10 @@ impl App {
 
                 // Insert virtual device in debug mode, or when explicitly requested (e.g. by tests).
                 #[cfg(not(any(debug_assertions, feature = "virtual_device")))]
-                new_paths.remove(Path::new(sed_virtual_device::VIRTUAL_DEVICE_PATH));
+                {
+                    use sed_manager::VIRTUAL_DEVICE_DIR;
+                    new_paths.retain(|path| !path.parent().is_some_and(|dir| dir == VIRTUAL_DEVICE_DIR));
+                };
 
                 let removed: HashSet<_> =
                     device_list.backend.extract_if(|path, _| !new_paths.contains(path)).map(|(path, _)| path).collect();
@@ -1049,14 +1052,12 @@ impl App {
     }
 
     fn try_convert_password(&self, password: &str) -> Option<MaxBytes<32>> {
-        let byte_password: MaxBytes<32> = password.as_bytes().into();
-        if byte_password.len() == password.len() {
-            Some(byte_password)
-        } else {
+        let byte_password = password.as_bytes().try_into().ok();
+        if byte_password.is_none() {
             self.toast_queue
                 .error("Password too long", "The password cannot be longer than 32 bytes (32 Latin characters)");
-            None
         }
+        byte_password
     }
 
     async fn listen_connection_changed(

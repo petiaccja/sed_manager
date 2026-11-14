@@ -176,6 +176,27 @@ impl std::fmt::Display for TableRef {
     }
 }
 
+#[cfg(feature = "serde")]
+impl serde::Serialize for TableRef {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for TableRef {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error as _;
+        Self::try_from(Uid::deserialize(deserializer)?).map_err(D::Error::custom)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rstest::rstest;

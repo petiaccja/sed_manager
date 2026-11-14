@@ -9,6 +9,7 @@ use sed_async::{PolyRuntime, TokioRuntime};
 use sed_packet::com_id::ComIdExt;
 use sed_packet::com_id_request::ComIdState;
 use sed_packet::discovery::{GeometryDescriptor, LockingDescriptor, TperDescriptor};
+use sed_spec::ssc::Ssc;
 use sed_telemetry::with_tracing;
 use sed_tper::{Error, Tper};
 use sed_virtual_device::{BASE_COM_ID, VirtualDevice};
@@ -24,7 +25,7 @@ fn connect(device: &Arc<VirtualDevice>) -> Tper {
 #[tokio::test]
 #[with_tracing]
 async fn discovery() {
-    let device = VirtualDevice::default();
+    let device = VirtualDevice::with_ssc(Ssc::OpalV2);
     let discovery = Tper::discover(&device).await.unwrap();
     assert!(discovery.get::<TperDescriptor>().is_some(), "discovery: {discovery:?}");
     assert!(discovery.get::<LockingDescriptor>().is_some(), "discovery: {discovery:?}");
@@ -35,7 +36,7 @@ async fn discovery() {
 #[tokio::test]
 #[with_tracing]
 async fn verify_com_id_valid_base() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = connect(&device);
     let result = tper.verify_com_id_valid(BASE_COM_ID, ComIdExt(0)).await;
     let expected = ComIdState::Issued;
@@ -46,7 +47,7 @@ async fn verify_com_id_valid_base() {
 #[tokio::test]
 #[with_tracing]
 async fn verify_com_id_valid_incorrent_id() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = connect(&device);
     let result = tper.verify_com_id_valid(BASE_COM_ID + 1, ComIdExt(0)).await;
     let expected = ComIdState::Inactive;
@@ -57,7 +58,7 @@ async fn verify_com_id_valid_incorrent_id() {
 #[tokio::test]
 #[with_tracing]
 async fn verify_com_id_valid_incorrent_ext() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = connect(&device);
     let result = tper.verify_com_id_valid(BASE_COM_ID, ComIdExt(1)).await;
     let expected = ComIdState::Invalid;
@@ -68,7 +69,7 @@ async fn verify_com_id_valid_incorrent_ext() {
 #[tokio::test]
 #[with_tracing]
 async fn stack_reset_base() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = connect(&device);
     let result = tper.stack_reset(BASE_COM_ID, ComIdExt(0)).await;
     assert_eq!(result, Ok(()));
@@ -81,7 +82,7 @@ async fn stack_reset_base() {
 #[tokio::test]
 #[with_tracing]
 async fn stack_reset_incorrent_id() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = connect(&device);
     let result = tper.stack_reset(BASE_COM_ID + 1, ComIdExt(0)).await;
     assert_eq!(result, Err(Error::StackResetFailed));
@@ -91,7 +92,7 @@ async fn stack_reset_incorrent_id() {
 #[tokio::test]
 #[with_tracing]
 async fn stack_reset_incorrent_ext() {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = connect(&device);
     let result = tper.stack_reset(BASE_COM_ID, ComIdExt(1)).await;
     assert_eq!(result, Err(Error::StackResetFailed));

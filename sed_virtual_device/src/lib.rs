@@ -11,7 +11,5 @@ mod packet_session;
 mod session;
 mod tper;
 
-pub use device::{
-    BASE_COM_ID, LOGICAL_SECTOR_COUNT, NUM_COM_IDS, VIRTUAL_DEVICE_PATH, VirtualDevice, VirtualDeviceBuilder,
-};
-pub use tper::{Admin, INITIAL_SID_PASSWORD, Locking, Opal2Tper, PSID_PASSWORD, SecurityProvider, Table, Tper};
+pub use device::{BASE_COM_ID, LOGICAL_SECTOR_COUNT, NUM_COM_IDS, VirtualDevice, VirtualDeviceBuilder};
+pub use tper::{Admin, INITIAL_SID_PASSWORD, Locking, PSID_PASSWORD, SecurityProvider, Table, Tper};

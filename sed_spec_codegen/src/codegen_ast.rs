@@ -353,6 +353,18 @@ impl ToTokens for SecurityProvider {
         let Self { name, uid: _, table_id, special_tables, object_tables } = self;
         let module = module_ident(name);
 
+        let table_id_lookups: Vec<_> = table_id
+            .as_ref()
+            // First look up in the SP's `TableID` special table.
+            .map(|_| quote! { &table_id::LOOKUP })
+            .into_iter()
+            // Then look up in the Core's Shared SP's `TableID`. This might be
+            // a duplicate of the previous one, but that's not a problem.
+            .chain(std::iter::once(quote! { &super::super::core::shared::table_id::LOOKUP }))
+            .collect();
+
+        let num_table_id_lookups = table_id_lookups.len();
+
         let mut sp_tables: Vec<_> = special_tables.iter().chain(object_tables).collect();
         // The tables must be sorted by UID for `SortedMap`.
         sp_tables.sort_by_key(|table| table.uid.as_ref().map(|this_table| this_table.uid.value));
@@ -369,7 +381,7 @@ impl ToTokens for SecurityProvider {
         tokens.extend(quote! {
             pub mod #module {
                 use ::sed_packet::{TableRef};
-                use crate::lookup::{TableLookup, SecurityProviderLookup, SortedMap};
+                use crate::lookup::{TableLookup, TableIdLookup, SecurityProviderLookup, SortedMap};
 
                 #table_id
                 #(#special_tables)*
@@ -379,9 +391,13 @@ impl ToTokens for SecurityProvider {
                     #(#sp_table_entries,)*
                 ];
 
+                const TABLE_ID_LOOKUPS: [&TableIdLookup; #num_table_id_lookups] = [
+                    #(#table_id_lookups,)*
+                ];
+
                 pub const LOOKUP: SecurityProviderLookup<'static> = SecurityProviderLookup {
                     name: #name,
-                    table_ids: &super::super::core::shared::table_id::LOOKUP,
+                    table_id_lookups: &TABLE_ID_LOOKUPS,
                     table_lookups: SortedMap { items: &TABLE_LOOKUPS },
                 };
             }
