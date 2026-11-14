@@ -8,7 +8,7 @@ use std::collections::BTreeMap;
 
 use sed_packet::Object;
 use sed_spec::objects::{
-    AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl,
+    AccessControl, Ace, Authority, CPin, KAes128, KAes256, LockingInfoExt, LockingRange, MbrControl,
     SecurityProvider as SecurityProviderObj, TableDesc,
 };
 
@@ -28,6 +28,12 @@ pub trait SecurityProvider {
     fn table_mut(&mut self) -> &mut Table<TableDesc>;
 
     // Tables some SPs have.
+    fn k_aes_128(&self) -> Option<&Table<KAes128>> {
+        None
+    }
+    fn k_aes_128_mut(&mut self) -> Option<&mut Table<KAes128>> {
+        None
+    }
     fn k_aes_256(&self) -> Option<&Table<KAes256>> {
         None
     }

@@ -7,8 +7,8 @@ use std::any::Any;
 
 use sed_spec::{
     objects::{
-        AccessControl, Ace, Authority, CPin, KAes256, LockingInfoExt, LockingRange, MbrControl, SecurityProviderRef,
-        TableDesc,
+        AccessControl, Ace, Authority, CPin, KAes128, KAes256, LockingInfoExt, LockingRange, MbrControl,
+        SecurityProviderRef, TableDesc,
     },
     uid_registry::{core::shared::table, enterprise, opal_2},
 };
@@ -22,7 +22,8 @@ pub struct Locking {
     pub ace: Table<Ace>,
     pub authority: Table<Authority>,
     pub c_pin: Table<CPin>,
-    pub k_aes_256: Table<KAes256>,
+    pub k_aes_128: Option<Table<KAes128>>,
+    pub k_aes_256: Option<Table<KAes256>>,
     pub locking: Table<LockingRange>,
     pub locking_info_ext: Table<LockingInfoExt>,
     pub mbr_control: Option<Table<MbrControl>>,
@@ -106,12 +107,20 @@ impl SecurityProvider for Locking {
         &mut self.table
     }
 
+    fn k_aes_128(&self) -> Option<&Table<KAes128>> {
+        self.k_aes_128.as_ref()
+    }
+
+    fn k_aes_128_mut(&mut self) -> Option<&mut Table<KAes128>> {
+        self.k_aes_128.as_mut()
+    }
+
     fn k_aes_256(&self) -> Option<&Table<KAes256>> {
-        Some(&self.k_aes_256)
+        self.k_aes_256.as_ref()
     }
 
     fn k_aes_256_mut(&mut self) -> Option<&mut Table<KAes256>> {
-        Some(&mut self.k_aes_256)
+        self.k_aes_256.as_mut()
     }
 
     fn locking(&self) -> Option<&Table<LockingRange>> {

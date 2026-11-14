@@ -273,10 +273,13 @@ async fn set_locking_ranges_invalid_desired() {
 fn get_media_encryption_key(virtual_device: &VirtualDevice) -> Option<heapless::Vec<u8, 64>> {
     virtual_device.inspect(|tper| {
         let locking_sp = tper.locking.as_ref().unwrap();
-        let key_uid = locking_sp.locking[&range_uid(2)].active_key.unwrap();
-        match key_uid {
-            MediaKeyRef::Aes128(_k_aes_128_ref) => panic!("no K_AES_128 table in virtual device"),
-            MediaKeyRef::Aes256(k_aes_256_ref) => locking_sp.k_aes_256[&k_aes_256_ref].key.clone(),
+        let key_ref = locking_sp.locking[&range_uid(2)].active_key.unwrap();
+        match key_ref {
+            MediaKeyRef::Aes128(key_ref) => locking_sp.k_aes_128.as_ref().unwrap()[&key_ref]
+                .key
+                .as_ref()
+                .map(|key| heapless::Vec::<u8, 64>::from_slice(key.as_slice()).unwrap()),
+            MediaKeyRef::Aes256(key_ref) => locking_sp.k_aes_256.as_ref().unwrap()[&key_ref].key.clone(),
         }
     })
 }

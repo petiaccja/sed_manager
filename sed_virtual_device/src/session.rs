@@ -18,7 +18,7 @@ use sed_spec::methods::{
     SetResult, extract_method,
 };
 use sed_spec::objects::{
-    AccessControlRef, Ace, Authority, AuthorityRef, CPin, EvalAceExpr, KAes256, KAes256Ref, LockingInfoExt,
+    AccessControlRef, Ace, Authority, AuthorityRef, CPin, EvalAceExpr, KAes128Ref, KAes256, KAes256Ref, LockingInfoExt,
     LockingRange, MbrControl, MethodRef, SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
 };
 use sed_spec::types::LifeCycleState;
@@ -234,16 +234,29 @@ impl Session {
 
         let this_sp = self.this_sp_mut(tper)?;
 
-        if let Ok(k_aes_256_uid) = KAes256Ref::try_from(invoking_id)
-            && let Some(locking_sp) = this_sp.as_any_mut().downcast_mut::<Locking>()
+        if let Some(locking_sp) = this_sp.as_any_mut().downcast_mut::<Locking>()
             && params.pin_length.is_none()
             && params.public_exponent.is_none()
         {
-            let k_aes_256 = locking_sp.k_aes_256.get_mut(&k_aes_256_uid).ok_or(MethodStatus::InvalidParameter)?;
-            let mut new_key = [0u8; 64];
-            rand::Fill::fill_slice(&mut new_key, &mut rand::rng());
-            k_aes_256.key = Some(new_key.into());
-            Ok(GenKeyResult)
+            if let Ok(key_uid) = KAes128Ref::try_from(invoking_id) {
+                let key = locking_sp
+                    .k_aes_128
+                    .as_mut()
+                    .and_then(|table| table.get_mut(&key_uid))
+                    .ok_or(MethodStatus::InvalidParameter)?;
+                key.key = Some(random_key::<32>());
+                Ok(GenKeyResult)
+            } else if let Ok(key_uid) = KAes256Ref::try_from(invoking_id) {
+                let key = locking_sp
+                    .k_aes_256
+                    .as_mut()
+                    .and_then(|table| table.get_mut(&key_uid))
+                    .ok_or(MethodStatus::InvalidParameter)?;
+                key.key = Some(random_key::<64>());
+                Ok(GenKeyResult)
+            } else {
+                Err(MethodStatus::InvalidParameter)
+            }
         } else {
             Err(MethodStatus::InvalidParameter)
         }
@@ -657,6 +670,12 @@ impl Session {
         }
         Ok(permitted_columns)
     }
+}
+
+fn random_key<const N: usize>() -> heapless::Vec<u8, N> {
+    let mut key = [0u8; N];
+    rand::Fill::fill_slice(&mut key, &mut rand::rng());
+    heapless::Vec::from_array(key)
 }
 
 struct ObjectSlice<'o, O> {

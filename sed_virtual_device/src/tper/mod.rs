@@ -340,6 +340,7 @@ mod tests {
             ace,
             authority,
             c_pin,
+            k_aes_128,
             k_aes_256,
             locking,
             locking_info_ext,
@@ -353,6 +354,7 @@ mod tests {
         expect_that!(ace, eq(&expected.ace));
         expect_that!(authority, eq(&expected.authority));
         expect_that!(c_pin, eq(&expected.c_pin));
+        expect_that!(k_aes_128, eq(&expected.k_aes_128));
         expect_that!(k_aes_256, eq(&expected.k_aes_256));
         expect_that!(locking, eq(&expected.locking));
         expect_that!(locking_info_ext, eq(&expected.locking_info_ext));
