@@ -1,3 +1,8 @@
+//L-----------------------------------------------------------------------------
+//L Copyright (C) Péter Kardos
+//L Please refer to the full license distributed with this software.
+//L-----------------------------------------------------------------------------
+
 use sed_manager::{
     ENTERPRISE_FILE, KPIO_FILE, OPAL_1_FILE, OPAL_2_FILE, OPALITE_FILE, PYRITE_1_FILE, PYRITE_2_FILE, RUBY_FILE,
 };
