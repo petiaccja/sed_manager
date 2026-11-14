@@ -138,10 +138,13 @@ impl Tper {
     fn locking_feature_desc(&self) -> Option<FeatureDescriptor> {
         self.locking.as_ref().map(|locking_sp| {
             let admin_sp = &self.admin;
-            let locking_sp_obj = admin_sp.sp.get(&locking_sp.uid).expect("locking SP missing from preconfig");
-            let life_cycle_state = locking_sp_obj.life_cycle_state.unwrap_or(LifeCycleState::ManufacturedInactive);
-            let locking_enabled =
-                life_cycle_state == LifeCycleState::Manufactured || life_cycle_state == LifeCycleState::Issued;
+            let life_cycle_state = admin_sp
+                .sp
+                .get(&locking_sp.uid)
+                .and_then(|locking_sp| locking_sp.life_cycle_state)
+                .unwrap_or(LifeCycleState::Manufactured);
+
+            let locking_enabled = [LifeCycleState::Manufactured, LifeCycleState::Issued].contains(&life_cycle_state);
 
             let locked = locking_sp
                 .locking

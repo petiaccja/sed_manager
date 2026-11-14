@@ -98,7 +98,7 @@ export component DeviceSideBar {
                 for device[index] in devices: DeviceSideBarItem {
                     is-selected: index == selected;
                     identity: device.identity;
-                    accessible-id: "device-side-bar-item-" + index;
+                    accessible-id: "device-side-bar-" + device.identity.path;
 
                     clicked => {
                         root.selected = index

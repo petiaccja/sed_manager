@@ -34,10 +34,10 @@ fn reset_stack() {
         // Scan for devices. The virtual device is sorted first because the
         // others are blocked by file OS access control.
         ui.single_click("scan-button", Left).await.unwrap();
-        ui.check_appearance("device-side-bar-item-0").await.unwrap();
+        ui.check_appearance("device-side-bar-/dev/virtual_device/opal_2").await.unwrap();
 
         // Select the virtual device.
-        ui.single_click("device-side-bar-item-0", Left).await.unwrap();
+        ui.single_click("device-side-bar-/dev/virtual_device/opal_2", Left).await.unwrap();
 
         // Click "Reset stack" and wait for the success toast. The button is disabled
         // while the commands issued when the device was opened are still running. The

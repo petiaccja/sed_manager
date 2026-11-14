@@ -11,10 +11,12 @@ use sed_manager::Host;
 use sed_manager_gui::app::App;
 use sed_manager_gui::toast::ToastQueue;
 use sed_manager_gui_slint as ui;
+use sed_spec::ssc::Ssc;
 use slint::ComponentHandle as _;
 use slint::platform::PointerEventButton::Left;
 
 use crate::driver::Driver;
+use crate::shared_steps::{activate_locking, scan_devices, select_virtual_device, take_ownership};
 use crate::test_utils::run_test;
 
 const TEST_PASSWORD: &str = "test-password-1234";
@@ -37,38 +39,10 @@ fn cycle_ownership() {
 
         let ui = Driver::new(ui, Duration::from_secs(5));
 
-        // Scan for devices; the virtual device is always included in debug builds.
-        ui.single_click("scan-button", Left).await.unwrap();
-        ui.check_appearance("device-side-bar-item-0").await.unwrap();
-
-        // Select the virtual device.
-        ui.single_click("device-side-bar-item-0", Left).await.unwrap();
-        ui.check_appearance("activity-take-ownership").await.unwrap();
-
-        // Switch to the "Take ownership" activity and fill in the password form.
-        ui.single_click("activity-take-ownership", Left).await.unwrap();
-        ui.enter_text("new-password", TEST_PASSWORD).await.unwrap();
-        ui.enter_text("repeat-password", TEST_PASSWORD).await.unwrap();
-
-        // Submit and wait for the success toast. The submit buttons are disabled while the TPer
-        // or the session is busy, so they are invoked synchronously right after they're found
-        // enabled, as opposed to an asynchronous mouse click, during which they may get disabled.
-        ui.check_enabled("take-ownership-submit").await.unwrap();
-        ui.invoke_default_action("take-ownership-submit").unwrap();
-        ui.check_appearance_toast("Taken ownership").await.unwrap();
-
-        // A successful action triggers a background re-discovery, which navigates the sidebar
-        // back to the "Discovery" activity once it completes. Wait for that before switching
-        // activities again, or the switch may be undone by the pending re-discovery.
-        ui.check_disappearance("new-password").await.unwrap();
-
-        // Switch to the "Activate locking" activity and submit the owner password.
-        ui.single_click("activity-activate-locking", Left).await.unwrap();
-        ui.enter_text("activate-locking-password", TEST_PASSWORD).await.unwrap();
-        ui.check_enabled("activate-locking-submit").await.unwrap();
-        ui.invoke_default_action("activate-locking-submit").unwrap();
-        ui.check_appearance_toast("Locking activated").await.unwrap();
-        ui.check_disappearance("activate-locking-password").await.unwrap();
+        scan_devices(&ui).await;
+        select_virtual_device(&ui, Ssc::OpalV2).await;
+        take_ownership(&ui).await;
+        activate_locking(&ui).await;
 
         // Switch to the "Revert device" activity and revert just the locking SP.
         ui.single_click("activity-revert-device", Left).await.unwrap();

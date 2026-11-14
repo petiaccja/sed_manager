@@ -14,14 +14,14 @@ use crate::{Device, Error};
 
 pub const VIRTUAL_DEVICE_DIR: &str = "/dev/virtual_device";
 
-const ENTERPRISE_FILE: &str = "enterprise";
-const OPAL_1_FILE: &str = "opal_1";
-const OPAL_2_FILE: &str = "opal_2";
-const OPALITE_FILE: &str = "opalite";
-const PYRITE_1_FILE: &str = "pyrite_1";
-const PYRITE_2_FILE: &str = "pyrite_2";
-const RUBY_FILE: &str = "ruby";
-const KPIO_FILE: &str = "kpio";
+pub const ENTERPRISE_FILE: &str = "enterprise";
+pub const OPAL_1_FILE: &str = "opal_1";
+pub const OPAL_2_FILE: &str = "opal_2";
+pub const OPALITE_FILE: &str = "opalite";
+pub const PYRITE_1_FILE: &str = "pyrite_1";
+pub const PYRITE_2_FILE: &str = "pyrite_2";
+pub const RUBY_FILE: &str = "ruby";
+pub const KPIO_FILE: &str = "kpio";
 
 /// The entry point to access the storage devices of the host computer system.
 ///

@@ -38,10 +38,10 @@ fn change_password() {
 
         // Scan for devices; the virtual device is always included in debug builds.
         ui.single_click("scan-button", Left).await.unwrap();
-        ui.check_appearance("device-side-bar-item-0").await.unwrap();
+        ui.check_appearance("device-side-bar-/dev/virtual_device/opal_2").await.unwrap();
 
         // Select the virtual device.
-        ui.single_click("device-side-bar-item-0", Left).await.unwrap();
+        ui.single_click("device-side-bar-/dev/virtual_device/opal_2", Left).await.unwrap();
         ui.check_appearance("activity-change-password").await.unwrap();
 
         // Switch to the "Change password" activity. Selecting it triggers a silent, background
