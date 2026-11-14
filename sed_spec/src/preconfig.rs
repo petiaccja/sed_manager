@@ -4,6 +4,7 @@
 //L-----------------------------------------------------------------------------
 
 pub const ENTERPRISE: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/preconfig_enterprise.json"));
+pub const KPIO: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/preconfig_kpio.json"));
 pub const OPAL_1: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/preconfig_opal_1.json"));
 pub const OPAL_2: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/preconfig_opal_2.json"));
 pub const OPALITE: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/preconfig_opalite.json"));

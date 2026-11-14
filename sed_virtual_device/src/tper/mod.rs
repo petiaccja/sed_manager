@@ -3,16 +3,18 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
-mod admin;
-mod locking;
+mod admin_sp;
+mod kpio_sp;
+mod locking_sp;
 mod preconfig;
 mod security_provider;
 
 use std::marker::PhantomData;
 use std::str::FromStr;
 
-pub use admin::Admin;
-pub use locking::Locking;
+pub use admin_sp::Admin;
+pub use kpio_sp::KeyPerIo;
+pub use locking_sp::Locking;
 pub use preconfig::{INITIAL_SID_PASSWORD, PSID_PASSWORD};
 pub use security_provider::{SecurityProvider, Table};
 use sed_packet::discovery::{
@@ -22,11 +24,11 @@ use sed_packet::discovery::{
 };
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::SecurityProviderRef;
-use sed_spec::preconfig::{ENTERPRISE, OPAL_1, OPAL_2, OPALITE, PYRITE_1, PYRITE_2, RUBY};
+use sed_spec::preconfig::{ENTERPRISE, KPIO, OPAL_1, OPAL_2, OPALITE, PYRITE_1, PYRITE_2, RUBY};
 use sed_spec::ssc::Ssc;
 use sed_spec::types::LifeCycleState;
-use sed_spec::uid_registry::opal_2;
 use sed_spec::uid_registry::opal_2::admin::c_pin;
+use sed_spec::uid_registry::{kpio, opal_2};
 use sorbit::ser_de::ToBytes;
 
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};
@@ -37,6 +39,7 @@ pub struct Tper {
     pub ssc: Ssc,
     pub admin: Admin,
     pub locking: Option<Locking>,
+    pub kpio: Option<KeyPerIo>,
 }
 
 impl Tper {
@@ -49,7 +52,7 @@ impl Tper {
             Ssc::PyriteV1 => PYRITE_1,
             Ssc::PyriteV2 => PYRITE_2,
             Ssc::Ruby => RUBY,
-            Ssc::KeyPerIO => todo!(),
+            Ssc::KeyPerIO => KPIO,
         };
         let raw_json_value =
             serde_json::Value::from_str(raw_json_str).expect("the JSON syntax is ensured by unit tests");
@@ -60,26 +63,34 @@ impl Tper {
             locking.resize_mbr();
             locking.resize_data_store();
         }
+        if let Some(kpio) = tper.kpio.as_mut() {
+            kpio.resize_data_store();
+        }
         tper
     }
 
     pub fn sp(&self, uid: SecurityProviderRef) -> Option<&dyn SecurityProvider> {
         let admin = &self.admin as &dyn SecurityProvider;
         let locking = self.locking.as_ref().map(|locking| locking as &dyn SecurityProvider);
-        std::iter::once(admin).chain(locking).find(|sp| sp.uid() == uid)
+        let kpio = self.kpio.as_ref().map(|kpio| kpio as &dyn SecurityProvider);
+        std::iter::once(admin).chain(locking).chain(kpio).find(|sp| sp.uid() == uid)
     }
 
     pub fn sp_mut(&mut self, uid: SecurityProviderRef) -> Option<&mut dyn SecurityProvider> {
         let admin = &mut self.admin as &mut dyn SecurityProvider;
         let locking = self.locking.as_mut().map(|locking| locking as &mut dyn SecurityProvider);
-        std::iter::once(admin).chain(locking).find(|sp| sp.uid() == uid)
+        let kpio = self.kpio.as_mut().map(|kpio| kpio as &mut dyn SecurityProvider);
+        std::iter::once(admin).chain(locking).chain(kpio).find(|sp| sp.uid() == uid)
     }
 
     pub fn restore_preconfig(&mut self, uid: SecurityProviderRef) -> Result<Vec<SecurityProviderRef>, MethodStatus> {
         if uid == self.admin.uid {
             let preconfig = Self::from_preconfig(self.ssc);
             *self = preconfig;
-            Ok(std::iter::once(self.admin.uid).chain(self.locking.as_ref().map(|sp| sp.uid)).collect())
+            Ok(std::iter::once(self.admin.uid)
+                .chain(self.locking.as_ref().map(|sp| sp.uid))
+                .chain(self.kpio.as_ref().map(|sp| sp.uid))
+                .collect())
         } else if let Some(locking) = self.locking.as_mut()
             && locking.uid == uid
         {
@@ -88,6 +99,15 @@ impl Tper {
                 locking_sp.life_cycle_state = Some(LifeCycleState::ManufacturedInactive);
             }
             self.locking = preconfig.locking;
+            Ok(vec![uid])
+        } else if let Some(kpio) = self.kpio.as_mut()
+            && kpio.uid == uid
+        {
+            let preconfig = Self::from_preconfig(self.ssc);
+            if let Some(kpio_sp) = self.admin.sp.get_mut(&kpio.uid) {
+                kpio_sp.life_cycle_state = Some(LifeCycleState::ManufacturedInactive);
+            }
+            self.kpio = preconfig.kpio;
             Ok(vec![uid])
         } else {
             Err(MethodStatus::InvalidParameter)
@@ -98,6 +118,9 @@ impl Tper {
         if let Some(locking) = &mut self.locking {
             locking.resize_mbr();
             locking.resize_data_store();
+        }
+        if let Some(kpio) = &mut self.kpio {
+            kpio.resize_data_store();
         }
     }
 
@@ -238,7 +261,7 @@ impl Tper {
                 num_com_ids_p3: NUM_COM_IDS,
                 initial_owner_pw: OwnerPasswordState::SameAsMSID,
                 reverted_owner_pw: OwnerPasswordState::SameAsMSID,
-                num_kpio_admins_supported: 0,
+                num_kpio_admins_supported: self.num_kpio_admins_supported(),
                 replay_protection_enabled: false,
                 replay_protection_supported: false,
                 incorrect_key_detection_supported: false,
@@ -278,6 +301,15 @@ impl Tper {
 
         match self.locking.as_ref() {
             Some(locking) => locking.authority.iter().filter(|(uid, _)| USER.contains(**uid)).count() as u16,
+            None => 0,
+        }
+    }
+
+    fn num_kpio_admins_supported(&self) -> u16 {
+        use kpio::key_per_io::authority::ADMIN;
+
+        match self.kpio.as_ref() {
+            Some(kpio) => kpio.authority.iter().filter(|(uid, _)| ADMIN.contains(**uid)).count() as u16,
             None => 0,
         }
     }
@@ -362,11 +394,26 @@ mod tests {
         expect_that!(data_store, eq(&expected.data_store));
     }
 
+    fn expect_kpio_eq(actual: &KeyPerIo, expected: &KeyPerIo) {
+        let KeyPerIo { uid, access_control, ace, authority, c_pin, table, data_store } = actual;
+        expect_that!(uid, eq(&expected.uid));
+        expect_that!(access_control, eq(&expected.access_control));
+        expect_that!(ace, eq(&expected.ace));
+        expect_that!(authority, eq(&expected.authority));
+        expect_that!(c_pin, eq(&expected.c_pin));
+        expect_that!(table, eq(&expected.table));
+        expect_that!(data_store, eq(&expected.data_store));
+    }
+
     fn expect_tper_eq(actual: &Tper, expected: &Tper) {
-        let Tper { ssc: _, admin, locking } = actual;
+        let Tper { ssc: _, admin, locking, kpio } = actual;
         expect_admin_eq(admin, &expected.admin);
         match (locking, &expected.locking) {
             (Some(actual), Some(expected)) => expect_locking_eq(actual, expected),
+            (actual, expected) => expect_that!(actual.is_some(), eq(expected.is_some())),
+        }
+        match (kpio, &expected.kpio) {
+            (Some(actual), Some(expected)) => expect_kpio_eq(actual, expected),
             (actual, expected) => expect_that!(actual.is_some(), eq(expected.is_some())),
         }
     }
@@ -377,6 +424,9 @@ mod tests {
         if let Some(locking) = tper.locking.as_mut() {
             locking.mbr = None;
             locking.data_store = None;
+        }
+        if let Some(kpio) = tper.kpio.as_mut() {
+            kpio.data_store = None;
         }
         tper
     }
@@ -389,6 +439,7 @@ mod tests {
     #[case::pyrite_1(Ssc::PyriteV1)]
     #[case::pyrite_2(Ssc::PyriteV2)]
     #[case::ruby(Ssc::Ruby)]
+    #[case::kpio(Ssc::KeyPerIO)]
     #[gtest]
     fn serde_json_roundtrip(#[case] ssc: Ssc) {
         let tper = serializable_state(ssc);
@@ -405,6 +456,7 @@ mod tests {
     #[case::pyrite_1(Ssc::PyriteV1)]
     #[case::pyrite_2(Ssc::PyriteV2)]
     #[case::ruby(Ssc::Ruby)]
+    #[case::kpio(Ssc::KeyPerIO)]
     #[gtest]
     fn serde_postcard_roundtrip(#[case] ssc: Ssc) {
         let tper = serializable_state(ssc);
@@ -421,6 +473,7 @@ mod tests {
     #[case::pyrite_1(Ssc::PyriteV1)]
     #[case::pyrite_2(Ssc::PyriteV2)]
     #[case::ruby(Ssc::Ruby)]
+    #[case::kpio(Ssc::KeyPerIO)]
     fn from_preconfig(#[case] ssc: Ssc) {
         let tper = Tper::from_preconfig(ssc);
         assert_eq!(tper.ssc, ssc)

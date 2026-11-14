@@ -26,14 +26,15 @@ use sed_spec::types::LifeCycleState;
 use sed_spec::uid_registry::core::shared::authority::ANYBODY;
 use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
 use sed_spec::uid_registry::core::shared::table_id;
-use sed_spec::uid_registry::{enterprise, opal_2};
+use sed_spec::uid_registry::{enterprise, kpio, opal_2};
 
 use crate::internal_error::Expect;
 use crate::tper::{Locking, SecurityProvider, Table, Tper};
 
-const DATA_STORE_IDS: [TableRef; 2] = [
+const DATA_STORE_IDS: [TableRef; 3] = [
     opal_2::locking::table_id::DATA_STORE,
     enterprise::locking::table_id::DATA_STORE,
+    kpio::key_per_io::table_id::DATA_STORE,
 ];
 
 #[derive(Debug)]
@@ -175,7 +176,7 @@ impl Session {
     }
 
     fn activate(&self, tper: &mut Tper, invoking_id: Uid, params: &Activate) -> Result<ActivateResult, MethodStatus> {
-        use sed_spec::uid_registry::opal_2::{admin, locking};
+        use sed_spec::uid_registry::opal_2::admin;
 
         self.check_permission(tper, invoking_id, params.method_id(), [0].into_iter())?;
 
@@ -185,9 +186,13 @@ impl Session {
         let sp_info = admin_sp.sp.get_mut(&sp_uid).ok_or(MethodStatus::InvalidParameter)?;
         if sp_info.life_cycle_state == Some(LifeCycleState::ManufacturedInactive) {
             sp_info.life_cycle_state = Some(LifeCycleState::Manufactured);
+            let admin1_pin_ref = if sp_uid == kpio::admin::sp::KEY_PER_IO {
+                kpio::key_per_io::c_pin::ADMIN.get(0).unwrap()
+            } else {
+                opal_2::locking::c_pin::ADMIN.get(0).unwrap()
+            };
             let sp = tper.sp_mut(sp_uid).expect_sp(sp_uid);
-            let admin1_pin =
-                sp.c_pin_mut().get_mut(&locking::c_pin::ADMIN.get(0).unwrap()).expect_object("C_PIN", "ADMIN1");
+            let admin1_pin = sp.c_pin_mut().get_mut(&admin1_pin_ref).expect_object("C_PIN", "ADMIN1");
             admin1_pin.pin = sid_pin;
             Ok(ActivateResult)
         } else {

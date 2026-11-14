@@ -227,3 +227,30 @@ async fn list_authorities_locking(#[case] ssc: Ssc) {
         device.inspect(|tper| tper.locking.as_ref().unwrap().authority.keys().cloned().collect());
     assert_that!(actual_uids, eq(&expected_uids));
 }
+
+#[instrument]
+#[tokio::test]
+#[with_tracing]
+async fn kpio_activate_change_password_revert() {
+    use sed_spec::types::LifeCycleState;
+    use sed_spec::uid_registry::kpio;
+
+    let kpio_sp = kpio::admin::sp::KEY_PER_IO;
+    let kpio_admin1 = kpio::key_per_io::authority::ADMIN.get(0).unwrap();
+    let kpio_life_cycle =
+        |device: &VirtualDevice| device.inspect(|tper| tper.admin.sp.get(&kpio_sp).and_then(|sp| sp.life_cycle_state));
+    let (session, device) = setup(Ssc::KeyPerIO).await;
+    assert_that!(session.spec().secondary_sp(), eq(kpio_sp));
+
+    session.take_owneship(NOT_DEFAULT).await.unwrap();
+    session.activate_secondary_sp(NOT_DEFAULT).await.unwrap();
+    assert_that!(kpio_life_cycle(&device), some(eq(LifeCycleState::Manufactured)));
+
+    // Activate copies the SID password into the KPIO SP's Admin1 credential.
+    let result = session.change_password(kpio_sp, kpio_admin1, NOT_DEFAULT, NOT_DEFAULT).await;
+    assert_that!(result, ok(eq(&())));
+
+    let result = session.revert_tper(opal_admin::authority::SID, NOT_DEFAULT).await;
+    assert_that!(result, ok(anything()));
+    assert_that!(kpio_life_cycle(&device), some(eq(LifeCycleState::ManufacturedInactive)));
+}
