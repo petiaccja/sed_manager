@@ -22,7 +22,7 @@ use sed_packet::discovery::{
 };
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::SecurityProviderRef;
-use sed_spec::preconfig::{ENTERPRISE, OPAL_2};
+use sed_spec::preconfig::{ENTERPRISE, OPAL_1, OPAL_2, OPALITE, PYRITE_1, PYRITE_2, RUBY};
 use sed_spec::ssc::Ssc;
 use sed_spec::types::LifeCycleState;
 use sed_spec::uid_registry::opal_2;
@@ -43,12 +43,12 @@ impl Tper {
     pub fn from_preconfig(ssc: Ssc) -> Self {
         let raw_json_str = match ssc {
             Ssc::Enterprise => ENTERPRISE,
-            Ssc::OpalV1 => todo!(),
+            Ssc::OpalV1 => OPAL_1,
             Ssc::OpalV2 => OPAL_2,
-            Ssc::Opalite => todo!(),
-            Ssc::PyriteV1 => todo!(),
-            Ssc::PyriteV2 => todo!(),
-            Ssc::Ruby => todo!(),
+            Ssc::Opalite => OPALITE,
+            Ssc::PyriteV1 => PYRITE_1,
+            Ssc::PyriteV2 => PYRITE_2,
+            Ssc::Ruby => RUBY,
             Ssc::KeyPerIO => todo!(),
         };
         let raw_json_value =
@@ -383,7 +383,12 @@ mod tests {
 
     #[rstest]
     #[case::enterprise(Ssc::Enterprise)]
+    #[case::opal_1(Ssc::OpalV1)]
     #[case::opal_2(Ssc::OpalV2)]
+    #[case::opalite(Ssc::Opalite)]
+    #[case::pyrite_1(Ssc::PyriteV1)]
+    #[case::pyrite_2(Ssc::PyriteV2)]
+    #[case::ruby(Ssc::Ruby)]
     #[gtest]
     fn serde_json_roundtrip(#[case] ssc: Ssc) {
         let tper = serializable_state(ssc);
@@ -394,7 +399,12 @@ mod tests {
 
     #[rstest]
     #[case::enterprise(Ssc::Enterprise)]
+    #[case::opal_1(Ssc::OpalV1)]
     #[case::opal_2(Ssc::OpalV2)]
+    #[case::opalite(Ssc::Opalite)]
+    #[case::pyrite_1(Ssc::PyriteV1)]
+    #[case::pyrite_2(Ssc::PyriteV2)]
+    #[case::ruby(Ssc::Ruby)]
     #[gtest]
     fn serde_postcard_roundtrip(#[case] ssc: Ssc) {
         let tper = serializable_state(ssc);
@@ -405,7 +415,12 @@ mod tests {
 
     #[rstest]
     #[case::enterprise(Ssc::Enterprise)]
+    #[case::opal_1(Ssc::OpalV1)]
     #[case::opal_2(Ssc::OpalV2)]
+    #[case::opalite(Ssc::Opalite)]
+    #[case::pyrite_1(Ssc::PyriteV1)]
+    #[case::pyrite_2(Ssc::PyriteV2)]
+    #[case::ruby(Ssc::Ruby)]
     fn from_preconfig(#[case] ssc: Ssc) {
         let tper = Tper::from_preconfig(ssc);
         assert_eq!(tper.ssc, ssc)

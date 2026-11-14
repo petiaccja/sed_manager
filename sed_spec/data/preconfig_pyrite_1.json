@@ -1,0 +1,859 @@
+{
+    "ssc": "PyriteV1",
+    "admin": {
+        "uid": "$Admin::SP::Admin",
+        "access_control": {
+            "$InvokingID::ThisSP.$MethodID::Authenticate": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$InvokingID::ThisSP.$MethodID::Random": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::Table.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::Table.$MethodID::Get": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::AccessControl.$MethodID::GetACL": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::ACE.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::ACE.$MethodID::Get": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::Authority.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::Authority.$MethodID::Get": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::C_PIN.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$Admin::C_PIN::SID.$MethodID::Get": {
+                "acl": ["$Admin::ACE::C_PIN_SID_Get_NOPIN"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$Admin::C_PIN::SID.$MethodID::Set": {
+                "acl": ["$Admin::ACE::C_PIN_SID_Set_PIN"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$Admin::C_PIN::MSID.$MethodID::Get": {
+                "acl": ["$Admin::ACE::C_PIN_MSID_Get_PIN"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::SP.$MethodID::Next": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::SP.$MethodID::Get": {
+                "acl": ["$Admin::ACE::Anybody"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$Admin::SP::Admin.$MethodID::Revert": {
+                "acl": ["$Admin::ACE::SP_SID"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$Admin::SP::Locking.$MethodID::Revert": {
+                "acl": ["$Admin::ACE::SP_SID"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            },
+            "$TableID::SP.$MethodID::Activate": {
+                "acl": ["$Admin::ACE::SP_SID"],
+                "get_acl_acl": ["$Admin::ACE::Anybody"]
+            }
+        },
+        "ace": {
+            "$Admin::ACE::Anybody": {
+                "uid": "$Admin::ACE::Anybody",
+                "name": "ACE_Anybody",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::Anybody"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18
+                ]
+            },
+            "$Admin::ACE::C_PIN_SID_Get_NOPIN": {
+                "uid": "$Admin::ACE::C_PIN_SID_Get_NOPIN",
+                "name": "ACE_C_PIN_SID_Get_NOPIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::Admins"
+                    },
+                    {
+                        "Authority": "$Admin::Authority::SID"
+                    },
+                    {
+                        "BooleanOp": "Or"
+                    }
+                ],
+                "columns": [0, 4, 5, 6, 7]
+            },
+            "$Admin::ACE::C_PIN_SID_Set_PIN": {
+                "uid": "$Admin::ACE::C_PIN_SID_Set_PIN",
+                "name": "ACE_C_PIN_SID_Set_PIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::SID"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Admin::ACE::C_PIN_MSID_Get_PIN": {
+                "uid": "$Admin::ACE::C_PIN_MSID_Get_PIN",
+                "name": "ACE_C_PIN_MSID_Get_PIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::Anybody"
+                    }
+                ],
+                "columns": [0, 3]
+            },
+            "$Admin::ACE::SP_SID": {
+                "uid": "$Admin::ACE::SP_SID",
+                "name": "ACE_SP_SID",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Admin::Authority::SID"
+                    }
+                ],
+                "columns": [0, 1, 2, 3, 4, 5, 6, 7]
+            }
+        },
+        "authority": {
+            "$Admin::Authority::Anybody": {
+                "uid": "$Admin::Authority::Anybody",
+                "name": "Anybody",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Admin::Authority::Admins": {
+                "uid": "$Admin::Authority::Admins",
+                "name": "Admins",
+                "is_class": true,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Admin::Authority::SID": {
+                "uid": "$Admin::Authority::SID",
+                "name": "SID",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Admin::C_PIN::SID",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            }
+        },
+        "c_pin": {
+            "$Admin::C_PIN::SID": {
+                "uid": "$Admin::C_PIN::SID",
+                "name": "C_PIN_SID",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Admin::C_PIN::MSID": {
+                "uid": "$Admin::C_PIN::MSID",
+                "name": "C_PIN_MSID",
+                "pin": [112, 97, 115, 115, 119, 111, 114, 100]
+            }
+        },
+        "sp": {
+            "$Admin::SP::Admin": {
+                "uid": "$Admin::SP::Admin",
+                "name": "Admin",
+                "life_cycle_state": "Manufactured",
+                "frozen": false
+            },
+            "$Admin::SP::Locking": {
+                "uid": "$Admin::SP::Locking",
+                "name": "Locking",
+                "life_cycle_state": "ManufacturedInactive",
+                "frozen": false
+            }
+        },
+        "table": {
+            "$Table::Table": {
+                "uid": "$Table::Table",
+                "name": "Table",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::AccessControl": {
+                "uid": "$Table::AccessControl",
+                "name": "AccessControl",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::ACE": {
+                "uid": "$Table::ACE",
+                "name": "ACE",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::Authority": {
+                "uid": "$Table::Authority",
+                "name": "Authority",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::C_PIN": {
+                "uid": "$Table::C_PIN",
+                "name": "C_PIN",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::SP": {
+                "uid": "$Table::SP",
+                "name": "SP",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            }
+        }
+    },
+    "locking": {
+        "uid": "$Admin::SP::Locking",
+        "access_control": {
+            "$InvokingID::ThisSP.$MethodID::Authenticate": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$InvokingID::ThisSP.$MethodID::RevertSP": {
+                "acl": ["$Locking::ACE::Admin"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$InvokingID::ThisSP.$MethodID::Random": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::Table.$MethodID::Next": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::Table.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::ACE.$MethodID::Next": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::ACE.$MethodID::Get": {
+                "acl": ["$Locking::ACE::ACE_Get_All"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::ACE_Get_All.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::Authority_Get_All.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::C_PIN_User1_Set_PIN.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::C_PIN_User2_Set_PIN.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::Locking_GlobalRange_Set_RdLocked.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::Locking_GlobalRange_Set_WrLocked.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::MBRControl_Set_DoneToDOR.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::DataStore_Get_All.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::ACE::DataStore_Set_All.$MethodID::Set": {
+                "acl": ["$Locking::ACE::ACE_Set_BooleanExpression"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::Authority.$MethodID::Next": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::Authority.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Authority_Get_All"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::Authority::User1.$MethodID::Set": {
+                "acl": ["$Locking::ACE::Authority_Set_Enabled"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::Authority::User2.$MethodID::Set": {
+                "acl": ["$Locking::ACE::Authority_Set_Enabled"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::C_PIN.$MethodID::Next": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::C_PIN::Admin1.$MethodID::Get": {
+                "acl": ["$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::C_PIN::Admin1.$MethodID::Set": {
+                "acl": ["$Locking::ACE::C_PIN_Admins_Set_PIN"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::C_PIN::User1.$MethodID::Get": {
+                "acl": ["$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::C_PIN::User1.$MethodID::Set": {
+                "acl": ["$Locking::ACE::C_PIN_User1_Set_PIN"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::C_PIN::User2.$MethodID::Get": {
+                "acl": ["$Locking::ACE::C_PIN_Admins_Get_All_NOPIN"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::C_PIN::User2.$MethodID::Set": {
+                "acl": ["$Locking::ACE::C_PIN_User2_Set_PIN"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::LockingInfo.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::Locking.$MethodID::Next": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::Locking::GlobalRange.$MethodID::Get": {
+                "acl": [
+                    "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey"
+                ],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::Locking::GlobalRange.$MethodID::Set": {
+                "acl": [
+                    "$Locking::ACE::Locking_GlblRng_Admins_Set",
+                    "$Locking::ACE::Locking_GlobalRange_Set_RdLocked",
+                    "$Locking::ACE::Locking_GlobalRange_Set_WrLocked"
+                ],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::MBRControl.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::MBRControl.$MethodID::Set": {
+                "acl": [
+                    "$Locking::ACE::MBRControl_Admins_Set",
+                    "$Locking::ACE::MBRControl_Set_DoneToDOR"
+                ],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::MBR.$MethodID::Get": {
+                "acl": ["$Locking::ACE::Anybody"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$TableID::MBR.$MethodID::Set": {
+                "acl": ["$Locking::ACE::Admin"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::TableID::DataStore.$MethodID::Get": {
+                "acl": ["$Locking::ACE::DataStore_Get_All"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            },
+            "$Locking::TableID::DataStore.$MethodID::Set": {
+                "acl": ["$Locking::ACE::DataStore_Set_All"],
+                "get_acl_acl": ["$Locking::ACE::Anybody"]
+            }
+        },
+        "ace": {
+            "$Locking::ACE::Anybody": {
+                "uid": "$Locking::ACE::Anybody",
+                "name": "ACE_Anybody",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Anybody"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::Admin": {
+                "uid": "$Locking::ACE::Admin",
+                "name": "ACE_Admin",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19
+                ]
+            },
+            "$Locking::ACE::ACE_Get_All": {
+                "uid": "$Locking::ACE::ACE_Get_All",
+                "name": "ACE_ACE_Get_All",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [0, 1, 2, 3, 4]
+            },
+            "$Locking::ACE::ACE_Set_BooleanExpression": {
+                "uid": "$Locking::ACE::ACE_Set_BooleanExpression",
+                "name": "ACE_ACE_Set_BooleanExpression",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::Authority_Get_All": {
+                "uid": "$Locking::ACE::Authority_Get_All",
+                "name": "ACE_Authority_Get_All",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18
+                ]
+            },
+            "$Locking::ACE::Authority_Set_Enabled": {
+                "uid": "$Locking::ACE::Authority_Set_Enabled",
+                "name": "ACE_Authority_Set_Enabled",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [5]
+            },
+            "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN": {
+                "uid": "$Locking::ACE::C_PIN_Admins_Get_All_NOPIN",
+                "name": "ACE_C_PIN_Admins_Get_All_NOPIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [0, 4, 5, 6, 7]
+            },
+            "$Locking::ACE::C_PIN_Admins_Set_PIN": {
+                "uid": "$Locking::ACE::C_PIN_Admins_Set_PIN",
+                "name": "ACE_C_PIN_Admins_Set_PIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::C_PIN_User1_Set_PIN": {
+                "uid": "$Locking::ACE::C_PIN_User1_Set_PIN",
+                "name": "ACE_C_PIN_User1_Set_PIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    },
+                    {
+                        "Authority": "$Locking::Authority::User1"
+                    },
+                    {
+                        "BooleanOp": "Or"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::C_PIN_User2_Set_PIN": {
+                "uid": "$Locking::ACE::C_PIN_User2_Set_PIN",
+                "name": "ACE_C_PIN_User2_Set_PIN",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    },
+                    {
+                        "Authority": "$Locking::Authority::User2"
+                    },
+                    {
+                        "BooleanOp": "Or"
+                    }
+                ],
+                "columns": [3]
+            },
+            "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey": {
+                "uid": "$Locking::ACE::Locking_GlobalRange_Get_RangeStartToActiveKey",
+                "name": "ACE_Locking_GlobalRange_Get_RangeStartToActiveKey",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [3, 4, 5, 6, 7, 8, 9, 10]
+            },
+            "$Locking::ACE::Locking_GlobalRange_Set_RdLocked": {
+                "uid": "$Locking::ACE::Locking_GlobalRange_Set_RdLocked",
+                "name": "ACE_Locking_GlobalRange_Set_RdLocked",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [7]
+            },
+            "$Locking::ACE::Locking_GlobalRange_Set_WrLocked": {
+                "uid": "$Locking::ACE::Locking_GlobalRange_Set_WrLocked",
+                "name": "ACE_Locking_GlobalRange_Set_WrLocked",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [8]
+            },
+            "$Locking::ACE::Locking_GlblRng_Admins_Set": {
+                "uid": "$Locking::ACE::Locking_GlblRng_Admins_Set",
+                "name": "ACE_Locking_GlblRng_Admins_Set",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [5, 6, 7, 8, 9]
+            },
+            "$Locking::ACE::MBRControl_Admins_Set": {
+                "uid": "$Locking::ACE::MBRControl_Admins_Set",
+                "name": "ACE_MBRControl_Admins_Set",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [1, 2, 3]
+            },
+            "$Locking::ACE::MBRControl_Set_DoneToDOR": {
+                "uid": "$Locking::ACE::MBRControl_Set_DoneToDOR",
+                "name": "ACE_MBRControl_Set_DoneToDOR",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [2, 3]
+            },
+            "$Locking::ACE::DataStore_Get_All": {
+                "uid": "$Locking::ACE::DataStore_Get_All",
+                "name": "ACE_DataStore_Get_All",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [0]
+            },
+            "$Locking::ACE::DataStore_Set_All": {
+                "uid": "$Locking::ACE::DataStore_Set_All",
+                "name": "ACE_DataStore_Set_All",
+                "boolean_expr": [
+                    {
+                        "Authority": "$Locking::Authority::Admins"
+                    }
+                ],
+                "columns": [0]
+            }
+        },
+        "authority": {
+            "$Locking::Authority::Anybody": {
+                "uid": "$Locking::Authority::Anybody",
+                "name": "Anybody",
+                "is_class": false,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::Admins": {
+                "uid": "$Locking::Authority::Admins",
+                "name": "Admins",
+                "is_class": true,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::Admin1": {
+                "uid": "$Locking::Authority::Admin1",
+                "name": "Admin1",
+                "is_class": false,
+                "class": "$Locking::Authority::Admins",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::Admin1",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::Users": {
+                "uid": "$Locking::Authority::Users",
+                "name": "Users",
+                "is_class": true,
+                "class": "$General::Null",
+                "enabled": true,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "None",
+                "credential": "$General::Null",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::User1": {
+                "uid": "$Locking::Authority::User1",
+                "name": "User1",
+                "is_class": false,
+                "class": "$Locking::Authority::Users",
+                "enabled": false,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::User1",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            },
+            "$Locking::Authority::User2": {
+                "uid": "$Locking::Authority::User2",
+                "name": "User2",
+                "is_class": false,
+                "class": "$Locking::Authority::Users",
+                "enabled": false,
+                "secure": "None",
+                "hash_and_sign": "None",
+                "present_certificate": false,
+                "operation": "Password",
+                "credential": "$Locking::C_PIN::User2",
+                "response_sign": "$General::Null",
+                "response_exch": "$General::Null"
+            }
+        },
+        "c_pin": {
+            "$Locking::C_PIN::Admin1": {
+                "uid": "$Locking::C_PIN::Admin1",
+                "name": "C_PIN_Admin1",
+                "pin": [
+                    100, 101, 102, 97, 117, 108, 116, 95, 97, 100, 109, 105,
+                    110, 95, 112, 119
+                ],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::User1": {
+                "uid": "$Locking::C_PIN::User1",
+                "name": "C_PIN_User1",
+                "pin": [
+                    100, 101, 102, 97, 117, 108, 116, 95, 117, 115, 101, 114,
+                    95, 112, 119
+                ],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            },
+            "$Locking::C_PIN::User2": {
+                "uid": "$Locking::C_PIN::User2",
+                "name": "C_PIN_User2",
+                "pin": [
+                    100, 101, 102, 97, 117, 108, 116, 95, 117, 115, 101, 114,
+                    95, 112, 119
+                ],
+                "char_set": "$General::Null",
+                "try_limit": 0,
+                "tries": 0,
+                "persistence": false
+            }
+        },
+        "locking": {
+            "$Locking::Locking::GlobalRange": {
+                "uid": "$Locking::Locking::GlobalRange",
+                "name": "Locking_GlobalRange",
+                "range_start": 0,
+                "range_length": 0,
+                "read_lock_enabled": false,
+                "write_lock_enabled": false,
+                "read_locked": false,
+                "write_locked": false,
+                "lock_on_reset": ["PowerCycle"],
+                "active_key": "$General::Null"
+            }
+        },
+        "locking_info_ext": {
+            "$LockingInfo::LockingInfo": {
+                "uid": "$LockingInfo::LockingInfo",
+                "encryption_support": "None",
+                "max_ranges": 0,
+                "alignment_required": true,
+                "logical_block_size": 512,
+                "alignment_granularity": 8,
+                "lowest_aligned_lba": 0
+            }
+        },
+        "mbr_control": {
+            "$MBRControl::MBRControl": {
+                "uid": "$MBRControl::MBRControl",
+                "enable": false,
+                "done": false,
+                "done_on_reset": ["PowerCycle"]
+            }
+        },
+        "table": {
+            "$Table::Table": {
+                "uid": "$Table::Table",
+                "name": "Table",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::AccessControl": {
+                "uid": "$Table::AccessControl",
+                "name": "AccessControl",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::ACE": {
+                "uid": "$Table::ACE",
+                "name": "ACE",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::Authority": {
+                "uid": "$Table::Authority",
+                "name": "Authority",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::C_PIN": {
+                "uid": "$Table::C_PIN",
+                "name": "C_PIN",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::LockingInfo": {
+                "uid": "$Table::LockingInfo",
+                "name": "LockingInfo",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::Locking": {
+                "uid": "$Table::Locking",
+                "name": "Locking",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::MBRControl": {
+                "uid": "$Table::MBRControl",
+                "name": "MBRControl",
+                "kind": "Object",
+                "mandatory_write_granularity": 0,
+                "recommended_access_granularity": 0
+            },
+            "$Table::MBR": {
+                "uid": "$Table::MBR",
+                "name": "MBR",
+                "kind": "Byte",
+                "rows": 134217728,
+                "mandatory_write_granularity": 1,
+                "recommended_access_granularity": 1
+            },
+            "$Locking::Table::DataStore": {
+                "uid": "$Locking::Table::DataStore",
+                "name": "DataStore",
+                "kind": "Byte",
+                "rows": 10485760,
+                "mandatory_write_granularity": 1,
+                "recommended_access_granularity": 1
+            }
+        }
+    }
+}
