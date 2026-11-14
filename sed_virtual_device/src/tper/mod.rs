@@ -16,14 +16,16 @@ pub use locking::Locking;
 pub use preconfig::{INITIAL_SID_PASSWORD, PSID_PASSWORD};
 pub use security_provider::{SecurityProvider, Table};
 use sed_packet::discovery::{
-    BlockSIDAuthDescriptor, Discovery, FeatureDescriptor, GeometryDescriptor, LockingDescriptor, OpalV2Descriptor,
-    OwnerPasswordState, TperDescriptor,
+    BlockSIDAuthDescriptor, Discovery, EnterpriseDescriptor, FeatureDescriptor, GeometryDescriptor, KeyPerIODescriptor,
+    LockingDescriptor, OpalV1Descriptor, OpalV2Descriptor, OpaliteDescriptor, OwnerPasswordState, PyriteV1Descriptor,
+    PyriteV2Descriptor, RubyDescriptor, TperDescriptor,
 };
 use sed_spec::methods::{MethodStatus, Properties};
 use sed_spec::objects::SecurityProviderRef;
 use sed_spec::preconfig::{ENTERPRISE, OPAL_2};
 use sed_spec::ssc::Ssc;
 use sed_spec::types::LifeCycleState;
+use sed_spec::uid_registry::opal_2;
 use sed_spec::uid_registry::opal_2::admin::c_pin;
 use sorbit::ser_de::ToBytes;
 
@@ -146,10 +148,10 @@ impl Tper {
                 .values()
                 .any(|range| range.read_locked.unwrap_or(false) || range.write_locked.unwrap_or(false));
 
-            let (_, mbr_control) =
-                locking_sp.mbr_control.first_key_value().expect("MBR control missing from preconfig");
-            let mbr_enabled = mbr_control.enable.unwrap_or(false);
-            let mbr_done = mbr_control.done.unwrap_or(false);
+            let mbr_control = locking_sp.mbr_control.as_ref().and_then(|mbr_control| mbr_control.first_key_value());
+            let mbr_enabled = mbr_control.and_then(|(_, mbr_control)| mbr_control.enable).unwrap_or(false);
+            let mbr_done = mbr_control.and_then(|(_, mbr_control)| mbr_control.done).unwrap_or(false);
+            let mbr_shadowing_supported = mbr_control.is_some() || self.ssc == Ssc::Enterprise;
 
             FeatureDescriptor::Locking(LockingDescriptor {
                 version: PhantomData,
@@ -161,23 +163,125 @@ impl Tper {
                 media_encryption: true,
                 mbr_enabled,
                 mbr_done,
-                mbr_shadowing_not_supported: false,
+                mbr_shadowing_not_supported: !mbr_shadowing_supported,
             })
         })
     }
 
     fn ssc_feature_desc(&self) -> FeatureDescriptor {
-        FeatureDescriptor::OpalV2(OpalV2Descriptor {
-            version: 1,
-            length: PhantomData,
-            base_com_id: BASE_COM_ID,
-            num_com_ids: NUM_COM_IDS,
-            no_range_crossing: false,
-            num_locking_admins_supported: 4,
-            num_locking_users_supported: 8,
-            initial_owner_pw: OwnerPasswordState::SameAsMSID,
-            reverted_owner_pw: OwnerPasswordState::SameAsMSID,
-        })
+        match self.ssc {
+            Ssc::Enterprise => FeatureDescriptor::Enterprise(EnterpriseDescriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                no_range_crossing: false,
+            }),
+            Ssc::OpalV1 => FeatureDescriptor::OpalV1(OpalV1Descriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                no_range_crossing: false,
+            }),
+            Ssc::OpalV2 => FeatureDescriptor::OpalV2(OpalV2Descriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                no_range_crossing: false,
+                num_locking_admins_supported: self.num_locking_admins_supported(),
+                num_locking_users_supported: self.num_locking_users_supported(),
+                initial_owner_pw: OwnerPasswordState::SameAsMSID,
+                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+            }),
+            Ssc::Opalite => FeatureDescriptor::Opalite(OpaliteDescriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                initial_owner_pw: OwnerPasswordState::SameAsMSID,
+                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+            }),
+            Ssc::PyriteV1 => FeatureDescriptor::PyriteV1(PyriteV1Descriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                initial_owner_pw: OwnerPasswordState::SameAsMSID,
+                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+            }),
+            Ssc::PyriteV2 => FeatureDescriptor::PyriteV2(PyriteV2Descriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                initial_owner_pw: OwnerPasswordState::SameAsMSID,
+                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+            }),
+            Ssc::Ruby => FeatureDescriptor::Ruby(RubyDescriptor {
+                version: 1,
+                length: PhantomData,
+                base_com_id: BASE_COM_ID,
+                num_com_ids: NUM_COM_IDS,
+                no_range_crossing: false,
+                num_locking_admins_supported: self.num_locking_admins_supported(),
+                num_locking_users_supported: self.num_locking_users_supported(),
+                initial_owner_pw: OwnerPasswordState::SameAsMSID,
+                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+            }),
+            Ssc::KeyPerIO => FeatureDescriptor::KeyPerIO(KeyPerIODescriptor {
+                version: 1,
+                minor_version: 0,
+                length: PhantomData,
+                base_com_id_p1: BASE_COM_ID,
+                num_com_ids_p1: NUM_COM_IDS,
+                base_com_id_p3: BASE_COM_ID + NUM_COM_IDS,
+                num_com_ids_p3: NUM_COM_IDS,
+                initial_owner_pw: OwnerPasswordState::SameAsMSID,
+                reverted_owner_pw: OwnerPasswordState::SameAsMSID,
+                num_kpio_admins_supported: 0,
+                replay_protection_enabled: false,
+                replay_protection_supported: false,
+                incorrect_key_detection_supported: false,
+                tweak_key_required: false,
+                kpio_scope: false,
+                kpio_enabled: false,
+                max_key_uid_len: 16,
+                kmip_key_injection_supported: false,
+                nist_rsa_oaep_supported: false,
+                nist_aes_gcm_supported: false,
+                nist_aes_kw_supported: false,
+                aes256_wrapping_supported: false,
+                rsa2k_wrapping_supported: false,
+                rsa3k_wrapping_supported: false,
+                rsa4k_wrapping_supported: false,
+                pki_kek_transport_supported: false,
+                plaintext_kek_prov_supported: false,
+                num_keks_supported: 1,
+                total_key_tags_supported: 1,
+                max_key_tags_per_namespace: 1,
+                get_nonce_cmd_nonce_len: 1,
+            }),
+        }
+    }
+
+    fn num_locking_admins_supported(&self) -> u16 {
+        use opal_2::locking::authority::ADMIN;
+
+        match self.locking.as_ref() {
+            Some(locking) => locking.authority.iter().filter(|(uid, _)| ADMIN.contains(**uid)).count() as u16,
+            None => 0,
+        }
+    }
+
+    fn num_locking_users_supported(&self) -> u16 {
+        use opal_2::locking::authority::USER;
+
+        match self.locking.as_ref() {
+            Some(locking) => locking.authority.iter().filter(|(uid, _)| USER.contains(**uid)).count() as u16,
+            None => 0,
+        }
     }
 
     fn geometry_feature_desc() -> FeatureDescriptor {
@@ -271,7 +375,7 @@ mod tests {
     fn serializable_state(ssc: Ssc) -> Tper {
         let mut tper = Tper::from_preconfig(ssc);
         if let Some(locking) = tper.locking.as_mut() {
-            locking.mbr = Vec::new();
+            locking.mbr = None;
             locking.data_store = None;
         }
         tper

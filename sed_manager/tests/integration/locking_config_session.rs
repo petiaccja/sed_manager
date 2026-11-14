@@ -366,17 +366,17 @@ async fn set_mbr_control() {
     let mbr_control =
         MbrControl { uid: Some(mbr_control::MBR_CONTROL), enable: Some(true), done: Some(true), done_on_reset: None };
 
-    assert_that!(
-        device.inspect(|tper| tper.locking.as_ref().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
-        some(eq(false))
-    );
+    let get_mbr_control = |tper: &sed_virtual_device::Tper| {
+        tper.locking.as_ref().unwrap().mbr_control.as_ref().unwrap().first_key_value().unwrap().1.clone()
+    };
+
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).enable), some(eq(false)));
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).done), some(eq(false)));
 
     session.set_mbr_control(mbr_control).await.unwrap();
 
-    assert_that!(
-        device.inspect(|tper| tper.locking.as_ref().unwrap().mbr_control[&mbr_control::MBR_CONTROL].enable),
-        some(eq(true))
-    );
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).enable), some(eq(true)));
+    assert_that!(device.inspect(|tper| get_mbr_control(tper).done), some(eq(true)));
 }
 
 #[instrument]
@@ -390,8 +390,8 @@ async fn write_mbr() {
     session.write_mbr(500, &data).await.unwrap();
 
     device.inspect(|tper| {
-        assert!(tper.locking.as_ref().unwrap().mbr[0..500].iter().all(|x| *x == 0));
-        assert!(tper.locking.as_ref().unwrap().mbr[500..987653] == data);
-        assert!(tper.locking.as_ref().unwrap().mbr[987653..988154].iter().all(|x| *x == 0));
+        assert!(tper.locking.as_ref().unwrap().mbr.as_ref().unwrap()[0..500].iter().all(|x| *x == 0));
+        assert!(tper.locking.as_ref().unwrap().mbr.as_ref().unwrap()[500..987653] == data);
+        assert!(tper.locking.as_ref().unwrap().mbr.as_ref().unwrap()[987653..988154].iter().all(|x| *x == 0));
     });
 }

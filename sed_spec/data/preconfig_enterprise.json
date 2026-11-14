@@ -1412,7 +1412,6 @@
                 "max_ranges": 8
             }
         },
-        "mbr_control": {},
         "table": {
             "$Table::Table": {
                 "uid": "$Table::Table",

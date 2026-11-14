@@ -25,12 +25,12 @@ pub struct Locking {
     pub k_aes_256: Table<KAes256>,
     pub locking: Table<LockingRange>,
     pub locking_info_ext: Table<LockingInfoExt>,
-    pub mbr_control: Table<MbrControl>,
+    pub mbr_control: Option<Table<MbrControl>>,
     pub table: Table<TableDesc>,
     // The byte tables are not serialized to keep snapshots of the virtual
     // device small. They are restored by `Tper::resize_byte_tables`.
     #[serde(skip)]
-    pub mbr: Vec<u8>,
+    pub mbr: Option<Vec<u8>>,
     #[serde(skip)]
     pub data_store: Option<Vec<u8>>,
 }
@@ -40,7 +40,11 @@ impl Locking {
     /// in the `Table` table.
     pub fn resize_mbr(&mut self) {
         if let Some(desc) = self.table.get(&table::MBR) {
-            self.mbr.resize(desc.rows.unwrap_or(128 * 1048576) as usize, 0);
+            if let Some(mbr) = self.mbr.as_mut() {
+                mbr.resize(desc.rows.unwrap_or(128 * 1048576) as usize, 0);
+            } else {
+                self.mbr = Some(vec![0; 128 * 1048576]);
+            }
         }
     }
 
@@ -127,19 +131,19 @@ impl SecurityProvider for Locking {
     }
 
     fn mbr_control(&self) -> Option<&Table<MbrControl>> {
-        Some(&self.mbr_control)
+        self.mbr_control.as_ref()
     }
 
     fn mbr_control_mut(&mut self) -> Option<&mut Table<MbrControl>> {
-        Some(&mut self.mbr_control)
+        self.mbr_control.as_mut()
     }
 
     fn mbr(&self) -> Option<&Vec<u8>> {
-        Some(&self.mbr)
+        self.mbr.as_ref()
     }
 
     fn mbr_mut(&mut self) -> Option<&mut Vec<u8>> {
-        Some(&mut self.mbr)
+        self.mbr.as_mut()
     }
 
     fn data_store(&self) -> Option<&Vec<u8>> {
