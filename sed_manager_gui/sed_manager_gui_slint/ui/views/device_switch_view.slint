@@ -7,7 +7,7 @@ import { Device, RevertScope, RevertAuthority, Uid } from "../data/lib.slint";
 import { DeviceView } from "device_view.slint";
 
 export component DeviceSwitchView {
-    in property <int> selected;
+    in property <string> selected;
     in-out property <[Device]> devices;
 
     callback take-owneship(device: string, password: string);
@@ -32,16 +32,16 @@ export component DeviceSwitchView {
     VerticalLayout {
         if devices.length == 0: Rectangle { }
 
-        for device[index] in devices: Rectangle {
+        for device in devices: Rectangle {
             min-width: content.min-width;
-            min-height: index == selected ? content.min-height : 0px;
+            min-height: device.identity.path == selected ? content.min-height : 0px;
             preferred-width: content.preferred-width;
-            preferred-height: index == selected ? content.preferred-height : 0px;
-            visible: index == selected;
-            vertical-stretch: index == selected ? 1.0 : 0.0;
+            preferred-height: device.identity.path == selected ? content.preferred-height : 0px;
+            visible: device.identity.path == selected;
+            vertical-stretch: device.identity.path == selected ? 1.0 : 0.0;
             content := DeviceView {
                 width: parent.width;
-                height: index == selected ? parent.height : self.min-height;
+                height: device.identity.path == selected ? parent.height : self.min-height;
                 device <=> device;
 
                 take-owneship(password) => {

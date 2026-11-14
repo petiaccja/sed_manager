@@ -30,7 +30,11 @@ pub async fn select_virtual_device(ui: &Driver<ui::MainWindow>, ssc: Ssc) {
     };
     let accessible_id = format!("device-side-bar-/dev/virtual_device/{file_name}");
     ui.check_appearance(&accessible_id).await.unwrap();
-    ui.single_click(&accessible_id, Left).await.unwrap();
+    // The devices in the side bar get reordered as their identities get loaded
+    // in the background after the scan. An asynchronous mouse click could land
+    // on another device that moved under the cursor mid-click, so the device is
+    // selected synchronously, by its element rather than by its position.
+    ui.invoke_default_action(&accessible_id).unwrap();
     ui.check_appearance("activity-take-ownership").await.unwrap();
 }
 
