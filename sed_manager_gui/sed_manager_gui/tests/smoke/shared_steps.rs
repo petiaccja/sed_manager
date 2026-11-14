@@ -1,6 +1,7 @@
 use sed_manager::{
     ENTERPRISE_FILE, KPIO_FILE, OPAL_1_FILE, OPAL_2_FILE, OPALITE_FILE, PYRITE_1_FILE, PYRITE_2_FILE, RUBY_FILE,
 };
+use sed_manager_gui_slint as ui;
 use sed_spec::ssc::Ssc;
 use slint::platform::PointerEventButton::Left;
 
@@ -9,14 +10,14 @@ use crate::driver::Driver;
 pub const TEST_PASSWORD: &str = "test-password-1234";
 pub const USER1_PASSWORD: &str = "user1-password-1234";
 
-pub async fn scan_devices(ui: &Driver<sed_manager_gui_slint::MainWindow>) {
+pub async fn scan_devices(ui: &Driver<ui::MainWindow>) {
     ui.single_click("scan-button", Left).await.unwrap();
     ui.check_condition("scan-button", |handle| handle.accessible_enabled().unwrap_or(true))
         .await
         .unwrap();
 }
 
-pub async fn select_virtual_device(ui: &Driver<sed_manager_gui_slint::MainWindow>, ssc: Ssc) {
+pub async fn select_virtual_device(ui: &Driver<ui::MainWindow>, ssc: Ssc) {
     let file_name = match ssc {
         Ssc::Enterprise => ENTERPRISE_FILE,
         Ssc::OpalV1 => OPAL_1_FILE,
@@ -33,7 +34,7 @@ pub async fn select_virtual_device(ui: &Driver<sed_manager_gui_slint::MainWindow
     ui.check_appearance("activity-take-ownership").await.unwrap();
 }
 
-pub async fn take_ownership(ui: &Driver<sed_manager_gui_slint::MainWindow>) {
+pub async fn take_ownership(ui: &Driver<ui::MainWindow>) {
     // Switch to the "Take ownership" activity and fill in the password form.
     ui.single_click("activity-take-ownership", Left).await.unwrap();
     ui.enter_text("new-password", TEST_PASSWORD).await.unwrap();
@@ -52,7 +53,7 @@ pub async fn take_ownership(ui: &Driver<sed_manager_gui_slint::MainWindow>) {
     ui.check_disappearance("new-password").await.unwrap();
 }
 
-pub async fn activate_locking(ui: &Driver<sed_manager_gui_slint::MainWindow>) {
+pub async fn activate_locking(ui: &Driver<ui::MainWindow>) {
     // Switch to the "Activate locking" activity and submit the owner password.
     ui.single_click("activity-activate-locking", Left).await.unwrap();
     ui.enter_text("activate-locking-password", TEST_PASSWORD).await.unwrap();
@@ -60,4 +61,30 @@ pub async fn activate_locking(ui: &Driver<sed_manager_gui_slint::MainWindow>) {
     ui.invoke_default_action("activate-locking-submit").unwrap();
     ui.check_appearance_toast("Locking activated").await.unwrap();
     ui.check_disappearance("activate-locking-password").await.unwrap();
+}
+
+pub async fn revert_admin_sp(ui: Driver<ui::MainWindow>) {
+    // Switch to the "Revert device" activity again, select "Everything" as the scope, and
+    // revert the whole device back to its factory state.
+    ui.single_click("activity-revert-device", Left).await.unwrap();
+    ui.single_click("revert-scope", Left).await.unwrap();
+    ui.select_combo_box_item("revert-scope", "Everything").unwrap();
+    ui.enter_text("revert-password", TEST_PASSWORD).await.unwrap();
+    ui.check_enabled("revert-submit").await.unwrap();
+    ui.invoke_default_action("revert-submit").unwrap();
+    ui.check_appearance_toast("Reverted device successfully").await.unwrap();
+    // Reverting the whole device restores the factory MSID password, so "Take ownership" reappears.
+    ui.check_appearance("activity-take-ownership").await.unwrap();
+}
+
+pub async fn revert_locking_sp(ui: &Driver<ui::MainWindow>) {
+    // Switch to the "Revert device" activity and revert just the locking SP.
+    ui.single_click("activity-revert-device", Left).await.unwrap();
+    ui.enter_text("revert-password", TEST_PASSWORD).await.unwrap();
+    ui.check_enabled("revert-submit").await.unwrap();
+    ui.invoke_default_action("revert-submit").unwrap();
+    ui.check_appearance_toast("Reverted device successfully").await.unwrap();
+    ui.check_disappearance("revert-password").await.unwrap();
+    // Reverting the locking SP disables locking again, so "Activate locking" reappears.
+    ui.check_appearance("activity-activate-locking").await.unwrap();
 }
