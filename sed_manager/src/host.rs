@@ -49,8 +49,14 @@ impl Host {
         let mut devices = list_storage_devices().await?;
         #[cfg(feature = "virtual_device")]
         {
-            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{OPAL_2_FILE}").into());
             devices.push(format!("{VIRTUAL_DEVICE_DIR}/{ENTERPRISE_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{OPAL_1_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{OPAL_2_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{OPALITE_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{PYRITE_1_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{PYRITE_2_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{RUBY_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{KPIO_FILE}").into());
         };
         Ok(devices)
     }
