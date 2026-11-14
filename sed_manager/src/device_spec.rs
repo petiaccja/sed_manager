@@ -9,6 +9,7 @@ use sed_packet::discovery::{
 };
 use sed_packet::discovery::{LockingDescriptor, TperDescriptor};
 use sed_spec::objects::SecurityProviderRef;
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::{enterprise, opalite, pyrite_2, ruby};
 use sed_spec::uid_registry::{kpio, opal_2};
 
@@ -93,6 +94,12 @@ impl DeviceSpec {
             PyriteV2(_) => pyrite_2::admin::sp::LOCKING,
             Ruby(_) => ruby::admin::sp::LOCKING,
         }
+    }
+
+    /// Return the SSC this spec is targeting. The device may have more SSCs
+    /// available.
+    pub fn ssc(&self) -> Ssc {
+        Ssc::from(&self.ssc_desc)
     }
 }
 
