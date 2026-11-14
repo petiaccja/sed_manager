@@ -11,15 +11,16 @@ use sed_packet::session_id::SessionId;
 use sed_packet::token_stream::{Command, ToTokens, Tokenize, Tokenizer};
 use sed_packet::{Bytes, Object, ObjectRef, TableRef, TokenizeField, Uid};
 use sed_spec::methods::{
-    Activate, ActivateResult, Authenticate, AuthenticateResult, ByteCellBlock, CloseSession, ExtractResult, GenKey,
-    GenKeyResult, Get, GetAcl, GetAclResult, MethodResult, MethodStatus, MgmtMethodCall, MgmtMethodCallParams,
-    NextResultUntyped, NextUntyped, ObjectCellBlock, Properties, Random, RandomResult, Revert, RevertResult, RevertSp,
-    RevertSpResult, SessionMethodCall, SessionMethodCallParams, SessionMethodParam as _, SetBytes, SetObject,
-    SetResult, extract_method,
+    Activate, ActivateResult, Authenticate, AuthenticateResult, ByteCellBlock, CloseSession, Erase, EraseResult,
+    ExtractResult, GenKey, GenKeyResult, Get, GetAcl, GetAclResult, MethodResult, MethodStatus, MgmtMethodCall,
+    MgmtMethodCallParams, NextResultUntyped, NextUntyped, ObjectCellBlock, Properties, Random, RandomResult, Revert,
+    RevertResult, RevertSp, RevertSpResult, SessionMethodCall, SessionMethodCallParams, SessionMethodParam as _,
+    SetBytes, SetObject, SetResult, extract_method,
 };
 use sed_spec::objects::{
-    AccessControlRef, Ace, Authority, AuthorityRef, CPin, EvalAceExpr, KAes128Ref, KAes256, KAes256Ref, LockingInfoExt,
-    LockingRange, MbrControl, MethodRef, SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
+    AccessControlRef, Ace, Authority, AuthorityRef, CPin, EvalAceExpr, KAes256, LockingInfoExt, LockingRange,
+    LockingRangeRef, MbrControl, MediaKeyRef, MethodRef, SecurityProvider as SecurityProviderObj, SecurityProviderRef,
+    TableDesc,
 };
 use sed_spec::types::LifeCycleState;
 use sed_spec::uid_registry::core::shared::authority::ANYBODY;
@@ -134,6 +135,7 @@ impl Session {
                 GenKey(params) => make_result(self.gen_key(tper, invoking_id, &params)),
                 Get(params) => make_result(self.get(tper, invoking_id, &params)),
                 GetAcl(params) => make_result(self.get_acl(tper, invoking_id, &params)),
+                Erase(params) => make_result(self.erase(tper, invoking_id, &params)),
                 Next(params) => make_result(self.next(tper, invoking_id, &params)),
                 Random(params) => make_result(self.random(tper, invoking_id, &params)),
                 Revert(params) => make_result_revert(self.revert(tper, invoking_id, &params)),
@@ -237,26 +239,9 @@ impl Session {
         if let Some(locking_sp) = this_sp.as_any_mut().downcast_mut::<Locking>()
             && params.pin_length.is_none()
             && params.public_exponent.is_none()
+            && let Ok(key_ref) = MediaKeyRef::try_from(invoking_id)
         {
-            if let Ok(key_uid) = KAes128Ref::try_from(invoking_id) {
-                let key = locking_sp
-                    .k_aes_128
-                    .as_mut()
-                    .and_then(|table| table.get_mut(&key_uid))
-                    .ok_or(MethodStatus::InvalidParameter)?;
-                key.key = Some(random_key::<32>());
-                Ok(GenKeyResult)
-            } else if let Ok(key_uid) = KAes256Ref::try_from(invoking_id) {
-                let key = locking_sp
-                    .k_aes_256
-                    .as_mut()
-                    .and_then(|table| table.get_mut(&key_uid))
-                    .ok_or(MethodStatus::InvalidParameter)?;
-                key.key = Some(random_key::<64>());
-                Ok(GenKeyResult)
-            } else {
-                Err(MethodStatus::InvalidParameter)
-            }
+            gen_new_media_key(locking_sp, key_ref)
         } else {
             Err(MethodStatus::InvalidParameter)
         }
@@ -380,6 +365,57 @@ impl Session {
         } else {
             Err(MethodStatus::InvalidParameter)
         }
+    }
+
+    fn erase(&self, tper: &mut Tper, invoking_id: Uid, params: &Erase) -> Result<EraseResult, MethodStatus> {
+        self.check_permission(tper, invoking_id, params.method_id(), [0].into_iter())?;
+
+        let Ok(locking_range_ref) = LockingRangeRef::try_from(invoking_id) else {
+            return Err(MethodStatus::InvalidParameter);
+        };
+
+        let Some(locking_sp) = tper.locking.as_mut() else {
+            return Err(MethodStatus::InvalidParameter);
+        };
+
+        let Some(locking_range) = locking_sp.locking.get_mut(&locking_range_ref) else {
+            return Err(MethodStatus::InvalidParameter);
+        };
+        locking_range.read_lock_enabled = Some(false);
+        locking_range.write_lock_enabled = Some(false);
+        locking_range.read_locked = Some(false);
+        locking_range.write_locked = Some(false);
+        let active_key = locking_range.active_key;
+
+        if let Some(key_ref) = active_key {
+            gen_new_media_key(locking_sp, key_ref)
+                .expect("internal error: band must have valid media key in preconfig");
+        }
+
+        // The GlobalRange is Band0, owned by BandMaster0, while the `BAND`
+        // UID range starts with Band1, owned by BandMaster1.
+        let band_index = if locking_range_ref == enterprise::locking::locking::GLOBAL_RANGE {
+            0
+        } else {
+            enterprise::locking::locking::BAND
+                .index_of(locking_range_ref)
+                .map(|index| index + 1)
+                .expect("internal error: band index must be available due to preconfig")
+        };
+        let band_master_pin_ref = enterprise::locking::c_pin::BAND_MASTER
+            .get(band_index)
+            .expect("internal error: band master PIN must be present in preconfig for valid band");
+
+        let msid_pin = tper
+            .admin
+            .c_pin
+            .get(&enterprise::admin::c_pin::MSID)
+            .expect_object("C_PIN", enterprise::admin::c_pin::MSID);
+        let band_master_pin =
+            locking_sp.c_pin.get_mut(&band_master_pin_ref).expect_object("C_PIN", band_master_pin_ref);
+        band_master_pin.pin = msid_pin.pin.clone();
+
+        Ok(EraseResult)
     }
 
     fn next(&self, tper: &mut Tper, invoking_id: Uid, params: &NextUntyped) -> Result<NextResultUntyped, MethodStatus> {
@@ -669,6 +705,29 @@ impl Session {
             }
         }
         Ok(permitted_columns)
+    }
+}
+
+fn gen_new_media_key(locking_sp: &mut Locking, key_ref: MediaKeyRef) -> Result<GenKeyResult, MethodStatus> {
+    match key_ref {
+        MediaKeyRef::Aes128(key_ref) => {
+            let key = locking_sp
+                .k_aes_128
+                .as_mut()
+                .and_then(|table| table.get_mut(&key_ref))
+                .ok_or(MethodStatus::InvalidParameter)?;
+            key.key = Some(random_key::<32>());
+            Ok(GenKeyResult)
+        }
+        MediaKeyRef::Aes256(key_ref) => {
+            let key = locking_sp
+                .k_aes_256
+                .as_mut()
+                .and_then(|table| table.get_mut(&key_ref))
+                .ok_or(MethodStatus::InvalidParameter)?;
+            key.key = Some(random_key::<64>());
+            Ok(GenKeyResult)
+        }
     }
 }
 

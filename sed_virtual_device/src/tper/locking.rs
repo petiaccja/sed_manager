@@ -67,6 +67,10 @@ impl Locking {
 }
 
 impl SecurityProvider for Locking {
+    fn uid(&self) -> SecurityProviderRef {
+        self.uid
+    }
+
     fn access_control(&self) -> &Table<AccessControl> {
         &self.access_control
     }

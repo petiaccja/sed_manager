@@ -7,7 +7,7 @@ use sed_packet::token_stream::{Command, Detokenize, Detokenizer, MessageError as
 use sed_packet::{TableRef, Uid};
 
 use crate::methods::{
-    Activate, Authenticate, CloseSession, GenKey, Get, GetAcl, MethodParam, MethodStatus, NextUntyped,
+    Activate, Authenticate, CloseSession, Erase, GenKey, Get, GetAcl, MethodParam, MethodStatus, NextUntyped,
     PropertiesMethod, Random, Revert, RevertSp, SessionMethodParam as _, SetBytes, SetObject, StartSession,
     SyncSession,
 };
@@ -164,6 +164,7 @@ pub enum SessionMethodCallParams {
     GenKey(GenKey),
     Get(Get),
     GetAcl(GetAcl),
+    Erase(Erase),
     Next(NextUntyped),
     Random(Random),
     Revert(Revert),
@@ -201,6 +202,10 @@ impl Tokenize for SessionMethodCall {
                 params.tokenize(tokenizer)?;
             }
             SessionMethodCallParams::GenKey(params) => {
+                params.method_id().tokenize(tokenizer)?;
+                params.tokenize(tokenizer)?;
+            }
+            SessionMethodCallParams::Erase(params) => {
                 params.method_id().tokenize(tokenizer)?;
                 params.tokenize(tokenizer)?;
             }
@@ -279,6 +284,7 @@ impl Detokenize for SessionMethodCall {
             NextUntyped::METHOD_ID => SessionMethodCallParams::Next(<_>::detokenize(detokenizer)?),
             GetAcl::METHOD_ID => SessionMethodCallParams::GetAcl(<_>::detokenize(detokenizer)?),
             GenKey::METHOD_ID => SessionMethodCallParams::GenKey(<_>::detokenize(detokenizer)?),
+            Erase::METHOD_ID => SessionMethodCallParams::Erase(<_>::detokenize(detokenizer)?),
             Revert::METHOD_ID => SessionMethodCallParams::Revert(<_>::detokenize(detokenizer)?),
             RevertSp::METHOD_ID => SessionMethodCallParams::RevertSp(<_>::detokenize(detokenizer)?),
             Random::METHOD_ID => SessionMethodCallParams::Random(<_>::detokenize(detokenizer)?),

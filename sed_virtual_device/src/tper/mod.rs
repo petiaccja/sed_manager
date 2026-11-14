@@ -32,8 +32,6 @@ use sorbit::ser_de::ToBytes;
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};
 use crate::tper::preconfig::resolve_paths;
 
-use sed_spec::uid_registry::opal_2::admin::sp;
-
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 pub struct Tper {
     pub ssc: Ssc,
@@ -66,36 +64,33 @@ impl Tper {
     }
 
     pub fn sp(&self, uid: SecurityProviderRef) -> Option<&dyn SecurityProvider> {
-        match uid {
-            sp::ADMIN => Some(&self.admin),
-            sp::LOCKING => self.locking.as_ref().map(|sp| sp as &dyn SecurityProvider),
-            _ => None,
-        }
+        let admin = &self.admin as &dyn SecurityProvider;
+        let locking = self.locking.as_ref().map(|locking| locking as &dyn SecurityProvider);
+        std::iter::once(admin).chain(locking).find(|sp| sp.uid() == uid)
     }
 
     pub fn sp_mut(&mut self, uid: SecurityProviderRef) -> Option<&mut dyn SecurityProvider> {
-        match uid {
-            sp::ADMIN => Some(&mut self.admin),
-            sp::LOCKING => self.locking.as_mut().map(|sp| sp as &mut dyn SecurityProvider),
-            _ => None,
-        }
+        let admin = &mut self.admin as &mut dyn SecurityProvider;
+        let locking = self.locking.as_mut().map(|locking| locking as &mut dyn SecurityProvider);
+        std::iter::once(admin).chain(locking).find(|sp| sp.uid() == uid)
     }
 
-    pub fn restore_preconfig(&mut self, sp: SecurityProviderRef) -> Result<Vec<SecurityProviderRef>, MethodStatus> {
-        let preconfig = Self::from_preconfig(self.ssc);
-        match sp {
-            sp::ADMIN => {
-                *self = preconfig;
-                Ok(vec![sp::ADMIN, sp::LOCKING])
+    pub fn restore_preconfig(&mut self, uid: SecurityProviderRef) -> Result<Vec<SecurityProviderRef>, MethodStatus> {
+        if uid == self.admin.uid {
+            let preconfig = Self::from_preconfig(self.ssc);
+            *self = preconfig;
+            Ok(std::iter::once(self.admin.uid).chain(self.locking.as_ref().map(|sp| sp.uid)).collect())
+        } else if let Some(locking) = self.locking.as_mut()
+            && locking.uid == uid
+        {
+            let preconfig = Self::from_preconfig(self.ssc);
+            if let Some(locking_sp) = self.admin.sp.get_mut(&locking.uid) {
+                locking_sp.life_cycle_state = Some(LifeCycleState::ManufacturedInactive);
             }
-            sp::LOCKING => {
-                if let Some(locking_sp) = self.admin.sp.get_mut(&sp::LOCKING) {
-                    locking_sp.life_cycle_state = Some(LifeCycleState::ManufacturedInactive);
-                }
-                self.locking = preconfig.locking;
-                Ok(vec![sp::LOCKING])
-            }
-            _ => Err(MethodStatus::InvalidParameter),
+            self.locking = preconfig.locking;
+            Ok(vec![uid])
+        } else {
+            Err(MethodStatus::InvalidParameter)
         }
     }
 

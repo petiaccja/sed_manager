@@ -24,6 +24,10 @@ pub struct Admin {
 }
 
 impl SecurityProvider for Admin {
+    fn uid(&self) -> SecurityProviderRef {
+        self.uid
+    }
+
     fn access_control(&self) -> &Table<AccessControl> {
         &self.access_control
     }

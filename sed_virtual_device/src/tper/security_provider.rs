@@ -9,12 +9,14 @@ use std::collections::BTreeMap;
 use sed_packet::Object;
 use sed_spec::objects::{
     AccessControl, Ace, Authority, CPin, KAes128, KAes256, LockingInfoExt, LockingRange, MbrControl,
-    SecurityProvider as SecurityProviderObj, TableDesc,
+    SecurityProvider as SecurityProviderObj, SecurityProviderRef, TableDesc,
 };
 
 pub type Table<T> = BTreeMap<<T as Object>::Ref, T>;
 
 pub trait SecurityProvider {
+    fn uid(&self) -> SecurityProviderRef;
+
     // Tables all SPs have.
     fn access_control(&self) -> &Table<AccessControl>;
     fn access_control_mut(&mut self) -> &mut Table<AccessControl>;

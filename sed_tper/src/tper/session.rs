@@ -10,11 +10,11 @@ use sed_packet::session_id::SessionId;
 use sed_packet::token_stream::{Command, Detokenize, Detokenizer, FromTokens, ToTokens, Tokenize};
 use sed_packet::{Bytes, Field, FieldRef, Ignore, MaxBytes, Named, Object, ObjectRef, TableRef, Uid};
 use sed_spec::methods::{
-    Activate, Authenticate, AuthenticateResult, CellBlock, GenKey, Get, GetAcl, GetBytesResult, MethodCall,
+    Activate, Authenticate, AuthenticateResult, CellBlock, Erase, GenKey, Get, GetAcl, GetBytesResult, MethodCall,
     MethodResult, MethodStatus, Next, Random, Revert, RevertSp, SessionMethodParam as _, SessionProperties, SetBytes,
     SetObject, SetResult, StartSession,
 };
-use sed_spec::objects::{AceRef, AuthorityRef, CredentialRef, MethodRef, SecurityProviderRef};
+use sed_spec::objects::{AceRef, AuthorityRef, CredentialRef, LockingRangeRef, MethodRef, SecurityProviderRef};
 use sed_spec::uid_registry::core::shared::invoking_id::THIS_SP;
 use sed_spec::uid_registry::core::shared::{method_id, table_id};
 use sed_spec_macros::DetokenizeStruct;
@@ -170,6 +170,28 @@ impl Session {
             AuthenticateResult::Success(false) => Err(MethodStatus::NotAuthorized.into()),
             AuthenticateResult::Challenge(_) => Err(Error::NotImplemented),
         }
+    }
+
+    /// Erase a locking range (Enterprise SSC).
+    ///
+    /// This method is specific to the Enterprise SSC. It cryptographically
+    /// erases the locking range by generating a new media encryption key, and
+    /// resets the range's locking state: `ReadLockEnabled`, `WriteLockEnabled`,
+    /// `ReadLocked`, and `WriteLocked` are all set to false. Additionally, the
+    /// password of the band's associated `BandMaster` authority is reset to
+    /// the MSID password.
+    ///
+    /// **All data in the locking range is irrecoverably lost.**
+    #[instrument(level = "info", skip(self), ret, err)]
+    pub async fn erase(&self, locking_range: LockingRangeRef) -> Result<(), Error> {
+        let call = Erase.to_call(locking_range.into());
+        let result_tokens = self
+            .controller
+            .call(self.session_id, call.to_tokens().expect("invalid method call"))
+            .await
+            .map_err(|_| Error::Closed)??;
+        let _result = Erase::result_from_tokens(&result_tokens)??;
+        Ok(())
     }
 
     /// Generate a random credential for one of the credential objects.

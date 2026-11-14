@@ -15,6 +15,7 @@ use sed_spec::methods::{GetBytesResult, MethodStatus, Properties, SessionPropert
 use sed_spec::objects::{AuthorityRef, CPin, CPinRefExt, SecurityProviderRef};
 use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::core::shared::{self, method_id, table_id};
+use sed_spec::uid_registry::enterprise;
 use sed_spec::uid_registry::opal_2::admin::{self, sp};
 use sed_spec::uid_registry::opal_2::locking;
 use sed_telemetry::with_tracing;
@@ -89,6 +90,19 @@ async fn authenticate() {
         err(eq(&Error::MethodCallFailed(MethodStatus::NotAuthorized)))
     );
     assert_that!(session.authenticate(admin::authority::SID, Some(INITIAL_SID_PASSWORD)).await, ok(eq(&())));
+    let _ = session.close().await;
+    let _ = protocol.await;
+}
+
+#[instrument]
+#[tokio::test]
+#[with_tracing]
+async fn erase() {
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::Enterprise));
+    let (session, protocol) =
+        spawn_session(&device, enterprise::admin::sp::LOCKING, Some(enterprise::locking::authority::ERASE_MASTER));
+    assert_that!(session.erase(enterprise::locking::locking::GLOBAL_RANGE).await, ok(eq(&())));
+    assert_that!(session.erase(enterprise::locking::locking::BAND.get(0).unwrap()).await, ok(eq(&())));
     let _ = session.close().await;
     let _ = protocol.await;
 }
