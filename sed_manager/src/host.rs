@@ -49,8 +49,8 @@ impl Host {
         let mut devices = list_storage_devices().await?;
         #[cfg(feature = "virtual_device")]
         {
-            devices.push(Path::new(VIRTUAL_DEVICE_DIR).join(OPAL_2_FILE));
-            devices.push(Path::new(VIRTUAL_DEVICE_DIR).join(ENTERPRISE_FILE));
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{OPAL_2_FILE}").into());
+            devices.push(format!("{VIRTUAL_DEVICE_DIR}/{ENTERPRISE_FILE}").into());
         };
         Ok(devices)
     }
