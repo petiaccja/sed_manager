@@ -3,6 +3,8 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
+use std::fmt;
+
 use sed_packet::discovery::SscFeatureDescriptor;
 
 /// One of the security subsystem classes.
@@ -17,6 +19,22 @@ pub enum Ssc {
     PyriteV2,
     Ruby,
     KeyPerIO,
+}
+
+impl fmt::Display for Ssc {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Ssc::Enterprise => "Enterprise",
+            Ssc::OpalV1 => "OpalV1",
+            Ssc::OpalV2 => "OpalV2",
+            Ssc::Opalite => "Opalite",
+            Ssc::PyriteV1 => "PyriteV1",
+            Ssc::PyriteV2 => "PyriteV2",
+            Ssc::Ruby => "Ruby",
+            Ssc::KeyPerIO => "KeyPerIO",
+        };
+        f.write_str(s)
+    }
 }
 
 impl From<SscFeatureDescriptor> for Ssc {

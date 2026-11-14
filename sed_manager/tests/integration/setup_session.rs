@@ -14,6 +14,7 @@ use sed_manager::{Error, SetupSession};
 use sed_packet::MaxBytes;
 use sed_packet::com_id::ComIdExt;
 use sed_packet::discovery::{BlockSIDAuthDescriptor, LockingDescriptor};
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::opal_2::{admin as opal_admin, locking as opal_locking};
 use sed_spec::uid_registry::psid;
 use sed_telemetry::with_tracing;
@@ -24,7 +25,7 @@ use tracing::instrument;
 const NOT_DEFAULT: MaxBytes<32> = MaxBytes::from_array(*b"not_default");
 
 async fn setup() -> (SetupSession, Arc<VirtualDevice>) {
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let runtime = Arc::new(PolyRuntime::Tokio(TokioRuntime::current().unwrap()));
     let tper = Tper::connect(BASE_COM_ID, ComIdExt(0), None, device.clone(), runtime);
     let spec = DeviceSpec::try_new(tper.discover_current().await.unwrap()).unwrap();

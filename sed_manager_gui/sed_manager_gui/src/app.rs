@@ -249,7 +249,10 @@ impl App {
 
                 // Insert virtual device in debug mode, or when explicitly requested (e.g. by tests).
                 #[cfg(not(any(debug_assertions, feature = "virtual_device")))]
-                new_paths.remove(Path::new(sed_virtual_device::VIRTUAL_DEVICE_PATH));
+                {
+                    use sed_manager::VIRTUAL_DEVICE_DIR;
+                    new_paths.retain(|path| !path.parent().is_some_and(|dir| dir == VIRTUAL_DEVICE_DIR));
+                };
 
                 let removed: HashSet<_> =
                     device_list.backend.extract_if(|path, _| !new_paths.contains(path)).map(|(path, _)| path).collect();

@@ -13,6 +13,7 @@ use sed_packet::MaxBytes;
 use sed_packet::com_id::ComIdExt;
 use sed_packet::discovery::{FeatureDescriptor, LockingDescriptor};
 use sed_spec::objects::{Authority, AuthorityRef, LockingRange, LockingRangeRef, MbrControl, MediaKeyRef};
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::core::shared::mbr_control;
 use sed_spec::uid_registry::opal_2::admin::sp;
 use sed_spec::uid_registry::opal_2::locking as opal_locking;
@@ -30,7 +31,7 @@ async fn setup_tper() -> Tper {
 
 async fn setup() -> (Tper, Arc<VirtualDevice>) {
     let runtime = Arc::new(PolyRuntime::Tokio(TokioRuntime::current().unwrap()));
-    let device = Arc::new(VirtualDevice::default());
+    let device = Arc::new(VirtualDevice::with_ssc(Ssc::OpalV2));
     let tper = Tper::connect(BASE_COM_ID, ComIdExt(0), None, device.clone(), runtime);
     let spec = DeviceSpec::try_new(tper.discover_current().await.unwrap()).unwrap();
     let setup_session = SetupSession::new(&tper, spec);

@@ -15,6 +15,6 @@ pub use device::Device;
 pub use device_spec::DeviceSpec;
 pub use error::Error;
 pub use geometry::{Alignment, Geometry};
-pub use host::Host;
+pub use host::{Host, VIRTUAL_DEVICE_DIR};
 pub use locking_config::{AuthorityPlanError, LockingConfigSession, LockingRangePlanError};
 pub use setup_session::SetupSession;
