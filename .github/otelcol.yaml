@@ -1,0 +1,21 @@
+# OpenTelemetry Collector config for CI: receives traces from the tests over
+# OTLP/HTTP and writes them to a JSONL file that is uploaded as an artifact.
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:4318
+
+exporters:
+  file:
+    path: ./traces/traces.jsonl
+    flush_interval: 1s
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [file]
+  telemetry:
+    metrics:
+      level: none
