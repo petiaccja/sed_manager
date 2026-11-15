@@ -67,14 +67,38 @@ impl SetupSession {
 
         // Change the SID password to the new one.
         self.tper
-            .start_session(spec.admin_sp(), Some(SID), Some(initial_password))
+            .start_session(spec.admin_sp(), Some(SID), Some(initial_password.clone()))
             .await
             .map_err(|err| match err {
                 TperError::MethodCallFailed(MethodStatus::NotAuthorized) => Error::AlreadyOwned,
                 err => err.into(),
             })?
-            .with(async |session| session.set_field(C_PIN_SID.pin(), new_sid_password).await)
+            .with(async |session| session.set_field(C_PIN_SID.pin(), new_sid_password.clone()).await)
             .await?;
+
+        // For Enterprise, change the password of EraseMaster and all BandMasters
+        // to the SID PIN instead of their default MSID PIN.
+        if self.spec.ssc() == Ssc::Enterprise {
+            let authorities = self
+                .tper
+                .start_session(enterprise::admin::sp::LOCKING, None, None)
+                .await?
+                .with(async |session| session.next(None::<AuthorityRef>, None).await)
+                .await?;
+            let authorities = authorities.into_iter().filter(|authority| {
+                *authority == enterprise::locking::authority::ERASE_MASTER
+                    || enterprise::locking::authority::BAND_MASTER.contains(*authority)
+            });
+            for authority in authorities {
+                self.change_password(
+                    enterprise::admin::sp::LOCKING,
+                    authority,
+                    initial_password.clone(),
+                    new_sid_password.clone(),
+                )
+                .await?;
+            }
+        }
 
         Ok(())
     }
@@ -281,12 +305,10 @@ impl SetupSession {
             // readable by `Anybody`.
             let session = self.tper.start_session(self.spec.admin_sp(), None, None).await?;
             let enabled = session.with(async |session| session.get_field(PSID.enabled()).await).await;
-            match enabled {
+            match enabled.map_err(Error::check_missing) {
                 Ok(_) => Ok(true),
-                Err(TperError::MethodCallFailed(MethodStatus::NotAuthorized | MethodStatus::InvalidParameter)) => {
-                    Ok(false)
-                }
-                Err(err) => Err(err.into()),
+                Err(Error::NotSupported) => Ok(false),
+                Err(err) => Err(err),
             }
         } else {
             // The PSID feature set is mandatory for Opal 2, Opalite, Pyrite 2,
@@ -297,7 +319,7 @@ impl SetupSession {
     }
 }
 
-fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Authority) -> Authority {
+pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Authority) -> Authority {
     use enterprise::admin::authority as enterprise_admin;
     use enterprise::locking::authority as enterprise_locking;
     use kpio::admin::authority as kpio_admin;

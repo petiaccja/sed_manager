@@ -27,12 +27,17 @@ use tracing::instrument;
 
 const NOT_DEFAULT: MaxBytes<32> = MaxBytes::from_array(*b"not_default");
 
-async fn setup(ssc: Ssc) -> (SetupSession, Arc<VirtualDevice>) {
+async fn setup_tper(ssc: Ssc) -> (SetupSession, Tper, Arc<VirtualDevice>) {
     let device = Arc::new(VirtualDevice::with_ssc(ssc));
     let runtime = Arc::new(PolyRuntime::Tokio(TokioRuntime::current().unwrap()));
     let tper = Tper::connect(BASE_COM_ID, ComIdExt(0), None, device.clone(), runtime);
     let spec = DeviceSpec::try_new(tper.discover_current().await.unwrap()).unwrap();
     let session = SetupSession::new(&tper, spec);
+    (session, tper, device)
+}
+
+async fn setup(ssc: Ssc) -> (SetupSession, Arc<VirtualDevice>) {
+    let (session, _, device) = setup_tper(ssc).await;
     (session, device)
 }
 
@@ -49,7 +54,7 @@ async fn setup(ssc: Ssc) -> (SetupSession, Arc<VirtualDevice>) {
 #[case::ruby(Ssc::Ruby)]
 #[case::kpio(Ssc::KeyPerIO)]
 async fn take_ownership(#[case] ssc: Ssc) {
-    let (session, device) = setup(ssc).await;
+    let (session, tper, device) = setup_tper(ssc).await;
 
     let block_sid_before = device.discover().get::<BlockSIDAuthDescriptor>().unwrap().clone();
     assert_that!(block_sid_before.sid_msid_pin_differ, eq(false));
@@ -59,6 +64,17 @@ async fn take_ownership(#[case] ssc: Ssc) {
 
     let block_sid_after = device.discover().get::<BlockSIDAuthDescriptor>().unwrap().clone();
     assert_that!(block_sid_after.sid_msid_pin_differ, eq(true));
+
+    if ssc == Ssc::Enterprise {
+        // Make sure the SID PIN was copied to all bands.
+        tper.start_session(
+            enterprise::admin::sp::LOCKING,
+            Some(enterprise::locking::authority::ERASE_MASTER),
+            Some(NOT_DEFAULT),
+        )
+        .await
+        .unwrap();
+    }
 }
 
 #[instrument]

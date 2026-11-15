@@ -175,7 +175,7 @@ impl Tper {
                 locked,
                 locking_enabled,
                 locking_supported: true,
-                media_encryption: true,
+                media_encryption: locking_sp.k_aes_128.is_some() || locking_sp.k_aes_256.is_some(),
                 mbr_enabled,
                 mbr_done,
                 mbr_shadowing_not_supported: !mbr_shadowing_supported,
