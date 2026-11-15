@@ -32,6 +32,7 @@ use sed_spec::uid_registry::{kpio, opal_2};
 use sorbit::ser_de::ToBytes;
 
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};
+use crate::internal_error::Expect;
 use crate::tper::preconfig::resolve_paths;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
@@ -155,14 +156,7 @@ impl Tper {
 
     fn locking_feature_desc(&self) -> Option<FeatureDescriptor> {
         self.locking.as_ref().map(|locking_sp| {
-            let admin_sp = &self.admin;
-            let life_cycle_state = admin_sp
-                .sp
-                .get(&locking_sp.uid)
-                .and_then(|locking_sp| locking_sp.life_cycle_state)
-                .unwrap_or(LifeCycleState::Manufactured);
-
-            let locking_enabled = [LifeCycleState::Manufactured, LifeCycleState::Issued].contains(&life_cycle_state);
+            let locking_enabled = self.is_sp_enabled(locking_sp.uid);
 
             let locked = locking_sp
                 .locking
@@ -187,6 +181,13 @@ impl Tper {
                 mbr_shadowing_not_supported: !mbr_shadowing_supported,
             })
         })
+    }
+
+    fn is_sp_enabled(&self, sp: SecurityProviderRef) -> bool {
+        let admin_sp = &self.admin;
+        let life_cycle_state = admin_sp.sp.get(&sp).and_then(|sp_obj| sp_obj.life_cycle_state).expect_sp(sp);
+
+        [LifeCycleState::Manufactured, LifeCycleState::Issued].contains(&life_cycle_state)
     }
 
     fn ssc_feature_desc(&self) -> FeatureDescriptor {
@@ -267,7 +268,7 @@ impl Tper {
                 incorrect_key_detection_supported: false,
                 tweak_key_required: false,
                 kpio_scope: false,
-                kpio_enabled: false,
+                kpio_enabled: self.is_sp_enabled(kpio::admin::sp::KEY_PER_IO),
                 max_key_uid_len: 16,
                 kmip_key_injection_supported: false,
                 nist_rsa_oaep_supported: false,
