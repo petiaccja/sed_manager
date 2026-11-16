@@ -242,13 +242,13 @@ export component DeviceView {
                         if device.admin-sp.authorities.length == 0 {
                             root.list-admin-authorities(true)
                         }
-                        if device.locking-sp.authorities.length == 0 && device.config.locking-enabled {
+                        if device.locking-sp.authorities.length == 0 && device.config.secondary-sp-enabled {
                             root.list-locking-authorities(true)
                         }
                     }
                     if self.selected-activity == DeviceActivity.configure-locking
                         && device.locking-sp.authorities.length == 0
-                        && device.config.locking-enabled
+                        && device.config.secondary-sp-enabled
                         && !device.command-status.secondary-session-active {
                         root.list-locking-authorities(true)
                     }
@@ -303,7 +303,7 @@ export component DeviceView {
                         }
                         list-authorities => {
                             list-admin-authorities(false);
-                            if device.config.locking-enabled {
+                            if device.config.secondary-sp-enabled {
                                 list-locking-authorities(false);
                             }
                         }

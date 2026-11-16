@@ -77,7 +77,7 @@ export component DeviceActivityBar {
                 }
             }
 
-            if !config.locking-enabled: IconButton {
+            if !config.secondary-sp-enabled: IconButton {
                 text: "Activate locking";
                 accessible-id: "activity-activate-locking";
                 icon: Icons.activate-locking;
@@ -107,7 +107,7 @@ export component DeviceActivityBar {
                 }
             }
 
-            if config.locking-enabled: IconButton {
+            if config.secondary-sp-enabled: IconButton {
                 text: "Configure locking";
                 accessible-id: "activity-configure-locking";
                 icon: Icons.configure-locking;

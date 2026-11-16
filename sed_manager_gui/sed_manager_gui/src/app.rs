@@ -18,12 +18,11 @@ use sed_manager_gui_slint as ui;
 use sed_packet::MaxBytes;
 use sed_packet::com_id_request::ComIdState;
 use sed_packet::discovery::FeatureDescriptor;
-use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{Authority, AuthorityRef, LockingRangeRef, MbrControl, SecurityProviderRef};
 use sed_spec::uid_registry::common::{self, locking};
-use sed_spec::uid_registry::core::shared::authority::{ANYBODY, SID};
+use sed_spec::uid_registry::core::shared::authority::SID;
 use sed_spec::uid_registry::psid::admin::authority::PSID;
-use sed_tper::{Error as TperError, PropertiesChanged};
+use sed_tper::PropertiesChanged;
 use slint::{
     CloseRequestResponse, ComponentHandle, Model, ModelExt as _, ModelRc, SharedString, ToSharedString,
     quit_event_loop, spawn_local,
@@ -593,7 +592,7 @@ impl App {
 
                 let size = match locking_config_session.get_mbr_size().await {
                     Ok(size) => size,
-                    Err(SedError::TperError(TperError::MethodCallFailed(MethodStatus::InvalidParameter))) => {
+                    Err(SedError::NotSupported) => {
                         return Ok(MbrDesc { supported: false, size: None, control: None });
                     }
                     Err(err) => return Err(err.into()),
@@ -943,8 +942,8 @@ impl App {
         };
 
         self.command()
-            .success_message("Locking activated")
-            .error_message("Could not activate locking")
+            .success_message("Device activated")
+            .error_message("Could not activate device")
             .on_session(path.clone(), async move |device: &Device, session: &mut Session| {
                 let sid_session = session.start_setup_session(device).await?;
                 sid_session.activate_secondary_sp(password).await?;
@@ -1108,15 +1107,8 @@ fn display_authorities(
 
     // Map and filter user names and UIDs for the password change
     // activity. TODO: move this into Slint when feature is available.
-    const NON_PASSWORD_AUTHORITIES: [AuthorityRef; 3] = [
-        ANYBODY,
-        locking::authority::ADMINS,
-        locking::authority::USERS,
-    ];
-    let individual_authorities = Rc::from(authorities.clone().filter(|auth| {
-        let auth_ref = AuthorityRef::try_from(auth.uid.value.cast_unsigned());
-        !auth.is_class && auth.enabled && auth_ref.is_ok_and(|auth| !NON_PASSWORD_AUTHORITIES.contains(&auth))
-    }));
+    let individual_authorities =
+        Rc::from(authorities.clone().filter(|authority| authority.has_password && authority.enabled));
     let individual_authority_names = individual_authorities.clone().map(|auth| auth.name);
     let individual_authority_uids = individual_authorities.clone().map(|auth| auth.uid);
     (authorities, individual_authority_names, individual_authority_uids)

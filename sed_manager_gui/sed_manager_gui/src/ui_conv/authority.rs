@@ -8,6 +8,7 @@ use std::num::NonZero;
 use sed_manager_gui_slint as ui;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::objects::{Authority, AuthorityRef, CPinRef, SecurityProviderRef};
+use sed_spec::types::AuthMethod;
 use sed_spec::uid_registry::common::{admin, locking};
 use slint::{SharedString, ToSharedString};
 
@@ -31,7 +32,7 @@ impl FromBackendName<&Authority> for ui::Authority {
             // we try to authenticate, but it's better than hiding it from the
             // UI.
             is_class: value.is_class.unwrap_or(false),
-            has_password: value.credential.is_some_and(|cred| CPinRef::try_from(cred).is_ok()),
+            has_password: value.operation.is_none_or(|operation| operation == AuthMethod::Password),
             is_admin: value.class.is_some_and(|class| ADMIN_CLASSES.contains(&class)),
         }
     }
