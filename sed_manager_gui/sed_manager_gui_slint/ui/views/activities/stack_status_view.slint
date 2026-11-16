@@ -116,7 +116,7 @@ export component StackStatusView {
                     clip: true;
 
                     properties-table := GridLayout {
-                        for name[index] in ["Property", "Host", "Device", "Connection"]: Rectangle {
+                        for name[index] in ["Property", "Host", "Device", "Outbound", "Inbound"]: Rectangle {
                             background: PaletteExtra.accented-background;
                             row: 0;
                             col: index;
@@ -172,7 +172,18 @@ export component StackStatusView {
                             horizontal-padding: 1rem;
 
                             Text {
-                                text: property.connection;
+                                text: property.outbound;
+                                overflow: elide;
+                            }
+                        }
+
+                        for property[index] in stack-status.protocol: Cell {
+                            row: index + 1;
+                            col: 4;
+                            horizontal-padding: 1rem;
+
+                            Text {
+                                text: property.inbound;
                                 overflow: elide;
                             }
                         }

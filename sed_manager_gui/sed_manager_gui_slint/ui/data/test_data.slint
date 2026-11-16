@@ -65,10 +65,16 @@ export global TestData {
             status: "Issued",
         },
         protocol: [
-            { name: "MaxMethods", host: "unlimited", device: "1", connection: "1" },
-            { name: "MaxComPacketSize", host: "1048576", device: "16384", connection: "16384" },
-            { name: "AckNak", host: "No", device: "No", connection: "No" },
-            { name: "Async", host: "No", device: "No", connection: "No" },
+            { name: "MaxMethods", host: "unlimited", device: "1", outbound: "1", inbound: "1" },
+            {
+                name: "MaxComPacketSize",
+                host: "1048576",
+                device: "16384",
+                outbound: "16384",
+                inbound: "8192"
+            },
+            { name: "AckNak", host: "No", device: "No", outbound: "No", inbound: "No" },
+            { name: "Async", host: "No", device: "No", outbound: "No", inbound: "No" },
         ]
     };
 

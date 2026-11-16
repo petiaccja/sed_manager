@@ -344,7 +344,7 @@ impl App {
                     self.clone().discover(path.clone());
                 }
                 if let (Some(capabilities), Some(properties_changed)) = (capabilities, properties_changed) {
-                    let combined_properties = CombinedProperties { host: capabilities, device: None, connection: None };
+                    let combined_properties = CombinedProperties { host: capabilities, ..Default::default() };
                     let status = ui_device.stack_status.clone().with_protocol((&combined_properties).into_ui());
                     spawn_local(Self::listen_connection_changed(
                         Rc::downgrade(&self),
@@ -1076,7 +1076,8 @@ impl App {
                             let combined = CombinedProperties {
                                 host: host_capabilities,
                                 device: Some(value.remote_capabilities),
-                                connection: Some(value.properties.outbound),
+                                outbound: Some(value.properties.outbound),
+                                inbound: Some(value.properties.inbound),
                             };
                             let status = ui_device.stack_status.clone().with_protocol((&combined).into_ui());
                             ui_device.with_stack_status(status)
