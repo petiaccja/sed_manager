@@ -4,7 +4,6 @@
 //L-----------------------------------------------------------------------------
 
 use sed_device::Error as DeviceError;
-use sed_packet::Uid;
 use sed_packet::token_stream::Error as TokenError;
 use sed_spec::methods::MethodStatus;
 use sorbit::error::Error as SorbitError;
@@ -42,8 +41,6 @@ pub enum Error {
     // RPC related.
     #[error("Method call failed: {}", .0)]
     MethodCallFailed(MethodStatus),
-    #[error("The field `{object}.{field}` was not returned in the device's response")]
-    FieldNotReturned { object: Uid, field: u16 },
     #[error("Stack reset failed")]
     StackResetFailed,
 

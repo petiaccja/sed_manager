@@ -871,6 +871,15 @@ impl Discovery {
     pub fn ssc_features(&self) -> impl Iterator<Item = SscFeatureDescriptor> {
         self.feature_descriptors.iter().filter_map(FeatureDescriptor::to_ssc)
     }
+
+    /// Returns `true` if the Locking or KPIO SPs are enabled, `false` is they
+    /// are disabled, and `None` when neither are present on the TPer.
+    pub fn is_secondary_sp_enabled(&self) -> Option<bool> {
+        let locking_enabled = self.get::<LockingDescriptor>().map(|desc| desc.locking_enabled);
+        let kpio_enabled = self.get::<KeyPerIODescriptor>().map(|desc| desc.kpio_enabled);
+        // No SSCs support both, so this is fine.
+        locking_enabled.or(kpio_enabled)
+    }
 }
 
 impl IntoIterator for Discovery {

@@ -44,18 +44,75 @@ jobs:
       run: |
         rustup toolchain install 1.98
         rustup default 1.98
+        cargo install --locked cargo-nextest
 
     - name: Build
-      run: cargo build --profile ${{ matrix.cargo_profile }} --verbose
+      run: cargo build --profile ${{ matrix.cargo_profile }} --all-targets
+
+    - name: Start OpenTelemetry collector
+      shell: bash
+      env:
+        OTELCOL_VERSION: "0.165.0"
+        OTELCOL_SHA256_LINUX: "bd6e73d94bf3359ad6fac25529a8ee308adb9b0b8a0e8af034ed3891fbe5aa33"
+        OTELCOL_SHA256_WINDOWS: "e728b24c23f54ec304845112a3e3c7a555c9a19d5edc6417afc9819d2ab892b0"
+      run: |
+        set -euo pipefail
+        archive="otelcol-contrib_${OTELCOL_VERSION}_${{ matrix.os_name }}_amd64.tar.gz"
+        if [ "${{ matrix.os_name }}" = "windows" ]; then
+          expected_sha256="$OTELCOL_SHA256_WINDOWS"
+        else
+          expected_sha256="$OTELCOL_SHA256_LINUX"
+        fi
+        dir=".otelcol"  # relative: GNU tar treats "D:\..." as a remote host
+        mkdir -p "$dir" traces
+        curl -fsSL -o "$dir/$archive" \
+          "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTELCOL_VERSION}/${archive}"
+        echo "$expected_sha256  $dir/$archive" | sha256sum --check --strict
+        tar -xzf "$dir/$archive" -C "$dir"
+        "$dir/otelcol-contrib" --config .github/otelcol.yaml > otelcol.log 2>&1 &
+        echo $! > "$dir/otelcol.pid"
+        # Wait for the OTLP/HTTP receiver to accept connections. If the tests
+        # start earlier, they silently fall back to tracing to STDOUT.
+        for _ in $(seq 30); do
+          if curl -s -o /dev/null http://127.0.0.1:4318; then exit 0; fi
+          sleep 1
+        done
+        echo "OpenTelemetry collector did not start:"
+        cat otelcol.log
+        exit 1
 
     - name: Run tests
       shell: bash
+      env:
+        OTEL_EXPORTER_OTLP_ENDPOINT: http://127.0.0.1:4318
+        OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-          xvfb-run -a cargo test --profile ${{ matrix.cargo_profile }} --verbose
+          xvfb-run -a cargo nextest run --cargo-profile ${{ matrix.cargo_profile }} --failure-output final --show-progress none --no-fail-fast
+          xvfb-run -a cargo test --doc --profile ${{ matrix.cargo_profile }}
         else
-          cargo test --profile ${{ matrix.cargo_profile }} --verbose
+          cargo nextest run --cargo-profile ${{ matrix.cargo_profile }} --failure-output final --show-progress none --no-fail-fast
+          cargo test --doc --profile ${{ matrix.cargo_profile }}
         fi
+
+    - name: Stop OpenTelemetry collector
+      if: always()
+      shell: bash
+      run: |
+        # Give the file exporter time to flush (flush_interval is 1s): on
+        # Windows, `kill` terminates the process without a graceful shutdown.
+        sleep 5
+        kill "$(cat .otelcol/otelcol.pid)" || true
+
+    - name: Upload traces
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: traces-${{ matrix.os_name }}-${{ matrix.cargo_profile }}
+        path: |
+          traces/
+          otelcol.log
+        if-no-files-found: warn
 
     - name: "Upload binaries"
       uses: actions/upload-artifact@v7

@@ -258,25 +258,10 @@ impl Session {
         invoking_id: Uid,
         params: &Get,
     ) -> Result<GetResult<'tper>, MethodStatus> {
-        fn get_slice<O: Object>(
-            table: &Table<O>,
-            object: Uid,
-            start_column: Option<u16>,
-            end_column: Option<u16>,
-            permitted_columns: HashSet<u16>,
-        ) -> Result<ObjectSlice<'_, O>, MethodStatus>
-        where
-            O::Ref: TryFrom<Uid> + Ord,
-        {
-            let object = table
-                .get(&object.try_into().map_err(|_| MethodStatus::InvalidParameter)?)
-                .ok_or(MethodStatus::InvalidParameter)?;
-            let (start_field, end_field) = unmap_bounds(start_column, end_column);
-            let fields = normalize_bounds(start_field, end_field, 0, O::FIELD_COUNT);
-            let fields = fields.filter(|field| permitted_columns.contains(field)).collect();
-            Ok(ObjectSlice { object, fields })
-        }
+        // Check if permission is granted for the UID & `Get` pair at all.
+        self.check_permission(tper, invoking_id, Get::METHOD_ID, [].into_iter())?;
 
+        // Get columns if the object is valid and filter them based on permissions.
         let permitted_columns = self.permitted_columns(tper, invoking_id, Get::METHOD_ID)?;
         let sp = self.this_sp(tper)?;
         if let Ok(ObjectCellBlock { table, object, start_column, end_column }) =
@@ -673,6 +658,19 @@ impl Session {
         method_id: MethodRef,
         mut columns: impl Iterator<Item = u16>,
     ) -> Result<(), MethodStatus> {
+        // If there is no entry in the `AccessControl` table, that's always denied.
+        let this_sp = self.this_sp(tper)?;
+        let ac_table = this_sp.access_control();
+        let has_direct_acl = ac_table.contains_key(&AccessControlRef { invoking_id, method_id });
+        let has_table_acl = invoking_id
+            .containing_table()
+            .map(|invoking_id| ac_table.contains_key(&AccessControlRef { invoking_id, method_id }))
+            .unwrap_or(false);
+        if !has_direct_acl && !has_table_acl {
+            return Err(MethodStatus::NotAuthorized);
+        }
+
+        // If there is an entry, we check if the columns are allowed.
         let permitted_columns = self.permitted_columns(tper, invoking_id, method_id)?;
         if columns.all(|column| permitted_columns.contains(&column)) {
             Ok(())
@@ -759,6 +757,25 @@ where
             Ok(())
         })
     }
+}
+
+fn get_slice<O: Object>(
+    table: &Table<O>,
+    object: Uid,
+    start_column: Option<u16>,
+    end_column: Option<u16>,
+    permitted_columns: HashSet<u16>,
+) -> Result<ObjectSlice<'_, O>, MethodStatus>
+where
+    O::Ref: TryFrom<Uid> + Ord,
+{
+    let object = table
+        .get(&object.try_into().map_err(|_| MethodStatus::InvalidParameter)?)
+        .ok_or(MethodStatus::InvalidParameter)?;
+    let (start_field, end_field) = unmap_bounds(start_column, end_column);
+    let fields = normalize_bounds(start_field, end_field, 0, O::FIELD_COUNT);
+    let fields = fields.filter(|field| permitted_columns.contains(field)).collect();
+    Ok(ObjectSlice { object, fields })
 }
 
 enum GetResult<'tper> {

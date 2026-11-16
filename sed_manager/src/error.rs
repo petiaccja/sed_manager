@@ -46,3 +46,22 @@ pub enum Error {
     )]
     AuthorityUpdateFailed(#[source] TperError),
 }
+
+impl Error {
+    /// Returns [`Self::NotSupported`] when the method status returned by the
+    /// Tper indicates that the object does not exist at all.
+    ///
+    /// This check is contextual. Use it only when you know that the ACLs grant
+    /// access to the object, so [`NotAuthorized`] is a reliable indication that
+    /// the no ACL refers to the object, meaning it does not exist.
+    ///
+    /// [`NotAuthorized`]: sed_spec::methods::MethodStatus::NotAuthorized
+    pub fn check_missing(error: TperError) -> Self {
+        use sed_spec::methods::MethodStatus::{InvalidParameter, NotAuthorized};
+
+        match error {
+            TperError::MethodCallFailed(InvalidParameter | NotAuthorized) => Self::NotSupported,
+            _ => Self::TperError(error),
+        }
+    }
+}

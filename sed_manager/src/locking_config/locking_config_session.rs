@@ -5,15 +5,16 @@
 
 use std::cmp::min;
 
-use sed_packet::MaxBytes;
-use sed_packet::discovery::SscFeatureDescriptor;
 use sed_packet::token_stream::token::{Atom, LongAtom};
+use sed_packet::{MaxBytes, Uid};
 use sed_spec::methods::{MethodStatus, SetBytes};
 use sed_spec::objects::{
-    Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, LockingInfoExt, LockingRange, LockingRangeRef,
-    LockingRangeRefExt, MbrControl, TableDescRefExt,
+    Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, KAes128RefExt, KAes256RefExt as _, LockingInfoExt,
+    LockingRange, LockingRangeRef, LockingRangeRefExt, MbrControl, MediaKeyRef, TableDescRefExt,
 };
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::core::shared::{locking_info, mbr_control, table, table_id};
+use sed_spec::uid_registry::opal_2;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 
@@ -76,7 +77,8 @@ impl LockingConfigSession {
         let authority_refs = self.session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await?;
         let mut authorities = Vec::new();
         for authority_ref in authority_refs {
-            authorities.push(self.session.get_object(authority_ref, ..).await?);
+            let authority = self.session.get_object(authority_ref, ..).await?;
+            authorities.push(crate::setup_session::append_authority_uid_and_op(authority_ref, authority));
         }
         Ok(authorities)
     }
@@ -91,7 +93,8 @@ impl LockingConfigSession {
         let range_refs = self.session.next::<{ table_id::LOCKING.to_u64() }>(None, None).await?;
         let mut ranges = Vec::new();
         for range_ref in range_refs {
-            ranges.push(self.session.get_object(range_ref, ..).await?);
+            let range: LockingRange = self.session.get_object(range_ref, ..).await?;
+            ranges.push(LockingRange { uid: range.uid.or(Some(range_ref)), ..range });
         }
         Ok(ranges)
     }
@@ -105,7 +108,7 @@ impl LockingConfigSession {
     /// table.)
     #[instrument(level = "info", skip(self), ret, err)]
     pub async fn get_mbr_size(&self) -> Result<u32, Error> {
-        self.session.get_field(table::MBR.rows()).await.map_err(|err| err.into())
+        self.session.get_field(table::MBR.rows()).await.map_err(Error::check_missing)
     }
 
     /// Get the MBR control parameters.
@@ -119,7 +122,7 @@ impl LockingConfigSession {
     /// not supported. (In this case, the MBRControl table is missing.)
     #[instrument(level = "info", skip(self), ret, err)]
     pub async fn get_mbr_control(&self) -> Result<MbrControl, Error> {
-        self.session.get_object(mbr_control::MBR_CONTROL, ..).await.map_err(|err| err.into())
+        self.session.get_object(mbr_control::MBR_CONTROL, ..).await.map_err(Error::check_missing)
     }
 
     /// Get the locking range alignment requirements.
@@ -211,11 +214,13 @@ impl LockingConfigSession {
     pub async fn erase_locking_range(&self, locking_range: LockingRangeRef) -> Result<(), Error> {
         if !self.spec.locking_desc.as_ref().is_some_and(|desc| desc.media_encryption) {
             Err(Error::NotSupported)
-        } else if matches!(self.spec.ssc_desc, SscFeatureDescriptor::Enterprise(_)) {
-            Err(Error::NotImplemented)
+        } else if self.spec.ssc() == Ssc::Enterprise {
+            self.session.erase(locking_range).await.map_err(Into::into)
         } else {
-            let key = self.session.get_field(locking_range.active_key()).await?;
-            self.session.gen_key(key, None, None).await?;
+            let keys = self.get_active_key(locking_range).await?;
+            for key in keys {
+                self.session.gen_key(key, None, None).await?;
+            }
             Ok(())
         }
     }
@@ -250,19 +255,25 @@ impl LockingConfigSession {
     /// change the given `authority's` password, or else this call will fail.
     #[instrument(skip(self), err)]
     pub async fn change_password(&self, authority: AuthorityRef, password: MaxBytes<32>) -> Result<(), Error> {
-        let credential = self.session.get_field(authority.credential()).await?;
-        if let Ok(c_pin_ref) = CPinRef::try_from(credential) {
-            self.session.set_field(c_pin_ref.pin(), password).await.map_err(Into::into)
-        } else {
-            Err(Error::NotAPasswordAuthority)
-        }
+        use MethodStatus::{InvalidParameter, NotAuthorized};
+        use opal_2::locking::authority::USER;
+        use opal_2::locking::c_pin::USER as C_PIN_USER;
+
+        let c_pin_ref = match self.session.get_field(authority.credential()).await {
+            Ok(credential) => CPinRef::try_from(credential).map_err(|_| Error::NotAPasswordAuthority)?,
+            Err(TperError::MethodCallFailed(NotAuthorized)) if let Some(index) = USER.index_of(authority) => {
+                C_PIN_USER.get(index).ok_or(TperError::MethodCallFailed(InvalidParameter))?
+            }
+            Err(err) => return Err(err.into()),
+        };
+        self.session.set_field(c_pin_ref.pin(), password).await.map_err(Into::into)
     }
 
     /// Set the new values for the MBR control object.
     #[instrument(skip(self), err)]
     pub async fn set_mbr_control(&self, mbr_control: MbrControl) -> Result<(), Error> {
         let mbr_control = MbrControl { uid: None, ..mbr_control };
-        self.session.set_object(mbr_control::MBR_CONTROL, mbr_control).await.map_err(|err| err.into())
+        self.session.set_object(mbr_control::MBR_CONTROL, mbr_control).await.map_err(Into::into)
     }
 
     /// Write the `data` into the MBR table at the given `offset`.
@@ -300,5 +311,51 @@ impl LockingConfigSession {
     async fn set_locking_range(&self, uid: LockingRangeRef, changes: LockingRange) -> Result<(), TperError> {
         let changes = LockingRange { uid: None, ..changes };
         self.session.set_object(uid, changes).await
+    }
+
+    /// Return the media keys that might be used for the locking range.
+    ///
+    /// When the current authority can read the `Locking` table, the `ActiveKey`
+    /// field is returned directly. If that's not the case, the `K_AES_*` tables
+    /// are probed and the 128- and 256-bit keys are returned when they exist.
+    #[instrument(skip(self), ret, err)]
+    async fn get_active_key(&self, locking_range: LockingRangeRef) -> Result<heapless::Vec<MediaKeyRef, 2>, TperError> {
+        use MethodStatus::{InvalidParameter, NotAuthorized};
+        use opal_2::locking::k_aes_128::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_128, RANGE_KEY as RANGE_KEY_128};
+        use opal_2::locking::k_aes_256::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_256, RANGE_KEY as RANGE_KEY_256};
+        use opal_2::locking::locking::{GLOBAL_RANGE, RANGE};
+
+        const INVALID_PARAMETER: TperError = TperError::MethodCallFailed(InvalidParameter);
+
+        // Attempt to get the key directly from the locking range object. This
+        // is not authorized for users by default.
+        match self.session.get_field(locking_range.active_key()).await {
+            Ok(key) if Uid::from(key) == Uid::null() => return Ok([].into()),
+            Ok(key) => return Ok([key].into()),
+            Err(TperError::MethodCallFailed(NotAuthorized)) => (),
+            Err(err) => return Err(err),
+        };
+
+        // Fall back to probing.
+        let (candidate_128, candidate_256) = match locking_range {
+            GLOBAL_RANGE => (GLOBAL_RANGE_KEY_128, GLOBAL_RANGE_KEY_256),
+            _ if let Some(index) = RANGE.index_of(locking_range) => (
+                RANGE_KEY_128.get(index).ok_or(INVALID_PARAMETER)?,
+                RANGE_KEY_256.get(index).ok_or(INVALID_PARAMETER)?,
+            ),
+            _ => return Err(INVALID_PARAMETER),
+        };
+        let mut candidates = heapless::Vec::<MediaKeyRef, 2>::new();
+        match self.session.get_field(candidate_128.mode()).await {
+            Ok(_) => candidates.push(candidate_128.into()).expect("at most 2 pushes"),
+            Err(TperError::MethodCallFailed(NotAuthorized | InvalidParameter)) => (),
+            Err(err) => return Err(err),
+        }
+        match self.session.get_field(candidate_256.mode()).await {
+            Ok(_) => candidates.push(candidate_256.into()).expect("at most 2 pushes"),
+            Err(TperError::MethodCallFailed(NotAuthorized | InvalidParameter)) => (),
+            Err(err) => return Err(err),
+        }
+        Ok(candidates)
     }
 }
