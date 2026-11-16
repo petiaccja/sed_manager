@@ -64,7 +64,7 @@ pub async fn take_ownership(ui: &Driver<ui::MainWindow>) {
 
 pub async fn activate_locking(ui: &Driver<ui::MainWindow>) {
     // Switch to the "Activate locking" activity and submit the owner password.
-    ui.single_click("activity-activate-locking", Left).await.unwrap();
+    ui.single_click("activity-activate", Left).await.unwrap();
     ui.enter_text("activate-locking-password", TEST_PASSWORD).await.unwrap();
     ui.check_enabled("activate-locking-submit").await.unwrap();
     ui.invoke_default_action("activate-locking-submit").unwrap();
@@ -95,5 +95,5 @@ pub async fn revert_locking_sp(ui: &Driver<ui::MainWindow>) {
     ui.check_appearance_toast("Reverted device successfully").await.unwrap();
     ui.check_disappearance("revert-password").await.unwrap();
     // Reverting the locking SP disables locking again, so "Activate locking" reappears.
-    ui.check_appearance("activity-activate-locking").await.unwrap();
+    ui.check_appearance("activity-activate").await.unwrap();
 }

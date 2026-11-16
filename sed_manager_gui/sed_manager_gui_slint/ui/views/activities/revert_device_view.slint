@@ -4,46 +4,84 @@
 //L-----------------------------------------------------------------------------
 
 import { ComboBox, LineEdit, Button } from "std-widgets.slint";
-import { ToastCard, ToastLevel } from "../../widgets/lib.slint";
+import { ToastCard, ToastLevel, ConfirmPopup } from "../../widgets/lib.slint";
 import {
     RevertScope,
     RevertAuthority,
     CommandStatus,
+    DeviceConfig,
 } from "../../data/lib.slint";
+import { Ssc, DeviceFeatures } from "../../data/device.slint";
+import { RevertScopeLib, RevertAuthorityLib } from "../../data/activity.slint";
+import { MainWindowGeometry } from "../../main_window_geometry.slint";
 
 export component RevertDeviceView {
+    in property <DeviceFeatures> features;
+    in property <DeviceConfig> config;
     in property <CommandStatus> command-status;
 
     callback revert-device(scope: RevertScope, authority: RevertAuthority, password: string);
+
+    private property <[RevertScope]> revert-scopes: {
+        if features.ssc == enterprise {
+            [everything]
+        } else {
+            [secondary, everything]
+        }
+    };
+    private property <[RevertAuthority]> revert-authorities: {
+        if features.ssc == enterprise && features.psid-supported {
+            [psid]
+        } else if revert-scope == everything {
+            [sid, psid]
+        } else {
+            [sid]
+        }
+    };
+    private property <RevertScope> revert-scope: revert-scopes[revert-scope-selector.current-index];
+    private property <RevertAuthority> revert-authority: revert-authorities[revert-authority-selector.current-index];
 
     VerticalLayout {
         spacing: 0.5rem;
         alignment: start;
 
         Text {
-            text: "What to revert?";
+            text: "Revert scope:";
         }
 
-        scope := ComboBox {
+        revert-scope-selector := ComboBox {
             accessible-id: "revert-scope";
-            model: ["Locking configuration", "Everything"];
+            model: {
+                if revert-scopes.length == 1 {
+                    [RevertScopeLib.to-string(revert-scopes[0], features.ssc)]
+                } else {
+                    [
+                        RevertScopeLib.to-string(revert-scopes[0], features.ssc),
+                        RevertScopeLib.to-string(revert-scopes[1], features.ssc)
+                    ]
+                }
+            };
             current-index: 0;
+            enabled: self.model.length > 1;
         }
 
         Text {
             text: "Authenticate as:";
         }
 
-        authority := ComboBox {
+        revert-authority-selector := ComboBox {
             model: {
-                if scope.current-index == 0 {
-                    ["Owner (SID)"];
+                if revert-authorities.length == 1 {
+                    [RevertAuthorityLib.to-string(revert-authorities[0])]
                 } else {
-                    ["Owner (SID)", "Physical owner (PSID)"];
+                    [
+                        RevertAuthorityLib.to-string(revert-authorities[0]),
+                        RevertAuthorityLib.to-string(revert-authorities[1])
+                    ]
                 }
             };
             current-index: 0;
-            enabled: scope.current-index == 1;
+            enabled: self.model.length > 1;
         }
 
         Text {
@@ -55,25 +93,26 @@ export component RevertDeviceView {
             accessible-id: "revert-password";
         }
 
-        ToastCard {
-            has-icon: true;
-            toast: {
-                level: ToastLevel.warning,
-                title: "Your data will be erased!",
-                message: "All data will be securely and permanently erased from the drive. Make sure to create a backup to avoid data loss."
-            };
+        confirm-revert := ConfirmPopup {
+            x: -root.absolute-position.x;
+            y: -root.absolute-position.y;
+            width: MainWindowGeometry.width;
+            height: MainWindowGeometry.height;
+            title: @tr("Revert {}?", RevertScopeLib.to-string(revert-scope, features.ssc));
+            message: "Your configuration will be lost. If your drive is currently encrypted, your data will be crypto-shredded and cannot be restored in any way.";
+
+            confirmed => {
+                revert-device(revert-scope, revert-authority, password.text)
+            }
         }
 
         Button {
-            text: scope.current-index == 0 ? "Revert locking" : "Revert everything";
+            text: "Revert";
             accessible-id: "revert-submit";
             primary: true;
             enabled: !command-status.session-busy && !command-status.tper-busy;
             clicked => {
-                revert-device(
-                    scope.current-index == 0 ? RevertScope.locking : RevertScope.everything,
-                    authority.current-index == 0 ? RevertAuthority.sid : RevertAuthority.psid,
-                    password.text)
+                confirm-revert.show()
             }
         }
     }

@@ -12,6 +12,7 @@ mod locking_range;
 mod mbr;
 mod primitives;
 mod properties;
+mod ssc;
 mod uid;
 
 use std::convert::Infallible;

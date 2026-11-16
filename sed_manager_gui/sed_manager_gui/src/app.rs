@@ -330,6 +330,12 @@ impl App {
             .on_device_entry(path.clone(), async move |device_entry: &mut DeviceEntry| {
                 let device = host.open_device(path_).await?;
                 let storage_device = device.storage_device();
+                let ssc = device.spec().map(|spec| spec.ssc()).ok();
+                let psid_supported = if let Ok(session) = device.start_setup_session().await {
+                    session.is_psid_supported().await.unwrap_or(false)
+                } else {
+                    false
+                };
                 let capabilities = device.capabilities().ok();
                 let properties_changed = device.properties_changed().ok();
                 let geometry = device
@@ -337,9 +343,9 @@ impl App {
                     .await
                     .unwrap_or(Geometry { logical_sector_size: 0, logical_sector_count: 1u64 << 62 });
                 device_entry.device = Some(device);
-                Ok((storage_device, capabilities, properties_changed, geometry))
+                Ok((storage_device, ssc, psid_supported, capabilities, properties_changed, geometry))
             })
-            .on_success(move |mut ui_device, (storage_device, capabilities, properties_changed, geometry)| {
+            .on_success(move |mut ui_device, (storage_device, ssc, psid_supported, capabilities, properties_changed, geometry)| {
                 if storage_device.is_security_supported() {
                     self.clone().discover(path.clone());
                 }
@@ -358,6 +364,7 @@ impl App {
                     ui_device.geometry = (&geometry).into_ui();
                 }
                 ui_device.identity = (&*storage_device).into_ui();
+                ui_device.features = ui::DeviceFeatures { psid_supported, ssc: ssc.into_ui() };
                 ui_device
             })
             .on_error(move |mut ui_device, err| {
@@ -1017,7 +1024,7 @@ impl App {
                     ui::RevertAuthority::Psid => PSID,
                 };
                 match scope {
-                    ui::RevertScope::Locking => sid_session.revert_secondary_sp(password).await,
+                    ui::RevertScope::Secondary => sid_session.revert_secondary_sp(password).await,
                     ui::RevertScope::Everything => sid_session.revert_tper(authority, password).await,
                 }
                 .map_err(Into::into)

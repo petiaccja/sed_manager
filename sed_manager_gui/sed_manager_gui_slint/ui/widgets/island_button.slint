@@ -11,12 +11,14 @@ export component IslandButton inherits TouchArea {
     in property <bool> has-background: true;
     in property <bool> has-idle-background: true;
     in property <bool> is-selected: false;
+    in property <color> accent: PaletteExtra.accent;
     in-out property <length> border-radius: 0.7rem;
     in-out property <length> border-top-left-radius: border-radius;
     in-out property <length> border-top-right-radius: border-radius;
     in-out property <length> border-bottom-left-radius: border-radius;
     in-out property <length> border-bottom-right-radius: border-radius;
 
+    private property <brush> accented-foreground: PaletteExtra.make-accented(accent, Palette.control-foreground, PaletteExtra.reduced-control-background);
     out property <brush> background: get-background();
     out property <brush> foreground: get-foreground();
 
@@ -25,7 +27,7 @@ export component IslandButton inherits TouchArea {
             #00000000
         } else if self.has-idle-background {
             if self.pressed {
-                Palette.control-background.mix(PaletteExtra.accented-control-foreground, 0.87).mix(Palette.control-foreground, 0.87)
+                Palette.control-background.mix(accented-foreground, 0.87).mix(Palette.control-foreground, 0.87)
             } else if self.is-selected {
                 Palette.control-background.mix(Palette.control-foreground, 0.87)
             } else if self.has-hover {
@@ -35,7 +37,7 @@ export component IslandButton inherits TouchArea {
             }
         } else {
             if self.pressed {
-                Palette.control-background.mix(PaletteExtra.accented-control-foreground, 0.93).mix(Palette.control-foreground, 0.93)
+                Palette.control-background.mix(accented-foreground, 0.93).mix(Palette.control-foreground, 0.93)
             } else if self.is-selected {
                 Palette.control-background
             } else if self.has-hover {
@@ -50,9 +52,9 @@ export component IslandButton inherits TouchArea {
         if !self.enabled {
             Palette.control-foreground.mix(Palette.background, 0.6)
         } else if !self.has-background && self.pressed {
-            Palette.control-foreground.mix(PaletteExtra.accented-control-foreground, 0.2)
+            Palette.control-foreground.mix(accented-foreground, 0.2)
         } else if !self.has-background && self.is-selected {
-            Palette.control-foreground.mix(PaletteExtra.accented-control-foreground, 0.5)
+            Palette.control-foreground.mix(accented-foreground, 0.5)
         } else if !self.has-background && self.has-hover {
             Palette.control-foreground
         } else if !self.has-background {

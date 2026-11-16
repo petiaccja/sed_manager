@@ -7,6 +7,18 @@ import { Status } from "status.slint";
 import { Uid } from "uid.slint";
 import { Sector } from "sector.slint";
 
+export enum Ssc {
+    none,
+    enterprise,
+    opal-1,
+    opal-2,
+    opalite,
+    pyrite-1,
+    pyrite-2,
+    ruby,
+    key-per-io,
+}
+
 export struct DiscoveryProperty {
     name: string,
     value: string,
@@ -21,6 +33,11 @@ export struct Discovery {
     status: Status,
     common-features: [DiscoveryFeature],
     ssc-features: [DiscoveryFeature],
+}
+
+export struct DeviceFeatures {
+    ssc: Ssc,
+    psid-supported: bool,
 }
 
 export struct DeviceConfig {
@@ -144,6 +161,7 @@ export struct SecurityProvider {
 
 export struct Device {
     identity: Identity,
+    features: DeviceFeatures,
     geometry: Geometry,
     alignment: Alignment,
     discovery: Discovery,
@@ -152,4 +170,66 @@ export struct Device {
     command-status: CommandStatus,
     admin-sp: SecurityProvider,
     locking-sp: SecurityProvider,
+}
+
+export global SscLib {
+    public pure function to-string(ssc: Ssc) -> string {
+        if ssc == Ssc.enterprise {
+            "Enterprise"
+        }
+        else if ssc == Ssc.opal-1 {
+            "Opal 1.0"
+        }
+        else if ssc == Ssc.opal-2 {
+            "Opal 2.0"
+        }
+        else if ssc == Ssc.opalite {
+            "Opalite"
+        }
+        else if ssc == Ssc.pyrite-1 {
+            "Pyrite 1.0"
+        }
+        else if ssc == Ssc.pyrite-2 {
+            "Pyrite 2.0"
+        }
+        else if ssc == Ssc.ruby {
+            "Ruby"
+        }
+        else if ssc == Ssc.key-per-io {
+            "Key Per I/O"
+        }
+        else {
+            "None"
+        }
+    }
+
+    public pure function accent-color(ssc: Ssc) -> color {
+        if ssc == Ssc.enterprise {
+            #105DC7
+        }
+        else if ssc == Ssc.opal-1 {
+            #4EBEF2
+        }
+        else if ssc == Ssc.opal-2 {
+            #4EBEF2
+        }
+        else if ssc == Ssc.opalite {
+            #71D1B8
+        }
+        else if ssc == Ssc.pyrite-1 {
+            #CFB959
+        }
+        else if ssc == Ssc.pyrite-2 {
+            #CFB959
+        }
+        else if ssc == Ssc.ruby {
+            #C4316A
+        }
+        else if ssc == Ssc.key-per-io {
+            #913500
+        }
+        else {
+            #B0B0B0
+        }
+    }
 }
