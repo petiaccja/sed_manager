@@ -20,8 +20,8 @@ use sed_packet::com_id_request::ComIdState;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{Authority, AuthorityRef, LockingRangeRef, MbrControl, SecurityProviderRef};
+use sed_spec::uid_registry::common::locking;
 use sed_spec::uid_registry::core::shared::authority::{ANYBODY, SID};
-use sed_spec::uid_registry::opal_2::locking;
 use sed_spec::uid_registry::psid::admin::authority::PSID;
 use sed_tper::{Error as TperError, PropertiesChanged};
 use slint::{

@@ -27,8 +27,8 @@ use sed_spec::objects::SecurityProviderRef;
 use sed_spec::preconfig::{ENTERPRISE, KPIO, OPAL_1, OPAL_2, OPALITE, PYRITE_1, PYRITE_2, RUBY};
 use sed_spec::ssc::Ssc;
 use sed_spec::types::LifeCycleState;
-use sed_spec::uid_registry::opal_2::admin::c_pin;
-use sed_spec::uid_registry::{kpio, opal_2};
+use sed_spec::uid_registry::common::admin::c_pin;
+use sed_spec::uid_registry::{common, kpio};
 use sorbit::ser_de::ToBytes;
 
 use crate::device::{BASE_COM_ID, NUM_COM_IDS};
@@ -289,7 +289,7 @@ impl Tper {
     }
 
     fn num_locking_admins_supported(&self) -> u16 {
-        use opal_2::locking::authority::ADMIN;
+        use common::locking::authority::ADMIN;
 
         match self.locking.as_ref() {
             Some(locking) => locking.authority.iter().filter(|(uid, _)| ADMIN.contains(**uid)).count() as u16,
@@ -298,7 +298,7 @@ impl Tper {
     }
 
     fn num_locking_users_supported(&self) -> u16 {
-        use opal_2::locking::authority::USER;
+        use common::locking::authority::USER;
 
         match self.locking.as_ref() {
             Some(locking) => locking.authority.iter().filter(|(uid, _)| USER.contains(**uid)).count() as u16,

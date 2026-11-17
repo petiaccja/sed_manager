@@ -10,11 +10,11 @@ use sed_spec::objects::{
 };
 use sed_spec::ssc::Ssc::{self, Enterprise};
 use sed_spec::types::{AuthMethod, LifeCycleState};
+use sed_spec::uid_registry::common::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
 use sed_spec::uid_registry::core::shared::authority::SID;
 use sed_spec::uid_registry::core::shared::table_id;
-use sed_spec::uid_registry::opal_2::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
 use sed_spec::uid_registry::psid::admin::authority::PSID;
-use sed_spec::uid_registry::{enterprise, kpio, opal_2, psid};
+use sed_spec::uid_registry::{common, enterprise, kpio, psid};
 use sed_tper::{Error as TperError, Tper, TperHandle};
 use tracing::instrument;
 
@@ -288,12 +288,11 @@ impl SetupSession {
 }
 
 pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Authority) -> Authority {
+    use common::admin::authority as common_admin;
+    use common::locking::authority as common_locking;
     use enterprise::admin::authority as enterprise_admin;
     use enterprise::locking::authority as enterprise_locking;
-    use kpio::admin::authority as kpio_admin;
     use kpio::key_per_io::authority as kpio_kpio;
-    use opal_2::admin::authority as opal_admin;
-    use opal_2::locking::authority as opal_locking;
     use psid::admin::authority as psid_admin;
     use sed_spec::uid_registry::core::shared::authority as core_shared;
 
@@ -303,7 +302,7 @@ pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Autho
         core_shared::SID => Some(AuthMethod::Password),
         core_shared::MAKERS => Some(AuthMethod::None),
         // Shared among SSCs.
-        opal_admin::ADMINS => Some(AuthMethod::None),
+        common_admin::ADMINS => Some(AuthMethod::None),
         // PSID
         psid_admin::PSID => Some(AuthMethod::Password),
         // Enterprise
@@ -311,14 +310,15 @@ pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Autho
         _ if enterprise_locking::BAND_MASTER.contains(authority_ref) => Some(AuthMethod::Password),
         enterprise_locking::ERASE_MASTER => Some(AuthMethod::Password),
         enterprise_locking::BAND_MASTERS => Some(AuthMethod::None),
-        // Opal family
-        _ if opal_admin::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
-        opal_locking::USERS => Some(AuthMethod::None),
-        _ if opal_locking::USER.contains(authority_ref) => Some(AuthMethod::Password),
-        _ if opal_locking::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
-        // Key per I/O
-        _ if kpio_admin::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
-        _ if kpio_kpio::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
+        // Opal family and Key per I/O
+        common_locking::USERS => Some(AuthMethod::None),
+        _ if common_admin::ADMIN.contains(authority_ref)
+            || common_locking::ADMIN.contains(authority_ref)
+            || common_locking::USER.contains(authority_ref)
+            || kpio_kpio::ADMIN.contains(authority_ref) =>
+        {
+            Some(AuthMethod::Password)
+        }
         // Unknown
         _ => None,
     };

@@ -16,9 +16,9 @@ use sed_packet::MaxBytes;
 use sed_packet::com_id::ComIdExt;
 use sed_packet::discovery::BlockSIDAuthDescriptor;
 use sed_spec::ssc::Ssc;
+use sed_spec::uid_registry::common::{admin, locking};
 use sed_spec::uid_registry::enterprise;
 use sed_spec::uid_registry::kpio;
-use sed_spec::uid_registry::opal_2::{admin as opal_admin, locking as opal_locking};
 use sed_spec::uid_registry::psid;
 use sed_telemetry::with_tracing;
 use sed_tper::Tper;
@@ -163,7 +163,7 @@ async fn revert_tper_with_sid_supported(#[case] ssc: Ssc) {
     session.activate_secondary_sp(new_sid_password.clone()).await.unwrap();
     assert_that!(device.discover().is_secondary_sp_enabled(), some(eq(true)));
 
-    let result = session.revert_tper(opal_admin::authority::SID, new_sid_password).await;
+    let result = session.revert_tper(admin::authority::SID, new_sid_password).await;
     assert_that!(result, ok(anything()));
 
     let block_sid = device.discover().get::<BlockSIDAuthDescriptor>().unwrap().clone();
@@ -183,7 +183,7 @@ async fn revert_tper_with_sid_unsupported(#[case] ssc: Ssc) {
     session.take_owneship(new_sid_password.clone()).await.unwrap();
     assert_that!(device.discover().is_secondary_sp_enabled(), some(eq(true)));
 
-    let result = session.revert_tper(opal_admin::authority::SID, new_sid_password).await;
+    let result = session.revert_tper(admin::authority::SID, new_sid_password).await;
     assert_that!(result, err(eq(&Error::NotSupported)));
 }
 
@@ -300,7 +300,7 @@ async fn revert_secondary_sp_ex_supported(#[case] ssc: Ssc) {
     session.activate_secondary_sp(NOT_DEFAULT).await.unwrap();
     assert_that!(device.discover().is_secondary_sp_enabled(), some(eq(true)));
 
-    let admin1 = opal_locking::authority::ADMIN.get(0).unwrap();
+    let admin1 = locking::authority::ADMIN.get(0).unwrap();
     let result = session.revert_secondary_sp_ex(admin1, NOT_DEFAULT, None).await;
     assert_that!(result, ok(anything()));
 
@@ -327,7 +327,7 @@ async fn revert_secondary_sp_ex_unsupported(#[case] ssc: Ssc) {
     }
     assert_that!(device.discover().is_secondary_sp_enabled(), some(eq(true)));
 
-    let admin1 = opal_locking::authority::ADMIN.get(0).unwrap();
+    let admin1 = locking::authority::ADMIN.get(0).unwrap();
     let result = session.revert_secondary_sp_ex(admin1, NOT_DEFAULT, None).await;
     assert_that!(result, err(eq(&Error::NotSupported)));
 }
@@ -347,7 +347,7 @@ async fn revert_secondary_sp_ex_unsupported(#[case] ssc: Ssc) {
 async fn change_password_admin_sp(#[case] ssc: Ssc) {
     let (session, _device) = setup(ssc).await;
     let sp = session.spec().admin_sp();
-    let authority = opal_admin::authority::SID;
+    let authority = admin::authority::SID;
 
     // Change the password of SID, authenticating in with the MSID password.
     let result = session.change_password(sp, authority, INITIAL_SID_PASSWORD, NOT_DEFAULT).await;
@@ -380,7 +380,7 @@ async fn change_password_secondary_sp(#[case] ssc: Ssc) {
     let authority = match ssc {
         Ssc::Enterprise => enterprise::locking::authority::ERASE_MASTER,
         Ssc::KeyPerIO => kpio::key_per_io::authority::ADMIN.get(0).unwrap(),
-        _ => opal_locking::authority::ADMIN.get(0).unwrap(),
+        _ => locking::authority::ADMIN.get(0).unwrap(),
     };
 
     // Change the password of SID, authenticating in with the MSID password.

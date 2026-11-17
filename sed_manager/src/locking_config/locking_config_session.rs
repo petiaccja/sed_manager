@@ -13,8 +13,8 @@ use sed_spec::objects::{
     LockingRange, LockingRangeRef, LockingRangeRefExt, MbrControl, MediaKeyRef, TableDescRefExt,
 };
 use sed_spec::ssc::Ssc;
+use sed_spec::uid_registry::common;
 use sed_spec::uid_registry::core::shared::{locking_info, mbr_control, table, table_id};
-use sed_spec::uid_registry::opal_2;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 
@@ -256,8 +256,8 @@ impl LockingConfigSession {
     #[instrument(skip(self), err)]
     pub async fn change_password(&self, authority: AuthorityRef, password: MaxBytes<32>) -> Result<(), Error> {
         use MethodStatus::{InvalidParameter, NotAuthorized};
-        use opal_2::locking::authority::USER;
-        use opal_2::locking::c_pin::USER as C_PIN_USER;
+        use common::locking::authority::USER;
+        use common::locking::c_pin::USER as C_PIN_USER;
 
         let c_pin_ref = match self.session.get_field(authority.credential()).await {
             Ok(credential) => CPinRef::try_from(credential).map_err(|_| Error::NotAPasswordAuthority)?,
@@ -321,9 +321,9 @@ impl LockingConfigSession {
     #[instrument(skip(self), ret, err)]
     async fn get_active_key(&self, locking_range: LockingRangeRef) -> Result<heapless::Vec<MediaKeyRef, 2>, TperError> {
         use MethodStatus::{InvalidParameter, NotAuthorized};
-        use opal_2::locking::k_aes_128::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_128, RANGE_KEY as RANGE_KEY_128};
-        use opal_2::locking::k_aes_256::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_256, RANGE_KEY as RANGE_KEY_256};
-        use opal_2::locking::locking::{GLOBAL_RANGE, RANGE};
+        use common::locking::k_aes_128::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_128, RANGE_KEY as RANGE_KEY_128};
+        use common::locking::k_aes_256::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_256, RANGE_KEY as RANGE_KEY_256};
+        use common::locking::locking::{GLOBAL_RANGE, RANGE};
 
         const INVALID_PARAMETER: TperError = TperError::MethodCallFailed(InvalidParameter);
 

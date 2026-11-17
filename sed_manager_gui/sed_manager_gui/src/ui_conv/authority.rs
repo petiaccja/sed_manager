@@ -8,7 +8,7 @@ use std::num::NonZero;
 use sed_manager_gui_slint as ui;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::objects::{Authority, AuthorityRef, CPinRef, SecurityProviderRef};
-use sed_spec::uid_registry::opal_2::{admin, locking};
+use sed_spec::uid_registry::common::{admin, locking};
 use slint::{SharedString, ToSharedString};
 
 use crate::ui_conv::{ConversionError, FromBackend, FromBackendName, TryFromUi, TryIntoBackend as _};
@@ -55,7 +55,7 @@ impl TryFromUi<&ui::Authority> for Authority {
 mod tests {
     use googletest::assert_that;
     use googletest::matchers::*;
-    use sed_spec::uid_registry::opal_2;
+    use sed_spec::uid_registry::common;
 
     use super::*;
 
@@ -64,7 +64,7 @@ mod tests {
     #[test]
     fn roundtrip() {
         let authority = Authority {
-            uid: opal_2::locking::authority::ADMIN.get(2),
+            uid: common::locking::authority::ADMIN.get(2),
             common_name: Some("Global range".into()),
             enabled: Some(false),
             ..Default::default()
