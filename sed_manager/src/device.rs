@@ -37,7 +37,7 @@ impl Device {
             .map(|spec| {
                 let com_id = spec.ssc_desc.static_com_ids_p1().start;
                 let com_id_ext = ComIdExt(0);
-                Tper::connect(com_id, com_id_ext, Some(&spec.ssc_desc), storage_device.clone(), runtime)
+                Tper::connect(com_id, com_id_ext, Some(spec.ssc()), storage_device.clone(), runtime)
             })
             .ok();
         Self { storage_device, spec, tper }

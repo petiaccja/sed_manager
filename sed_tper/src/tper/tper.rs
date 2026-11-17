@@ -11,9 +11,10 @@ use sed_device::StorageDevice;
 use sed_packet::MaxBytes;
 use sed_packet::com_id::{ComId, ComIdExt};
 use sed_packet::com_id_request::{ComIdRequest, ComIdResponsePayload, ComIdState, StackResetStatus};
-use sed_packet::discovery::{Discovery, SscFeatureDescriptor};
+use sed_packet::discovery::Discovery;
 use sed_spec::methods::Properties;
 use sed_spec::objects::{AuthorityRef, SecurityProviderRef};
+use sed_spec::ssc::Ssc;
 use sorbit::ser_de::FromBytes;
 use tracing::instrument;
 
@@ -97,7 +98,7 @@ impl Tper {
     pub fn connect(
         com_id: ComId,
         com_id_ext: ComIdExt,
-        ssc: Option<&SscFeatureDescriptor>,
+        ssc: Option<Ssc>,
         device: Arc<dyn StorageDevice>,
         runtime: Arc<PolyRuntime>,
     ) -> Self {

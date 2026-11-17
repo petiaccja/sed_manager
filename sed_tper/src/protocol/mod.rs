@@ -22,11 +22,11 @@ use sed_async::{PolyRuntime, Runtime as _};
 use sed_device::StorageDevice;
 use sed_packet::com_id::{ComId, ComIdExt};
 use sed_packet::com_id_request::{ComIdRequest, ComIdResponse};
-use sed_packet::discovery::SscFeatureDescriptor;
 use sed_packet::session_id::SessionId;
 #[cfg(feature = "test-utils")]
 use sed_spec::methods::SessionProperties;
 use sed_spec::methods::StartSession;
+use sed_spec::ssc::Ssc;
 use shared::{Action, link_both_ways};
 pub use shared::{PropertiesChanged, StartedSession};
 use tracing::{Instrument as _, Span, info_span};
@@ -56,7 +56,7 @@ impl Protocol {
     pub fn new(
         com_id: ComId,
         com_id_ext: ComIdExt,
-        ssc: Option<&SscFeatureDescriptor>,
+        ssc: Option<Ssc>,
         device: Arc<dyn StorageDevice>,
         runtime: Arc<PolyRuntime>,
         auto_sync_properties: bool,
