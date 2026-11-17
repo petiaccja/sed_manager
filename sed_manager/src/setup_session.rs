@@ -263,38 +263,6 @@ impl SetupSession {
                     .await
             }
         }
-
-        // if self.spec.ssc() == Ssc::Enterprise {
-        //     let authority_refs = if sp == enterprise::admin::sp::ADMIN {
-        //         // Enterprise does not authorize `Next` on the `Authority` table as
-        //         // `Anybody`.
-        //         use enterprise::admin::authority::{ANYBODY, MAKER_SYM_K, MAKERS, SID};
-        //         let psid = self.is_psid_supported().await?.then_some(PSID);
-        //         let fixed = [SID, MAKERS, MAKER_SYM_K, ANYBODY];
-        //         fixed.into_iter().chain(psid).collect::<Vec<_>>()
-        //     } else {
-        //         // Enterprise does not authorize reading anything from the
-        //         // `Authority` table as `Anybody`.
-        //         let session = self.tper.start_session(sp, None, None).await?;
-        //         session
-        //             .with(async |session| session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await)
-        //             .await?
-        //     };
-        //     Ok(authority_refs.into_iter().map(|uid| append_authority_uid_and_op(uid, Default::default())).collect())
-        // } else {
-        //     let session = self.tper.start_session(sp, None, None).await?;
-        //     session
-        //         .with(async |session| {
-        //             let authority_refs = session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await?;
-        //             let mut authorities = Vec::new();
-        //             for authority_ref in authority_refs {
-        //                 let authority = session.get_object(authority_ref, ..).await?;
-        //                 authorities.push(authority);
-        //             }
-        //             Ok(authorities)
-        //         })
-        //         .await
-        // }
     }
 
     /// Checks whether the PSID feature set is supported.
