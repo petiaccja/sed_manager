@@ -19,7 +19,8 @@ pub enum UidEntry {
         /// The first UID of the range.
         #[serde(deserialize_with = "deserialize_uid")]
         start: u64,
-        /// The number of UIDs in the range.
+        /// The number of UIDs in the range. This may be larger than what a
+        /// particular SSC defines.
         count: u64,
         /// Only every `step`th UID is part of the range.
         #[serde(default = "default_value_one")]
