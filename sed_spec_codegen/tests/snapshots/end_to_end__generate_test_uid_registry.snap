@@ -263,3 +263,10 @@ pub mod feature_x {
         sp_lookups: SortedMap { items: &SP_LOOKUPS },
     };
 }
+pub mod common {
+    use crate::lookup::{SecurityProviderLookup, FeatureLookup, SortedMap, SpRef};
+    const SP_LOOKUPS: [(Option<SpRef>, &SecurityProviderLookup); 0usize] = [];
+    pub const LOOKUP: FeatureLookup<'static> = FeatureLookup {
+        sp_lookups: SortedMap { items: &SP_LOOKUPS },
+    };
+}

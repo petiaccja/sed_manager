@@ -1,5 +1,6 @@
 {
     "Core": {
+        "kind": "core",
         "Shared": {
             "Authority": {
                 "Anybody": "0000000900000001",
@@ -261,6 +262,7 @@
         }
     },
     "DataStore": {
+        "kind": "feature",
         "Admin": {
             "SP": {
                 "Admin": "0000020500000001",
@@ -299,6 +301,7 @@
         }
     },
     "Enterprise": {
+        "kind": "ssc",
         "Admin": {
             "ACE": {
                 "Anybody": "0000000800000001",
@@ -399,6 +402,7 @@
         }
     },
     "KPIO": {
+        "kind": "ssc",
         "Admin": {
             "TableID": {
                 "DataRemovalMechanism": "0000110100000000"
@@ -525,6 +529,7 @@
         }
     },
     "Opalite": {
+        "kind": "ssc",
         "Admin": {
             "ACE": {
                 "Anybody": "0000000800000001",
@@ -623,6 +628,7 @@
         }
     },
     "Opal_2": {
+        "kind": "ssc",
         "Admin": {
             "TableID": {
                 "DataRemovalMechanism": "0000110100000000"
@@ -793,6 +799,7 @@
         }
     },
     "PSID": {
+        "kind": "feature",
         "Admin": {
             "ACE": {
                 "C_PIN_Get_PSID_NoPIN": "00000008000100E1",
@@ -812,6 +819,7 @@
         "Locking": {}
     },
     "Pyrite_2": {
+        "kind": "ssc",
         "Admin": {
             "TableID": {
                 "DataRemovalMechanism": "0000110100000000"
@@ -924,6 +932,7 @@
         }
     },
     "Ruby": {
+        "kind": "ssc",
         "Admin": {
             "ACE": {
                 "Anybody": "0000000800000001",

@@ -1,5 +1,6 @@
 {
     "Core": {
+        "kind": "core",
         "Shared": {
             "TableID": {
                 "InvokingID": "FFFFFFFE00000000",
@@ -20,6 +21,7 @@
         }
     },
     "FeatureX": {
+        "kind": "ssc",
         "Admin": {
             "SP": {
                 "Admin": "0000020500000002",
