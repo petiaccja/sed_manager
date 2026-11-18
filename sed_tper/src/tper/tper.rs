@@ -52,6 +52,11 @@ impl Tper {
         self.com_id_ext
     }
 
+    /// Get the storage device to which the `Tper` is connected.
+    pub fn storage_device(&self) -> Arc<dyn StorageDevice> {
+        self.device.clone()
+    }
+
     /// Get the communication capabilities of the host. These properties
     /// reflect how this library implements the TCG protocol stack.
     pub fn capabilities(&self) -> Properties {
@@ -121,7 +126,9 @@ impl Tper {
     /// Discover the capabilities of the provided device.
     #[instrument(level = "info", ret, err)]
     pub async fn discover(device: &dyn StorageDevice) -> Result<Discovery, Error> {
-        let bytes = device.security_recv(0x01, 0x0001_u16.to_be_bytes(), 4096).await?;
+        let bytes = device
+            .security_recv(Discovery::PROTOCOL, Discovery::COM_ID.to_be_bytes(), Discovery::TRANSFER_LEN)
+            .await?;
         Discovery::from_bytes(&bytes).map_err(Error::InvalidDiscovery)
     }
 

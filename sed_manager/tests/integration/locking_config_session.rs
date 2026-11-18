@@ -44,7 +44,7 @@ async fn setup(ssc: Ssc) -> (Tper, Arc<VirtualDevice>) {
     let setup_session = SetupSession::new(&tper, spec);
 
     setup_session.take_owneship(NEW_SID_PASSWORD).await.unwrap();
-    if ssc != Ssc::Enterprise {
+    if ssc.activate_supported() {
         setup_session.activate_secondary_sp(NEW_SID_PASSWORD).await.unwrap();
     }
 

@@ -12,7 +12,7 @@ use sed_spec::objects::{
     Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, KAes128RefExt, KAes256RefExt as _, LockingInfoExt,
     LockingRange, LockingRangeRef, LockingRangeRefExt, MbrControl, MediaKeyRef, TableDescRefExt,
 };
-use sed_spec::ssc::Ssc;
+use sed_spec::ssc::EraseMethod;
 use sed_spec::uid_registry::common;
 use sed_spec::uid_registry::core::shared::{locking_info, mbr_control, table, table_id};
 use sed_tper::{Error as TperError, Session, Tper};
@@ -52,7 +52,7 @@ impl LockingConfigSession {
         if spec.locking_desc.is_none() {
             return Err(Error::IncompatibleSsc);
         }
-        let session = tper.start_session(spec.secondary_sp(), Some(authority), password).await?;
+        let session = tper.start_session(spec.ssc().secondary_sp(), Some(authority), password).await?;
         Ok(Self { spec, session })
     }
 
@@ -206,22 +206,21 @@ impl LockingConfigSession {
     /// Besides the usual, [`Error::NotSupported`] is returned if the device
     /// does not use media encryption (e.g. Pyrite), as there is no key to
     /// discard.
-    ///
-    /// # Notes
-    ///
-    /// Currently, Enterprise is not implemented and an error is always returned.
     #[instrument(skip(self), err)]
     pub async fn erase_locking_range(&self, locking_range: LockingRangeRef) -> Result<(), Error> {
-        if !self.spec.locking_desc.as_ref().is_some_and(|desc| desc.media_encryption) {
-            Err(Error::NotSupported)
-        } else if self.spec.ssc() == Ssc::Enterprise {
-            self.session.erase(locking_range).await.map_err(Into::into)
-        } else {
-            let keys = self.get_active_key(locking_range).await?;
-            for key in keys {
-                self.session.gen_key(key, None, None).await?;
+        let media_encryption = self.spec.locking_desc.as_ref().is_some_and(|desc| desc.media_encryption);
+        let erase_method = self.spec.ssc().erase_method();
+
+        match (media_encryption, erase_method) {
+            (true, EraseMethod::Erase) => self.session.erase(locking_range).await.map_err(Into::into),
+            (true, EraseMethod::GenKey) => {
+                let keys = self.get_active_key(locking_range).await?;
+                for key in keys {
+                    self.session.gen_key(key, None, None).await?;
+                }
+                Ok(())
             }
-            Ok(())
+            _ => Err(Error::NotSupported),
         }
     }
 
