@@ -8,7 +8,7 @@ use std::num::NonZero;
 use sed_manager_gui_slint as ui;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::objects::{LockingRange, LockingRangeRef, SecurityProviderRef};
-use sed_spec::uid_registry::opal_2::locking::locking::GLOBAL_RANGE;
+use sed_spec::uid_registry::common::locking::locking::GLOBAL_RANGE;
 use slint::{SharedString, ToSharedString};
 
 use crate::ui_conv::{ConversionError, FromBackend, FromBackendName, TryFromUi, TryIntoBackend};
@@ -64,7 +64,7 @@ impl TryFromUi<&ui::LockingRange> for LockingRange {
 mod tests {
     use googletest::assert_that;
     use googletest::matchers::*;
-    use sed_spec::uid_registry::opal_2;
+    use sed_spec::uid_registry::common;
 
     use super::*;
 
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn roundtrip_global_range() {
         let locking_range = LockingRange {
-            uid: Some(opal_2::locking::locking::GLOBAL_RANGE),
+            uid: Some(common::locking::locking::GLOBAL_RANGE),
             common_name: Some("Global range".into()),
             range_start: None,
             range_length: None,
@@ -92,7 +92,7 @@ mod tests {
     #[test]
     fn roundtrip_non_global_range() {
         let locking_range = LockingRange {
-            uid: Some(opal_2::locking::locking::RANGE.get(0).unwrap()),
+            uid: Some(common::locking::locking::RANGE.get(0).unwrap()),
             common_name: Some("Global range".into()),
             range_start: Some(1234),
             range_length: Some(5678),

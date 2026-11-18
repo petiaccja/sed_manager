@@ -100,8 +100,8 @@ impl Properties {
         asynchronous: false,
     };
 
-    /// Initial assumptions of Opal 1-2, Opalite, Pyrite 1-2, Ruby, and KPIO
-    /// devices in both directions.
+    /// Initial assumptions of Opal 1-2, Opalite, Pyrite 1-2, and Ruby devices
+    /// in both directions.
     pub const INITIAL_OPAL_FAMILY: Self = Self {
         max_gross_packet_size: Limit::Limited(NonZero::new(2028).unwrap()),
         max_gross_compacket_size: Limit::Limited(NonZero::new(2048).unwrap()),
@@ -110,6 +110,11 @@ impl Properties {
         max_agg_token_size: Limit::Limited(NonZero::new(1992).unwrap()), // Matches individual tokens on purpose.
         ..Self::INITIAL
     };
+
+    /// Initial assumptions of KPIO devices in both directions.
+    // This is the same as Opal, but it's cleaner not to lump it under the
+    // "Opal family".
+    pub const INITIAL_KPIO: Self = Self::INITIAL_OPAL_FAMILY;
 
     /// Initial assumptions of Enterprise devices in both directions.
     pub const INITIAL_ENTERPRISE: Self = Self {

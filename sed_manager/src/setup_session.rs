@@ -3,18 +3,19 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
+use std::sync::Arc;
+
+use sed_device::StorageDevice;
 use sed_packet::MaxBytes;
 use sed_spec::methods::MethodStatus;
-use sed_spec::objects::{
-    Authority, AuthorityRef, AuthorityRefExt as _, CPinRef, CPinRefExt, SecurityProviderRef, SecurityProviderRefExt,
-};
-use sed_spec::ssc::Ssc::{self, Enterprise};
-use sed_spec::types::{AuthMethod, LifeCycleState};
+use sed_spec::objects::{Authority, AuthorityRef, AuthorityRefExt as _, CPinRef, CPinRefExt, SecurityProviderRef};
+use sed_spec::ssc::Ssc;
+use sed_spec::types::AuthMethod;
+use sed_spec::uid_registry::common::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
 use sed_spec::uid_registry::core::shared::authority::SID;
 use sed_spec::uid_registry::core::shared::table_id;
-use sed_spec::uid_registry::opal_2::admin::c_pin::{MSID as C_PIN_MSID, SID as C_PIN_SID};
 use sed_spec::uid_registry::psid::admin::authority::PSID;
-use sed_spec::uid_registry::{enterprise, kpio, opal_2, psid};
+use sed_spec::uid_registry::{common, enterprise, kpio, psid};
 use sed_tper::{Error as TperError, Tper, TperHandle};
 use tracing::instrument;
 
@@ -30,6 +31,7 @@ use crate::Error::{self, NotSupported};
 /// supports, though only intermittently.
 #[derive(Debug)]
 pub struct SetupSession {
+    storage_device: Arc<dyn StorageDevice>,
     spec: DeviceSpec,
     tper: TperHandle,
 }
@@ -37,7 +39,7 @@ pub struct SetupSession {
 impl SetupSession {
     /// Open a session on the SSC given by `spec`.
     pub fn new(tper: &Tper, spec: DeviceSpec) -> Self {
-        Self { tper: tper.handle(), spec }
+        Self { storage_device: tper.storage_device(), tper: tper.handle(), spec }
     }
 
     pub fn spec(&self) -> &DeviceSpec {
@@ -55,19 +57,17 @@ impl SetupSession {
     /// The method may also fail due to any common Tper RPC errors.
     #[instrument(level = "info", skip(self, new_sid_password), ret, err)]
     pub async fn take_owneship(&self, new_sid_password: MaxBytes<32>) -> Result<(), Error> {
-        let spec = &self.spec;
-
         // Get the MSID password.
         let initial_password = self
             .tper
-            .start_session(spec.admin_sp(), None, None)
+            .start_session(common::admin::sp::ADMIN, None, None)
             .await?
             .with(async |session| session.get_field(C_PIN_MSID.pin()).await)
             .await?;
 
         // Change the SID password to the new one.
         self.tper
-            .start_session(spec.admin_sp(), Some(SID), Some(initial_password.clone()))
+            .start_session(common::admin::sp::ADMIN, Some(SID), Some(initial_password.clone()))
             .await
             .map_err(|err| match err {
                 TperError::MethodCallFailed(MethodStatus::NotAuthorized) => Error::AlreadyOwned,
@@ -107,36 +107,28 @@ impl SetupSession {
     ///
     /// # Errors
     ///
-    /// The SID authority is used to activate the locking or KPIO SP. If the SP
-    /// is already in the [`Manufactured`] state (i.e. already activated),
+    /// The session as the SID authority is used to activate the locking or KPIO SP.
+    /// If the discovery indicates that the secondary SP is already active,
     /// [`Error::AlreadyActivated`] is returned.
     ///
     /// The method may also fail due to any common Tper RPC errors.
-    ///
-    /// [`Manufactured`]: LifeCycleState::Manufactured
     #[instrument(level = "info", skip(self, sid_password), ret, err)]
     pub async fn activate_secondary_sp(&self, sid_password: MaxBytes<32>) -> Result<(), Error> {
-        // Enterprise is always activated, but has no SP table on the Admin SP.
-        if self.spec.ssc() == Ssc::Enterprise {
-            return Err(Error::AlreadyActivated);
+        let ssc = self.spec().ssc();
+
+        let discovery = Tper::discover(&*self.storage_device).await?;
+
+        match discovery.is_secondary_sp_enabled() {
+            Some(true) => Err(Error::AlreadyActivated),
+            Some(false) => self
+                .tper
+                .start_session(common::admin::sp::ADMIN, Some(SID), Some(sid_password))
+                .await?
+                .with(async |session| session.activate(ssc.secondary_sp()).await)
+                .await
+                .map_err(Into::into),
+            None => Err(Error::IncompatibleSsc),
         }
-
-        // For all other SSCs, we can query the lifecycle state from the Admin
-        // SP's SP table.
-        self.tper
-            .start_session(self.spec.admin_sp(), Some(SID), Some(sid_password))
-            .await?
-            .with(async |session| {
-                let life_cycle_state = session.get_field(self.spec.secondary_sp().life_cycle_state()).await?;
-                if life_cycle_state != LifeCycleState::ManufacturedInactive {
-                    return Err(Error::AlreadyActivated);
-                }
-                session.activate(self.spec.secondary_sp()).await?;
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
     }
 
     /// Revert the whole device to its original factory state.
@@ -151,11 +143,14 @@ impl SetupSession {
     /// - `password`: the password of the `authority`.
     #[instrument(level = "info", skip(self, password), ret, err)]
     pub async fn revert_tper(&self, authority: AuthorityRef, password: MaxBytes<32>) -> Result<(), Error> {
-        let is_revert_supported = (authority == PSID && self.is_psid_supported().await?)
-            || (authority != PSID && self.spec.ssc() != Ssc::Enterprise);
-        if is_revert_supported {
-            let session = self.tper.start_session(self.spec.admin_sp(), Some(authority), Some(password)).await?;
-            session.with(async |session| session.revert(self.spec.admin_sp()).await).await.map_err(Into::into)
+        let is_action_supported = (authority == PSID && self.is_psid_supported().await?)
+            || (authority != PSID && self.spec.ssc().revert_by_sid_supported());
+        if is_action_supported {
+            let session = self.tper.start_session(common::admin::sp::ADMIN, Some(authority), Some(password)).await?;
+            session
+                .with(async |session| session.revert(common::admin::sp::ADMIN).await)
+                .await
+                .map_err(Into::into)
         } else {
             Err(Error::NotSupported)
         }
@@ -167,17 +162,16 @@ impl SetupSession {
     /// Only the secondary SP will be reverted, the Admin SP is unaffected.
     #[instrument(level = "info", skip(self, sid_password), ret, err)]
     pub async fn revert_secondary_sp(&self, sid_password: MaxBytes<32>) -> Result<(), Error> {
-        if self.spec.ssc() == Enterprise {
-            return Err(NotSupported);
+        if self.spec.ssc().revert_by_sid_supported() {
+            self.tper
+                .start_session(common::admin::sp::ADMIN, Some(SID), Some(sid_password))
+                .await?
+                .with(async |session| session.revert(self.spec.ssc().secondary_sp()).await)
+                .await
+                .map_err(Into::into)
+        } else {
+            Err(NotSupported)
         }
-
-        self.tper
-            .start_session(self.spec.admin_sp(), Some(SID), Some(sid_password))
-            .await?
-            .with(async |session| session.revert(self.spec.secondary_sp()).await)
-            .await?;
-
-        Ok(())
     }
 
     /// Revert the secondary SP to its original factory state.
@@ -191,17 +185,17 @@ impl SetupSession {
         password: MaxBytes<32>,
         keep_global_range_key: Option<bool>,
     ) -> Result<(), Error> {
-        if [Ssc::Enterprise, Ssc::KeyPerIO].contains(&self.spec.ssc()) {
-            return Err(Error::NotSupported);
-        }
-
-        let session = self.tper.start_session(self.spec.secondary_sp(), Some(admin), Some(password)).await?;
-        match session.revert_sp(keep_global_range_key).await {
-            Ok(()) => Ok(()),
-            Err((session, err)) => {
-                let _ = session.close().await;
-                Err(err.into())
+        if self.spec.ssc().revert_sp_supported() {
+            let session = self.tper.start_session(self.spec.ssc().secondary_sp(), Some(admin), Some(password)).await?;
+            match session.revert_sp(keep_global_range_key).await {
+                Ok(()) => Ok(()),
+                Err((session, err)) => {
+                    let _ = session.close().await;
+                    Err(err.into())
+                }
             }
+        } else {
+            Err(Error::NotSupported)
         }
     }
 
@@ -263,69 +257,35 @@ impl SetupSession {
                     .await
             }
         }
-
-        // if self.spec.ssc() == Ssc::Enterprise {
-        //     let authority_refs = if sp == enterprise::admin::sp::ADMIN {
-        //         // Enterprise does not authorize `Next` on the `Authority` table as
-        //         // `Anybody`.
-        //         use enterprise::admin::authority::{ANYBODY, MAKER_SYM_K, MAKERS, SID};
-        //         let psid = self.is_psid_supported().await?.then_some(PSID);
-        //         let fixed = [SID, MAKERS, MAKER_SYM_K, ANYBODY];
-        //         fixed.into_iter().chain(psid).collect::<Vec<_>>()
-        //     } else {
-        //         // Enterprise does not authorize reading anything from the
-        //         // `Authority` table as `Anybody`.
-        //         let session = self.tper.start_session(sp, None, None).await?;
-        //         session
-        //             .with(async |session| session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await)
-        //             .await?
-        //     };
-        //     Ok(authority_refs.into_iter().map(|uid| append_authority_uid_and_op(uid, Default::default())).collect())
-        // } else {
-        //     let session = self.tper.start_session(sp, None, None).await?;
-        //     session
-        //         .with(async |session| {
-        //             let authority_refs = session.next::<{ table_id::AUTHORITY.to_u64() }>(None, None).await?;
-        //             let mut authorities = Vec::new();
-        //             for authority_ref in authority_refs {
-        //                 let authority = session.get_object(authority_ref, ..).await?;
-        //                 authorities.push(authority);
-        //             }
-        //             Ok(authorities)
-        //         })
-        //         .await
-        // }
     }
 
     /// Checks whether the PSID feature set is supported.
     #[instrument(level = "info", skip(self), ret, err)]
     pub async fn is_psid_supported(&self) -> Result<bool, Error> {
-        if [Ssc::Enterprise, Ssc::OpalV1, Ssc::PyriteV1].contains(&self.spec.ssc()) {
+        if self.spec.ssc().psid_mandatory() {
+            // We should spare starting an extra session; non-compliant devices
+            // will error out on PSID operations.
+            Ok(true)
+        } else {
             // Check if the PSID authority exists by getting one of its fields
             // readable by `Anybody`.
-            let session = self.tper.start_session(self.spec.admin_sp(), None, None).await?;
+            let session = self.tper.start_session(common::admin::sp::ADMIN, None, None).await?;
             let enabled = session.with(async |session| session.get_field(PSID.enabled()).await).await;
             match enabled.map_err(Error::check_missing) {
                 Ok(_) => Ok(true),
                 Err(Error::NotSupported) => Ok(false),
                 Err(err) => Err(err),
             }
-        } else {
-            // The PSID feature set is mandatory for Opal 2, Opalite, Pyrite 2,
-            // and KPIO. We should spare starting an extra session; non-compliant
-            // devices will error out on PSID operations.
-            Ok(true)
         }
     }
 }
 
 pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Authority) -> Authority {
+    use common::admin::authority as common_admin;
+    use common::locking::authority as common_locking;
     use enterprise::admin::authority as enterprise_admin;
     use enterprise::locking::authority as enterprise_locking;
-    use kpio::admin::authority as kpio_admin;
     use kpio::key_per_io::authority as kpio_kpio;
-    use opal_2::admin::authority as opal_admin;
-    use opal_2::locking::authority as opal_locking;
     use psid::admin::authority as psid_admin;
     use sed_spec::uid_registry::core::shared::authority as core_shared;
 
@@ -335,7 +295,7 @@ pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Autho
         core_shared::SID => Some(AuthMethod::Password),
         core_shared::MAKERS => Some(AuthMethod::None),
         // Shared among SSCs.
-        opal_admin::ADMINS => Some(AuthMethod::None),
+        common_admin::ADMINS => Some(AuthMethod::None),
         // PSID
         psid_admin::PSID => Some(AuthMethod::Password),
         // Enterprise
@@ -343,14 +303,15 @@ pub fn append_authority_uid_and_op(authority_ref: AuthorityRef, authority: Autho
         _ if enterprise_locking::BAND_MASTER.contains(authority_ref) => Some(AuthMethod::Password),
         enterprise_locking::ERASE_MASTER => Some(AuthMethod::Password),
         enterprise_locking::BAND_MASTERS => Some(AuthMethod::None),
-        // Opal family
-        _ if opal_admin::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
-        opal_locking::USERS => Some(AuthMethod::None),
-        _ if opal_locking::USER.contains(authority_ref) => Some(AuthMethod::Password),
-        _ if opal_locking::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
-        // Key per I/O
-        _ if kpio_admin::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
-        _ if kpio_kpio::ADMIN.contains(authority_ref) => Some(AuthMethod::Password),
+        // Opal family and Key per I/O
+        common_locking::USERS => Some(AuthMethod::None),
+        _ if common_admin::ADMIN.contains(authority_ref)
+            || common_locking::ADMIN.contains(authority_ref)
+            || common_locking::USER.contains(authority_ref)
+            || kpio_kpio::ADMIN.contains(authority_ref) =>
+        {
+            Some(AuthMethod::Password)
+        }
         // Unknown
         _ => None,
     };

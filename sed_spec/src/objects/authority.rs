@@ -9,7 +9,7 @@ use sed_spec_macros::{DetokenizeStruct, FieldList, Object, TokenizeField, Tokeni
 use crate::objects::{AuthorityRef, LogListRef};
 use crate::types::{AuthMethod, Date, HashProtocol, LogSelect, MessagingType};
 use crate::uid_registry::core::shared::table_id;
-use crate::uid_registry::{core, enterprise, opal_2, psid};
+use crate::uid_registry::{common, core, enterprise, psid};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Object, TokenizeStruct, DetokenizeStruct, FieldList, TokenizeField)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(default))]
@@ -97,10 +97,10 @@ impl AuthorityKind {
 
 impl From<AuthorityRef> for AuthorityKind {
     fn from(value: AuthorityRef) -> Self {
+        use common::admin::authority::ADMIN as ADMIN_SP_ADMIN;
+        use common::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER};
         use core::shared::authority::{ANYBODY, SID};
         use enterprise::locking::authority::{BAND_MASTER, ERASE_MASTER};
-        use opal_2::admin::authority::ADMIN as ADMIN_SP_ADMIN;
-        use opal_2::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER};
         use psid::admin::authority::PSID;
 
         match value {
@@ -120,10 +120,10 @@ impl From<AuthorityRef> for AuthorityKind {
 
 impl From<AuthorityKind> for AuthorityRef {
     fn from(value: AuthorityKind) -> Self {
+        use common::admin::authority::ADMIN as ADMIN_SP_ADMIN;
+        use common::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER};
         use core::shared::authority::{ANYBODY, SID};
         use enterprise::locking::authority::{BAND_MASTER, ERASE_MASTER};
-        use opal_2::admin::authority::ADMIN as ADMIN_SP_ADMIN;
-        use opal_2::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER};
         use psid::admin::authority::PSID;
 
         match value {
@@ -157,9 +157,9 @@ impl TryFrom<AuthorityRef> for AuthorityClass {
     type Error = ();
 
     fn try_from(value: AuthorityRef) -> Result<Self, Self::Error> {
+        use common::locking::authority::USERS;
         use core::shared::authority::ADMINS;
         use enterprise::locking::authority::BAND_MASTERS;
-        use opal_2::locking::authority::USERS;
 
         match value {
             ADMINS => Ok(Self::Admins),
@@ -172,9 +172,9 @@ impl TryFrom<AuthorityRef> for AuthorityClass {
 
 impl From<AuthorityClass> for AuthorityRef {
     fn from(value: AuthorityClass) -> Self {
+        use common::locking::authority::USERS;
         use core::shared::authority::ADMINS;
         use enterprise::locking::authority::BAND_MASTERS;
-        use opal_2::locking::authority::USERS;
 
         match value {
             AuthorityClass::Admins => ADMINS,
@@ -196,27 +196,25 @@ mod tests {
     use rstest::rstest;
 
     use super::*;
+    use crate::uid_registry::common::admin::authority::ADMIN as ADMIN_SP_ADMIN;
+    use crate::uid_registry::common::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER, USERS};
     use crate::uid_registry::core::shared::authority::{ADMINS, ANYBODY, MAKERS, SID};
     use crate::uid_registry::enterprise::locking::authority::{BAND_MASTER, BAND_MASTERS, ERASE_MASTER};
     use crate::uid_registry::kpio;
-    use crate::uid_registry::opal_2::admin::authority::ADMIN as ADMIN_SP_ADMIN;
-    use crate::uid_registry::opal_2::locking::authority::{ADMIN as SECONDARY_SP_ADMIN, USER, USERS};
     use crate::uid_registry::psid::admin::authority::PSID;
 
     /// The classification relies on the authorities sharing UIDs across SSCs
-    /// and SPs. These UIDs should be stable, but we want to document the
-    /// equalities the code relies on.
+    /// and SPs. The `common` module guarantees equality between SSCs for the
+    /// same SP, but not between the core and the SSCs, or between different
+    /// SPs, so we document those equalities here.
     #[test]
     fn sscs_shared_uids_for_same_concept() {
-        assert_eq!(ADMINS, opal_2::admin::authority::ADMINS);
-        assert_eq!(ADMINS, opal_2::locking::authority::ADMINS);
-        assert_eq!(ADMINS, kpio::admin::authority::ADMINS);
+        assert_eq!(ADMINS, common::admin::authority::ADMINS);
+        assert_eq!(ADMINS, common::locking::authority::ADMINS);
         assert_eq!(ADMINS, kpio::key_per_io::authority::ADMINS);
-        assert_eq!(ADMIN_SP_ADMIN, kpio::admin::authority::ADMIN);
         assert_eq!(SECONDARY_SP_ADMIN, kpio::key_per_io::authority::ADMIN);
-        assert_eq!(SID, opal_2::admin::authority::SID);
-        assert_eq!(SID, enterprise::admin::authority::SID);
-        assert_eq!(ANYBODY, enterprise::locking::authority::ANYBODY);
+        assert_eq!(SID, common::admin::authority::SID);
+        assert_eq!(ANYBODY, common::locking::authority::ANYBODY);
     }
 
     #[rstest]

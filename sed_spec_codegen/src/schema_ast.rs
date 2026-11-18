@@ -19,7 +19,8 @@ pub enum UidEntry {
         /// The first UID of the range.
         #[serde(deserialize_with = "deserialize_uid")]
         start: u64,
-        /// The number of UIDs in the range.
+        /// The number of UIDs in the range. This may be larger than what a
+        /// particular SSC defines.
         count: u64,
         /// Only every `step`th UID is part of the range.
         #[serde(default = "default_value_one")]
@@ -58,8 +59,27 @@ pub struct SecurityProvider {
     pub tables: BTreeMap<String, Table>,
 }
 
+/// The kind of a feature in the JSON, which determines how it's processed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FeatureKind {
+    /// The core specification, which defines the tables shared by all SSCs.
+    Core,
+    /// A feature set that extends SSCs, such as PSID or Additional DataStore.
+    Feature,
+    /// A security subsystem class, such as Opal 2 or Enterprise.
+    Ssc,
+    /// The feature generated from the UIDs common to all SSCs. This can't be
+    /// used in the JSON.
+    #[serde(skip)]
+    Common,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Feature {
+    /// The kind of the feature. This is mandatory so that new features are
+    /// explicitly categorized.
+    pub kind: FeatureKind,
     #[serde(flatten)]
     pub security_providers: BTreeMap<String, SecurityProvider>,
 }
@@ -158,10 +178,16 @@ mod tests {
         };
         let expected = UidRegistry {
             features: [
-                ("Core".to_owned(), Feature { security_providers: [("Shared".to_owned(), shared)].into() }),
+                (
+                    "Core".to_owned(),
+                    Feature { kind: FeatureKind::Core, security_providers: [("Shared".to_owned(), shared)].into() },
+                ),
                 (
                     "FeatureX".to_owned(),
-                    Feature { security_providers: [("Admin".to_owned(), admin), ("SPY".to_owned(), spy)].into() },
+                    Feature {
+                        kind: FeatureKind::Ssc,
+                        security_providers: [("Admin".to_owned(), admin), ("SPY".to_owned(), spy)].into(),
+                    },
                 ),
             ]
             .into(),

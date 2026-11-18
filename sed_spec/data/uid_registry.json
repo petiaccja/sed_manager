@@ -1,5 +1,6 @@
 {
     "Core": {
+        "kind": "core",
         "Shared": {
             "Authority": {
                 "Anybody": "0000000900000001",
@@ -261,6 +262,7 @@
         }
     },
     "DataStore": {
+        "kind": "feature",
         "Admin": {
             "SP": {
                 "Admin": "0000020500000001",
@@ -299,6 +301,7 @@
         }
     },
     "Enterprise": {
+        "kind": "ssc",
         "Admin": {
             "ACE": {
                 "Anybody": "0000000800000001",
@@ -399,6 +402,7 @@
         }
     },
     "KPIO": {
+        "kind": "ssc",
         "Admin": {
             "TableID": {
                 "DataRemovalMechanism": "0000110100000000"
@@ -525,6 +529,7 @@
         }
     },
     "Opalite": {
+        "kind": "ssc",
         "Admin": {
             "ACE": {
                 "Anybody": "0000000800000001",
@@ -567,8 +572,11 @@
                 "Authority_Set_Enabled": "0000000800039001",
                 "C_PIN_Admins_Get_All_NOPIN": "000000080003A000",
                 "C_PIN_Admins_Set_PIN": "000000080003A001",
-                "C_PIN_User1_Set_PIN": "000000080003A801",
-                "C_PIN_User2_Set_PIN": "000000080003A802",
+                "C_PIN_User{n}_Set_PIN": {
+                    "start": "000000080003A801",
+                    "count": 2046,
+                    "display_start": 1
+                },
                 "K_AES_Mode": "000000080003BFFF",
                 "K_AES_128_GlobalRange_GenKey": "000000080003B000",
                 "K_AES_256_GlobalRange_GenKey": "000000080003B800",
@@ -584,15 +592,29 @@
             "Authority": {
                 "Anybody": "0000000900000001",
                 "Admins": "0000000900000002",
-                "Admin1": "0000000900010001",
+                "Admin{n}": {
+                    "start": "0000000900010001",
+                    "count": 2048,
+                    "display_start": 1
+                },
                 "Users": "0000000900030000",
-                "User1": "0000000900030001",
-                "User2": "0000000900030002"
+                "User{n}": {
+                    "start": "0000000900030001",
+                    "count": 2046,
+                    "display_start": 1
+                }
             },
             "C_PIN": {
-                "Admin1": "0000000B00010001",
-                "User1": "0000000B00030001",
-                "User2": "0000000B00030002"
+                "Admin{n}": {
+                    "start": "0000000B00010001",
+                    "count": 2048,
+                    "display_start": 1
+                },
+                "User{n}": {
+                    "start": "0000000B00030001",
+                    "count": 2046,
+                    "display_start": 1
+                }
             },
             "Locking": {
                 "GlobalRange": "0000080200000001"
@@ -606,6 +628,7 @@
         }
     },
     "Opal_2": {
+        "kind": "ssc",
         "Admin": {
             "TableID": {
                 "DataRemovalMechanism": "0000110100000000"
@@ -776,6 +799,7 @@
         }
     },
     "PSID": {
+        "kind": "feature",
         "Admin": {
             "ACE": {
                 "C_PIN_Get_PSID_NoPIN": "00000008000100E1",
@@ -795,6 +819,7 @@
         "Locking": {}
     },
     "Pyrite_2": {
+        "kind": "ssc",
         "Admin": {
             "TableID": {
                 "DataRemovalMechanism": "0000110100000000"
@@ -860,8 +885,11 @@
                 "Authority_Set_Enabled": "0000000800039001",
                 "C_PIN_Admins_Get_All_NOPIN": "000000080003A000",
                 "C_PIN_Admins_Set_PIN": "000000080003A001",
-                "C_PIN_User1_Set_PIN": "000000080003A801",
-                "C_PIN_User2_Set_PIN": "000000080003A802",
+                "C_PIN_User{n}_Set_PIN": {
+                    "start": "000000080003A801",
+                    "count": 2046,
+                    "display_start": 1
+                },
                 "Locking_GlobalRange_Get_RangeStartToActiveKey": "000000080003D000",
                 "Locking_GlobalRange_Set_RdLocked": "000000080003E000",
                 "Locking_GlobalRange_Set_WrLocked": "000000080003E800",
@@ -880,8 +908,11 @@
                     "display_start": 1
                 },
                 "Users": "0000000900030000",
-                "User1": "0000000900030001",
-                "User2": "0000000900030002"
+                "User{n}": {
+                    "start": "0000000900030001",
+                    "count": 2046,
+                    "display_start": 1
+                }
             },
             "C_PIN": {
                 "Admin{n}": {
@@ -889,8 +920,11 @@
                     "count": 2048,
                     "display_start": 1
                 },
-                "User1": "0000000B00030001",
-                "User2": "0000000B00030002"
+                "User{n}": {
+                    "start": "0000000B00030001",
+                    "count": 2046,
+                    "display_start": 1
+                }
             },
             "Locking": {
                 "GlobalRange": "0000080200000001"
@@ -898,6 +932,7 @@
         }
     },
     "Ruby": {
+        "kind": "ssc",
         "Admin": {
             "ACE": {
                 "Anybody": "0000000800000001",

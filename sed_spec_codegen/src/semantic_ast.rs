@@ -7,6 +7,7 @@ use std::collections::{BTreeMap, HashMap};
 use std::ops::Range;
 
 use crate::schema_ast;
+pub use crate::schema_ast::FeatureKind;
 
 #[derive(Debug, thiserror::Error)]
 pub enum SemanticError {
@@ -20,6 +21,8 @@ pub enum SemanticError {
     UnknownTable(String),
     #[error("the security provider `{security_provider}` of feature `{feature}` has no entry in the `Admin::SP` table")]
     UnknownSecurityProvider { feature: String, security_provider: String },
+    #[error("the feature name `{0}` is reserved for the generated feature of UIDs common to all SSCs")]
+    ReservedFeatureName(String),
 }
 
 /// The name of the JSON table that lists the UIDs of tables.
@@ -41,11 +44,13 @@ const SP_TABLE: (&str, &str) = ("Admin", "SP");
 /// Maps the names of tables to their UIDs, as listed in the `TableID` tables.
 pub type TableIdTable = BTreeMap<String, u64>;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UidSingleEntry {
     pub name: String,
     pub value: u64,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UidRangeEntry {
     pub prefix: String,
     pub suffix: String,
@@ -111,6 +116,7 @@ pub const OBJECT_STEP_UNIT: u64 = 1;
 /// has to be added.
 pub const TABLE_STEP_UNIT: u64 = 1 << 32;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Table {
     pub name: String,
     /// The UID of the table, or `None` for the `TableID` table, which has no UID.
@@ -133,14 +139,7 @@ impl Table {
     ) -> Result<Self, SemanticError> {
         let (uid_entries, uid_range_entries) = convert_entries(source, step_unit)?;
         check_uniqueness(&uid_entries)?;
-        for (index, uid_range_entry) in uid_range_entries.iter().enumerate() {
-            for uid_entry in &uid_entries {
-                uid_range_entry.check_contains(uid_entry)?;
-            }
-            for other_range in &uid_range_entries[index + 1..] {
-                uid_range_entry.check_overlaps(other_range)?;
-            }
-        }
+        check_overlaps(&uid_entries, &uid_range_entries)?;
         Ok(Self { name, uid, uid_entries, uid_range_entries })
     }
 }
@@ -168,7 +167,8 @@ fn convert_entries(
     Ok((uid_entries, uid_range_entries))
 }
 
-fn check_uniqueness(uid_entries: &[UidSingleEntry]) -> Result<(), SemanticError> {
+/// Returns an error if two single UID entries have the same value.
+pub fn check_uniqueness(uid_entries: &[UidSingleEntry]) -> Result<(), SemanticError> {
     let mut by_value = HashMap::new();
     for UidSingleEntry { name, value } in uid_entries {
         if let Some(first) = by_value.insert(value, name) {
@@ -178,6 +178,24 @@ fn check_uniqueness(uid_entries: &[UidSingleEntry]) -> Result<(), SemanticError>
     Ok(())
 }
 
+/// Returns an error if a single UID entry falls inside a UID range entry, or if
+/// two UID range entries overlap.
+pub fn check_overlaps(
+    uid_entries: &[UidSingleEntry],
+    uid_range_entries: &[UidRangeEntry],
+) -> Result<(), SemanticError> {
+    for (index, uid_range_entry) in uid_range_entries.iter().enumerate() {
+        for uid_entry in uid_entries {
+            uid_range_entry.check_contains(uid_entry)?;
+        }
+        for other_range in &uid_range_entries[index + 1..] {
+            uid_range_entry.check_overlaps(other_range)?;
+        }
+    }
+    Ok(())
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SecurityProvider {
     pub name: String,
     /// The UID of the SP, or `None` for the shared SP, which has no UID.
@@ -238,8 +256,10 @@ impl SecurityProvider {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Feature {
     pub name: String,
+    pub kind: FeatureKind,
     pub security_providers: Vec<SecurityProvider>,
 }
 
@@ -271,10 +291,11 @@ impl Feature {
                 SecurityProvider::try_from(sp_name, uid, security_provider, core_table_id)
             })
             .collect::<Result<_, _>>()?;
-        Ok(Self { name, security_providers })
+        Ok(Self { name, kind: source.kind, security_providers })
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UidRegistry {
     pub features: Vec<Feature>,
 }
@@ -427,13 +448,14 @@ mod tests {
 
     #[test]
     fn unknown_table() {
-        let json = r#"{ "F": { "Shared": { "TableID": {}, "Unlisted": {} } } }"#;
+        let json = r#"{ "F": { "kind": "core", "Shared": { "TableID": {}, "Unlisted": {} } } }"#;
         assert_that!(convert(json), some(matches_pattern!(SemanticError::UnknownTable(eq("Unlisted")))));
     }
 
     #[test]
     fn unknown_security_provider() {
         let json = r#"{ "Core": {
+            "kind": "core",
             "Shared": { "TableID": { "SP": "0000020500000000" } },
             "Admin": { "SP": { "Admin": "0000020500000001" } },
             "Unlisted": {}
@@ -451,12 +473,14 @@ mod tests {
     fn table_id_of_own_security_provider() {
         // Both SPs define a table with the same name but a different UID.
         let json = r#"{
-            "Core": { "Shared": { "TableID": { "SP": "0000020500000000" } } },
+            "Core": { "kind": "core", "Shared": { "TableID": { "SP": "0000020500000000" } } },
             "F": {
+                "kind": "ssc",
                 "Admin": { "SP": { "Admin": "0000020500000001", "Locking": "0000020500000002" } },
                 "Locking": { "TableID": { "Own": "0000100100000000" }, "Own": {} }
             },
             "G": {
+                "kind": "ssc",
                 "Admin": { "SP": { "Admin": "0000020500000001", "Locking": "0000020500000002" } },
                 "Locking": { "TableID": { "Own": "0000800100000000" }, "Own": {} }
             }
@@ -467,8 +491,9 @@ mod tests {
     #[test]
     fn table_id_of_other_security_provider() {
         let json = r#"{
-            "Core": { "Shared": { "TableID": { "SP": "0000020500000000" } } },
+            "Core": { "kind": "core", "Shared": { "TableID": { "SP": "0000020500000000" } } },
             "F": {
+                "kind": "ssc",
                 "Admin": { "SP": { "Admin": "0000020500000001", "Locking": "0000020500000002" }, "Own": {} },
                 "Locking": { "TableID": { "Own": "0000100100000000" } }
             }

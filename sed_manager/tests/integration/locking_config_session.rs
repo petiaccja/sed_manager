@@ -18,11 +18,11 @@ use sed_spec::objects::CPinRef;
 use sed_spec::objects::{Authority, AuthorityRef, LockingRange, LockingRangeRef, MbrControl, MediaKeyRef};
 use sed_spec::ssc::Ssc;
 use sed_spec::ssc::Ssc::Enterprise;
+use sed_spec::uid_registry::common::locking;
 use sed_spec::uid_registry::core::shared::authority::ANYBODY;
 use sed_spec::uid_registry::core::shared::mbr_control;
 use sed_spec::uid_registry::enterprise;
 use sed_spec::uid_registry::opal_2::admin::sp;
-use sed_spec::uid_registry::opal_2::locking as opal_locking;
 use sed_telemetry::with_tracing;
 use sed_tper::Tper;
 use sed_virtual_device::{BASE_COM_ID, LOGICAL_SECTOR_COUNT, VirtualDevice};
@@ -44,7 +44,7 @@ async fn setup(ssc: Ssc) -> (Tper, Arc<VirtualDevice>) {
     let setup_session = SetupSession::new(&tper, spec);
 
     setup_session.take_owneship(NEW_SID_PASSWORD).await.unwrap();
-    if ssc != Ssc::Enterprise {
+    if ssc.activate_supported() {
         setup_session.activate_secondary_sp(NEW_SID_PASSWORD).await.unwrap();
     }
 
@@ -54,19 +54,19 @@ async fn setup(ssc: Ssc) -> (Tper, Arc<VirtualDevice>) {
 fn editing_authority(ssc: Ssc) -> AuthorityRef {
     match ssc {
         Ssc::Enterprise => enterprise::locking::authority::BAND_MASTER.get(1).unwrap(),
-        _ => opal_locking::authority::ADMIN.get(0).unwrap(),
+        _ => locking::authority::ADMIN.get(0).unwrap(),
     }
 }
 
 fn erasing_authority(ssc: Ssc) -> AuthorityRef {
     match ssc {
         Ssc::Enterprise => enterprise::locking::authority::ERASE_MASTER,
-        _ => opal_locking::authority::ADMIN.get(0).unwrap(),
+        _ => locking::authority::ADMIN.get(0).unwrap(),
     }
 }
 
 fn user_authority() -> AuthorityRef {
-    opal_locking::authority::USER.get(0).unwrap()
+    locking::authority::USER.get(0).unwrap()
 }
 
 async fn login_for_editing(tper: &Tper) -> Result<LockingConfigSession, Error> {
@@ -103,11 +103,11 @@ fn enable_user1(device: &VirtualDevice) {
 }
 
 fn range_uid(index: usize) -> LockingRangeRef {
-    opal_locking::locking::RANGE.get(index).unwrap()
+    locking::locking::RANGE.get(index).unwrap()
 }
 
 fn user_uid(index: usize) -> AuthorityRef {
-    opal_locking::authority::USER.get(index).unwrap()
+    locking::authority::USER.get(index).unwrap()
 }
 
 fn make_range_from_span(index: usize, start: u64, length: u64) -> LockingRange {
@@ -401,7 +401,7 @@ async fn set_locking_ranges_multi_range(#[case] ssc: Ssc) {
 #[case::pyrite_1(Ssc::PyriteV1)]
 #[case::pyrite_2(Ssc::PyriteV2)]
 async fn set_locking_ranges_single_range(#[case] ssc: Ssc) {
-    use opal_locking::locking::GLOBAL_RANGE;
+    use locking::locking::GLOBAL_RANGE;
 
     let tper = setup_tper(ssc).await;
     let session = login_for_editing(&tper).await.unwrap();
@@ -580,7 +580,7 @@ fn get_media_encryption_key(virtual_device: &VirtualDevice, range: LockingRangeR
 #[case::opalite(Ssc::Opalite)]
 #[case::ruby(Ssc::Ruby)]
 async fn erase_locking_range_with_media_encryption(#[case] ssc: Ssc) {
-    let range = opal_locking::locking::GLOBAL_RANGE;
+    let range = locking::locking::GLOBAL_RANGE;
     let (tper, device) = setup(ssc).await;
     let session = login_for_erase(&tper).await.unwrap();
 
@@ -603,14 +603,14 @@ async fn erase_locking_range_with_media_encryption(#[case] ssc: Ssc) {
 #[case::opalite(Ssc::Opalite)]
 #[case::ruby(Ssc::Ruby)]
 async fn erase_locking_range_by_user(#[case] ssc: Ssc) {
-    let range = opal_locking::locking::GLOBAL_RANGE;
+    let range = locking::locking::GLOBAL_RANGE;
     let (tper, device) = setup(ssc).await;
     enable_user1(&device);
 
     // Allow everyone to erase the global range.
     device.modify(|tper| {
         let locking_sp = tper.locking.as_mut().unwrap();
-        locking_sp.ace.get_mut(&opal_locking::ace::K_AES_256_GLOBAL_RANGE_GEN_KEY).unwrap().boolean_expr =
+        locking_sp.ace.get_mut(&locking::ace::K_AES_256_GLOBAL_RANGE_GEN_KEY).unwrap().boolean_expr =
             Some(ace_expr!(ANYBODY));
     });
 
@@ -633,7 +633,7 @@ async fn erase_locking_range_by_user(#[case] ssc: Ssc) {
 #[case::pyrite_1(Ssc::PyriteV1)]
 #[case::pyrite_2(Ssc::PyriteV2)]
 async fn erase_locking_range_no_media_encryption(#[case] ssc: Ssc) {
-    let range = opal_locking::locking::GLOBAL_RANGE;
+    let range = locking::locking::GLOBAL_RANGE;
     let (tper, _device) = setup(ssc).await;
     let session = login_for_erase(&tper).await.unwrap();
 

@@ -210,7 +210,7 @@ mod tests {
     use sed_packet::token_stream::{FromTokens, ToTokens};
 
     use super::*;
-    use crate::uid_registry::opal_2::locking::{k_aes_128, k_aes_256, locking};
+    use crate::uid_registry::common::locking::{k_aes_128, k_aes_256, locking};
 
     #[rstest]
     // Null UIDs are assumed AES_128 because we cannot determine it.

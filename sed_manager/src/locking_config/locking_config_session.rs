@@ -12,9 +12,9 @@ use sed_spec::objects::{
     Authority, AuthorityRef, AuthorityRefExt, CPinRef, CPinRefExt, KAes128RefExt, KAes256RefExt as _, LockingInfoExt,
     LockingRange, LockingRangeRef, LockingRangeRefExt, MbrControl, MediaKeyRef, TableDescRefExt,
 };
-use sed_spec::ssc::Ssc;
+use sed_spec::ssc::EraseMethod;
+use sed_spec::uid_registry::common;
 use sed_spec::uid_registry::core::shared::{locking_info, mbr_control, table, table_id};
-use sed_spec::uid_registry::opal_2;
 use sed_tper::{Error as TperError, Session, Tper};
 use tracing::{debug, instrument};
 
@@ -52,7 +52,7 @@ impl LockingConfigSession {
         if spec.locking_desc.is_none() {
             return Err(Error::IncompatibleSsc);
         }
-        let session = tper.start_session(spec.secondary_sp(), Some(authority), password).await?;
+        let session = tper.start_session(spec.ssc().secondary_sp(), Some(authority), password).await?;
         Ok(Self { spec, session })
     }
 
@@ -206,22 +206,21 @@ impl LockingConfigSession {
     /// Besides the usual, [`Error::NotSupported`] is returned if the device
     /// does not use media encryption (e.g. Pyrite), as there is no key to
     /// discard.
-    ///
-    /// # Notes
-    ///
-    /// Currently, Enterprise is not implemented and an error is always returned.
     #[instrument(skip(self), err)]
     pub async fn erase_locking_range(&self, locking_range: LockingRangeRef) -> Result<(), Error> {
-        if !self.spec.locking_desc.as_ref().is_some_and(|desc| desc.media_encryption) {
-            Err(Error::NotSupported)
-        } else if self.spec.ssc() == Ssc::Enterprise {
-            self.session.erase(locking_range).await.map_err(Into::into)
-        } else {
-            let keys = self.get_active_key(locking_range).await?;
-            for key in keys {
-                self.session.gen_key(key, None, None).await?;
+        let media_encryption = self.spec.locking_desc.as_ref().is_some_and(|desc| desc.media_encryption);
+        let erase_method = self.spec.ssc().erase_method();
+
+        match (media_encryption, erase_method) {
+            (true, EraseMethod::Erase) => self.session.erase(locking_range).await.map_err(Into::into),
+            (true, EraseMethod::GenKey) => {
+                let keys = self.get_active_key(locking_range).await?;
+                for key in keys {
+                    self.session.gen_key(key, None, None).await?;
+                }
+                Ok(())
             }
-            Ok(())
+            _ => Err(Error::NotSupported),
         }
     }
 
@@ -256,8 +255,8 @@ impl LockingConfigSession {
     #[instrument(skip(self), err)]
     pub async fn change_password(&self, authority: AuthorityRef, password: MaxBytes<32>) -> Result<(), Error> {
         use MethodStatus::{InvalidParameter, NotAuthorized};
-        use opal_2::locking::authority::USER;
-        use opal_2::locking::c_pin::USER as C_PIN_USER;
+        use common::locking::authority::USER;
+        use common::locking::c_pin::USER as C_PIN_USER;
 
         let c_pin_ref = match self.session.get_field(authority.credential()).await {
             Ok(credential) => CPinRef::try_from(credential).map_err(|_| Error::NotAPasswordAuthority)?,
@@ -321,9 +320,9 @@ impl LockingConfigSession {
     #[instrument(skip(self), ret, err)]
     async fn get_active_key(&self, locking_range: LockingRangeRef) -> Result<heapless::Vec<MediaKeyRef, 2>, TperError> {
         use MethodStatus::{InvalidParameter, NotAuthorized};
-        use opal_2::locking::k_aes_128::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_128, RANGE_KEY as RANGE_KEY_128};
-        use opal_2::locking::k_aes_256::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_256, RANGE_KEY as RANGE_KEY_256};
-        use opal_2::locking::locking::{GLOBAL_RANGE, RANGE};
+        use common::locking::k_aes_128::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_128, RANGE_KEY as RANGE_KEY_128};
+        use common::locking::k_aes_256::{GLOBAL_RANGE_KEY as GLOBAL_RANGE_KEY_256, RANGE_KEY as RANGE_KEY_256};
+        use common::locking::locking::{GLOBAL_RANGE, RANGE};
 
         const INVALID_PARAMETER: TperError = TperError::MethodCallFailed(InvalidParameter);
 

@@ -850,6 +850,13 @@ pub struct Discovery {
 }
 
 impl Discovery {
+    /// The security protocol used for the IF-RECV command to get the L0 discovery.
+    pub const PROTOCOL: u8 = 0x01;
+    /// The ComID used for the IF-RECV command to get the L0 discovery.
+    pub const COM_ID: u16 = 0x0001;
+    /// A transfer length for IF-RECV that should rarely truncate the L0 discovery.
+    pub const TRANSFER_LEN: usize = 4096;
+
     pub fn new() -> Discovery {
         Self::default()
     }

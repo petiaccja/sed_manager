@@ -20,8 +20,8 @@ use sed_packet::com_id_request::ComIdState;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::methods::MethodStatus;
 use sed_spec::objects::{Authority, AuthorityRef, LockingRangeRef, MbrControl, SecurityProviderRef};
+use sed_spec::uid_registry::common::{self, locking};
 use sed_spec::uid_registry::core::shared::authority::{ANYBODY, SID};
-use sed_spec::uid_registry::opal_2::locking;
 use sed_spec::uid_registry::psid::admin::authority::PSID;
 use sed_tper::{Error as TperError, PropertiesChanged};
 use slint::{
@@ -424,11 +424,13 @@ impl App {
             .on_device(path.clone(), async |device: &Device| Ok((device.spec().cloned()?, device.discover().await?)))
             .on_success(move |mut ui_device, (spec, discovery)| {
                 let features = &discovery.feature_descriptors;
-                ui_device.admin_sp.uid = (&spec.admin_sp()).into_ui();
-                ui_device.admin_sp.name = (&spec.admin_sp()).into_ui_name(features, Some(spec.admin_sp()));
+                let admin_sp = common::admin::sp::ADMIN;
+                let secondary_sp = spec.ssc().secondary_sp();
+                ui_device.admin_sp.uid = (&admin_sp).into_ui();
+                ui_device.admin_sp.name = (&admin_sp).into_ui_name(features, Some(admin_sp));
                 if spec.locking_desc.is_some() {
-                    ui_device.locking_sp.uid = (&spec.secondary_sp()).into_ui();
-                    ui_device.locking_sp.name = (&spec.secondary_sp()).into_ui_name(features, Some(spec.admin_sp()))
+                    ui_device.locking_sp.uid = (&secondary_sp).into_ui();
+                    ui_device.locking_sp.name = (&secondary_sp).into_ui_name(features, Some(admin_sp))
                 }
                 ui_device
             })
@@ -442,7 +444,7 @@ impl App {
             .error_message("Failed to list admin authorities")
             .on_session(path.clone(), async |device: &Device, session: &mut Session| {
                 let setup_session = session.start_setup_session(device).await?;
-                let sp_ref = setup_session.spec().admin_sp();
+                let sp_ref = common::admin::sp::ADMIN;
                 let authorities = setup_session.list_authorities(sp_ref).await?;
                 Ok((authorities, Some(sp_ref)))
             })
@@ -468,8 +470,8 @@ impl App {
                 let setup_session = session.start_setup_session(device).await?;
                 let spec = setup_session.spec();
                 if spec.locking_desc.is_some() {
-                    let authorities = setup_session.list_authorities(spec.secondary_sp()).await?;
-                    Ok((authorities, Some(spec.secondary_sp())))
+                    let authorities = setup_session.list_authorities(spec.ssc().secondary_sp()).await?;
+                    Ok((authorities, Some(spec.ssc().secondary_sp())))
                 } else {
                     Ok((vec![], None))
                 }
@@ -545,7 +547,7 @@ impl App {
             })
             .on_success(move |mut ui_device, spec, authorities| {
                 let (authorities, individual_authority_names, individual_authority_uids) =
-                    display_authorities(spec, &authorities, spec.map(DeviceSpec::secondary_sp));
+                    display_authorities(spec, &authorities, spec.map(|spec| spec.ssc().secondary_sp()));
 
                 ui_device.locking_sp.authorities = authorities.into();
                 ui_device.locking_sp.individual_authority_names = Rc::from(individual_authority_names).into();
@@ -568,7 +570,7 @@ impl App {
             })
             .on_success(move |mut ui_device, spec, ranges| {
                 let ssc_feature = spec.map(|spec| FeatureDescriptor::from(spec.ssc_desc.clone()));
-                let secondary_sp = spec.map(|spec| spec.secondary_sp());
+                let secondary_sp = spec.map(|spec| spec.ssc().secondary_sp());
                 let ranges: Vec<ui::LockingRange> =
                     ranges.iter().map(|range| range.into_ui_name(ssc_feature.as_slice(), secondary_sp)).collect();
                 ui_device.locking_sp.locking_ranges = Rc::from(DiffModel::from(ranges)).into();

@@ -8,10 +8,7 @@ use sed_packet::discovery::{
     GeometryDescriptor, SscFeatureDescriptor,
 };
 use sed_packet::discovery::{LockingDescriptor, TperDescriptor};
-use sed_spec::objects::SecurityProviderRef;
 use sed_spec::ssc::Ssc;
-use sed_spec::uid_registry::{enterprise, opalite, pyrite_2, ruby};
-use sed_spec::uid_registry::{kpio, opal_2};
 
 use crate::Error;
 
@@ -72,28 +69,6 @@ impl DeviceSpec {
             block_sid_auth_desc,
             additional_data_stores_desc,
         })
-    }
-
-    /// Return the UID of the Admin SP.
-    pub fn admin_sp(&self) -> SecurityProviderRef {
-        // The admin SP is the same for all SSCs.
-        opal_2::admin::sp::ADMIN
-    }
-
-    /// Return the UID of the secondary SP: this is either the Locking SP or the
-    /// KPIO SC, depending on the SSC.
-    pub fn secondary_sp(&self) -> SecurityProviderRef {
-        use SscFeatureDescriptor::*;
-        match &self.ssc_desc {
-            KeyPerIO(_) => kpio::admin::sp::KEY_PER_IO,
-            Enterprise(_) => enterprise::admin::sp::LOCKING,
-            OpalV1(_) => opal_2::admin::sp::LOCKING,
-            OpalV2(_) => opal_2::admin::sp::LOCKING,
-            Opalite(_) => opalite::admin::sp::LOCKING,
-            PyriteV1(_) => pyrite_2::admin::sp::LOCKING,
-            PyriteV2(_) => pyrite_2::admin::sp::LOCKING,
-            Ruby(_) => ruby::admin::sp::LOCKING,
-        }
     }
 
     /// Return the SSC this spec is targeting. The device may have more SSCs
