@@ -81,7 +81,11 @@ pub async fn revert_admin_sp(ui: Driver<ui::MainWindow>) {
     ui.enter_text("revert-password", TEST_PASSWORD).await.unwrap();
     ui.check_enabled("revert-submit").await.unwrap();
     ui.invoke_default_action("revert-submit").unwrap();
+    // Reverting asks for confirmation in a popup before going ahead.
+    ui.check_enabled("confirm-popup-submit").await.unwrap();
+    ui.invoke_default_action("confirm-popup-submit").unwrap();
     ui.check_appearance_toast("Reverted device successfully").await.unwrap();
+    ui.check_disappearance("confirm-popup-submit").await.unwrap();
     // Reverting the whole device restores the factory MSID password, so "Take ownership" reappears.
     ui.check_appearance("activity-take-ownership").await.unwrap();
 }
@@ -94,7 +98,11 @@ pub async fn revert_locking_sp(ui: &Driver<ui::MainWindow>) {
     ui.enter_text("revert-password", TEST_PASSWORD).await.unwrap();
     ui.check_enabled("revert-submit").await.unwrap();
     ui.invoke_default_action("revert-submit").unwrap();
+    // Reverting asks for confirmation in a popup before going ahead.
+    ui.check_enabled("confirm-popup-submit").await.unwrap();
+    ui.invoke_default_action("confirm-popup-submit").unwrap();
     ui.check_appearance_toast("Reverted device successfully").await.unwrap();
+    ui.check_disappearance("confirm-popup-submit").await.unwrap();
     ui.check_disappearance("revert-password").await.unwrap();
     // Reverting the locking SP disables locking again, so "Activate locking" reappears.
     ui.check_appearance("activity-activate").await.unwrap();
