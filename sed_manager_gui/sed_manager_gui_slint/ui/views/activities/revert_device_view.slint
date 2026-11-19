@@ -22,20 +22,26 @@ export component RevertDeviceView {
 
     callback revert-device(scope: RevertScope, authority: RevertAuthority, password: string);
 
+    private property <[RevertScope]> no-revert-scopes: [];
     private property <[RevertScope]> revert-scopes: {
-        if features.ssc == enterprise {
+        if features.revert-by-sid-supported {
+            [secondary, everything]
+        } else if features.psid-supported {
             [everything]
         } else {
-            [secondary, everything]
+            no-revert-scopes
         }
     };
+    private property <[RevertAuthority]> no-revert-authorities: [];
     private property <[RevertAuthority]> revert-authorities: {
-        if features.ssc == enterprise && features.psid-supported {
-            [psid]
-        } else if revert-scope == everything {
+        if revert-scope == everything && features.psid-supported && features.revert-by-sid-supported {
             [sid, psid]
-        } else {
+        } else if revert-scope == everything && features.psid-supported {
+            [psid]
+        } else if revert-scope == secondary && features.revert-by-sid-supported {
             [sid]
+        } else {
+            no-revert-authorities
         }
     };
     private property <RevertScope> revert-scope: revert-scopes[revert-scope-selector.current-index];
@@ -52,12 +58,14 @@ export component RevertDeviceView {
         revert-scope-selector := ComboBox {
             accessible-id: "revert-scope";
             model: {
-                if revert-scopes.length == 1 {
-                    [RevertScopeLib.to-string(revert-scopes[0], features.ssc)]
+                if revert-scopes.length == 0 {
+                    ["Not supported"]
+                } else if revert-scopes.length == 1 {
+                    [RevertScopeLib.to-string(revert-scopes[0], features.secondary-sp-name)]
                 } else {
                     [
-                        RevertScopeLib.to-string(revert-scopes[0], features.ssc),
-                        RevertScopeLib.to-string(revert-scopes[1], features.ssc)
+                        RevertScopeLib.to-string(revert-scopes[0], features.secondary-sp-name),
+                        RevertScopeLib.to-string(revert-scopes[1], features.secondary-sp-name)
                     ]
                 }
             };
@@ -71,7 +79,9 @@ export component RevertDeviceView {
 
         revert-authority-selector := ComboBox {
             model: {
-                if revert-authorities.length == 1 {
+                if revert-authorities.length == 0 {
+                    ["Not supported"]
+                } else if revert-authorities.length == 1 {
                     [RevertAuthorityLib.to-string(revert-authorities[0])]
                 } else {
                     [
@@ -98,7 +108,7 @@ export component RevertDeviceView {
             y: -root.absolute-position.y;
             width: MainWindowGeometry.width;
             height: MainWindowGeometry.height;
-            title: @tr("Revert {}?", RevertScopeLib.to-string(revert-scope, features.ssc));
+            title: revert-scope == secondary ? @tr("Revert {} configuration?", features.secondary-sp-name) : @tr("Revert everything?");
             message: "Your configuration will be lost. If your drive is currently encrypted, your data will be crypto-shredded and cannot be restored in any way.";
 
             confirmed => {
@@ -107,10 +117,10 @@ export component RevertDeviceView {
         }
 
         Button {
-            text: "Revert";
+            text: @tr("Revert");
             accessible-id: "revert-submit";
             primary: true;
-            enabled: !command-status.session-busy && !command-status.tper-busy;
+            enabled: !command-status.session-busy && !command-status.tper-busy && revert-scopes.length != 0 && revert-authorities.length != 0;
             clicked => {
                 confirm-revert.show()
             }

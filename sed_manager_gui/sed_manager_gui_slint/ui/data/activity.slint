@@ -15,15 +15,11 @@ export enum RevertAuthority {
 }
 
 export global RevertScopeLib {
-    public pure function to-string(scope: RevertScope, ssc: Ssc) -> string {
+    public pure function to-string(scope: RevertScope, secondary-sp-name: string) -> string {
         if scope == secondary {
-            if ssc == key-per-io {
-                "Key per I/O configuration"
-            } else {
-                "Locking configuration"
-            }
+            @tr("{} configuration", secondary-sp-name)
         } else {
-            "Entire device"
+            @tr("Entire device")
         }
     }
 }
@@ -31,9 +27,9 @@ export global RevertScopeLib {
 export global RevertAuthorityLib {
     public pure function to-string(authority: RevertAuthority) -> string {
         if authority == sid {
-            "Owner (SID)"
+            @tr("Owner (SID)")
         } else {
-            "Physical owner (PSID)"
+            @tr("Physical owner (PSID)")
         }
     }
 }

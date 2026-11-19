@@ -80,7 +80,7 @@ export component DeviceActivityBar {
             }
 
             if !config.secondary-sp-enabled: IconButton {
-                text: features.ssc == key-per-io ? "Activate key per I/O" : "Activate locking";
+                text: "Activate " + features.secondary-sp-name;
                 accessible-id: "activity-activate";
                 icon: Icons.activate-locking;
                 preferred-height: button-height;
@@ -109,7 +109,7 @@ export component DeviceActivityBar {
                 }
             }
 
-            if config.secondary-sp-enabled && features.ssc != key-per-io: IconButton {
+            if config.secondary-sp-enabled && features.locking-supported: IconButton {
                 text: "Configure locking";
                 accessible-id: "activity-configure-locking";
                 icon: Icons.configure-locking;
@@ -128,7 +128,7 @@ export component DeviceActivityBar {
                 height: 0.2rem;
             }
 
-            if features.psid-supported || features.ssc != enterprise: IconButton {
+            if features.psid-supported || features.revert-by-sid-supported: IconButton {
                 text: "Revert device";
                 accessible-id: "activity-revert-device";
                 icon: Icons.revert-device;

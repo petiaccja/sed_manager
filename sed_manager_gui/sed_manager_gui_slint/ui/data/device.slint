@@ -37,7 +37,13 @@ export struct Discovery {
 
 export struct DeviceFeatures {
     ssc: Ssc,
+    secondary-sp-name: string,
+    locking-supported: bool,
+    kpio-supported: bool,
+    media-encryption-supported: bool,
     psid-supported: bool,
+    activate-supported: bool,
+    revert-by-sid-supported: bool,
 }
 
 export struct DeviceConfig {
@@ -173,36 +179,6 @@ export struct Device {
 }
 
 export global SscLib {
-    public pure function to-string(ssc: Ssc) -> string {
-        if ssc == Ssc.enterprise {
-            "Enterprise"
-        }
-        else if ssc == Ssc.opal-1 {
-            "Opal 1.0"
-        }
-        else if ssc == Ssc.opal-2 {
-            "Opal 2.0"
-        }
-        else if ssc == Ssc.opalite {
-            "Opalite"
-        }
-        else if ssc == Ssc.pyrite-1 {
-            "Pyrite 1.0"
-        }
-        else if ssc == Ssc.pyrite-2 {
-            "Pyrite 2.0"
-        }
-        else if ssc == Ssc.ruby {
-            "Ruby"
-        }
-        else if ssc == Ssc.key-per-io {
-            "Key Per I/O"
-        }
-        else {
-            "None"
-        }
-    }
-
     public pure function accent-color(ssc: Ssc) -> color {
         if ssc == Ssc.enterprise {
             #105DC7
