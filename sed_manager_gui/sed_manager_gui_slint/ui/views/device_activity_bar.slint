@@ -79,8 +79,8 @@ export component DeviceActivityBar {
                 }
             }
 
-            if !config.secondary-sp-enabled: IconButton {
-                text: "Activate " + features.secondary-sp-name;
+            if !config.secondary-sp-enabled && features.activate-supported: IconButton {
+                text: @tr("Activate {}", features.secondary-sp-name);
                 accessible-id: "activity-activate";
                 icon: Icons.activate-locking;
                 preferred-height: button-height;

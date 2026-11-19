@@ -32,9 +32,11 @@ import { ShadowMbrTab } from "locking/shadow_mbr.slint";
 import { LoginPanel } from "locking/login.slint";
 import { Icons } from "../../resources/lib.slint";
 import { AccessControlTab } from "locking/access_control.slint";
+import { DeviceFeatures } from "../../data/device.slint";
 
 
 export component ConfigureLockingView {
+    in property <DeviceFeatures> features;
     in property <Geometry> geometry;
     in property <Alignment> alignment;
     in property <CommandStatus> command-status;
@@ -76,6 +78,7 @@ export component ConfigureLockingView {
                 padding-top: StyleMetrics.layout-spacing;
 
                 LockingRangesTab {
+                    features: features;
                     geometry: geometry;
                     alignment: alignment;
                     locking-ranges <=> locking-sp.locking-ranges;

@@ -33,11 +33,13 @@ import {
 } from "../../../widgets/lib.slint";
 import { Icons } from "../../../resources/lib.slint";
 import { MainWindowGeometry } from "../../../main_window_geometry.slint";
+import { DeviceFeatures } from "../../../data/device.slint";
 
 component LockingRangeTable {
     preferred-width: table.preferred-width;
     preferred-height: table.preferred-height;
 
+    in property <DeviceFeatures> features;
     in property <Geometry> geometry;
     in property <Alignment> alignment;
     in-out property <[LockingRange]> locking-ranges;
@@ -105,7 +107,7 @@ component LockingRangeTable {
                                     font-italic: LockingRangeLib.is-individual-dirty(index, locking-ranges);
                                 }
 
-                                IconButton {
+                                if features.media-encryption-supported: IconButton {
                                     accessible-id: "locking-range-erase-" + index;
                                     icon-size: 1.4rem;
                                     icon: Icons.destruction;
@@ -276,6 +278,7 @@ component LockingRangeStripe inherits Rectangle {
 }
 
 export component LockingRangesTab {
+    in property <DeviceFeatures> features;
     in property <Geometry> geometry;
     in property <Alignment> alignment;
     in-out property <[LockingRange]> locking-ranges;
@@ -303,6 +306,7 @@ export component LockingRangesTab {
         }
 
         LockingRangeTable {
+            features: features;
             geometry: geometry;
             alignment: alignment;
             max-height: self.preferred-height;
