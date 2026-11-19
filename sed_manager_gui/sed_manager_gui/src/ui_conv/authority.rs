@@ -7,7 +7,7 @@ use std::num::NonZero;
 
 use sed_manager_gui_slint as ui;
 use sed_packet::discovery::FeatureDescriptor;
-use sed_spec::objects::{Authority, AuthorityRef, CPinRef, SecurityProviderRef};
+use sed_spec::objects::{Authority, AuthorityRef, SecurityProviderRef};
 use sed_spec::types::AuthMethod;
 use sed_spec::uid_registry::common::{admin, locking};
 use slint::{SharedString, ToSharedString};

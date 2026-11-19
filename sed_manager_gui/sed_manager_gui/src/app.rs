@@ -19,7 +19,7 @@ use sed_packet::MaxBytes;
 use sed_packet::com_id_request::ComIdState;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::objects::{Authority, AuthorityRef, LockingRangeRef, MbrControl, SecurityProviderRef};
-use sed_spec::uid_registry::common::{self, locking};
+use sed_spec::uid_registry::common;
 use sed_spec::uid_registry::core::shared::authority::SID;
 use sed_spec::uid_registry::psid::admin::authority::PSID;
 use sed_tper::PropertiesChanged;
