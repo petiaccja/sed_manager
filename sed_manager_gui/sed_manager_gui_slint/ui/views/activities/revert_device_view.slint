@@ -38,7 +38,7 @@ export component RevertDeviceView {
             [sid, psid]
         } else if revert-scope == everything && features.psid-supported {
             [psid]
-        } else if revert-scope == secondary && features.revert-by-sid-supported {
+        } else if features.revert-by-sid-supported {
             [sid]
         } else {
             no-revert-authorities

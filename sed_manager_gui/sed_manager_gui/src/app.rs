@@ -19,6 +19,7 @@ use sed_packet::MaxBytes;
 use sed_packet::com_id_request::ComIdState;
 use sed_packet::discovery::FeatureDescriptor;
 use sed_spec::objects::{Authority, AuthorityRef, LockingRangeRef, MbrControl, SecurityProviderRef};
+use sed_spec::ssc::Ssc;
 use sed_spec::uid_registry::common;
 use sed_spec::uid_registry::core::shared::authority::SID;
 use sed_spec::uid_registry::psid::admin::authority::PSID;
@@ -330,27 +331,24 @@ impl App {
             .on_device_entry(path.clone(), async move |device_entry: &mut DeviceEntry| {
                 let device = host.open_device(path_).await?;
                 let storage_device = device.storage_device();
-                let ssc = device.spec().map(|spec| spec.ssc()).ok();
-                let psid_supported = if let Ok(session) = device.start_setup_session().await {
-                    session.is_psid_supported().await.unwrap_or(false)
-                } else {
-                    false
-                };
-                let capabilities = device.capabilities().ok();
+                let host_capabilities = device.capabilities().ok();
                 let properties_changed = device.properties_changed().ok();
                 let geometry = device
                     .geometry()
                     .await
                     .unwrap_or(Geometry { logical_sector_size: 0, logical_sector_count: 1u64 << 62 });
                 device_entry.device = Some(device);
-                Ok((storage_device, ssc, psid_supported, capabilities, properties_changed, geometry))
+                Ok((storage_device, host_capabilities, properties_changed, geometry))
             })
-            .on_success(move |mut ui_device, (storage_device, ssc, psid_supported, capabilities, properties_changed, geometry)| {
+            .on_success(move |mut ui_device, (storage_device, host_capabilities, properties_changed, geometry)| {
                 if storage_device.is_security_supported() {
                     self.clone().discover(path.clone());
+                    self.clone().query_stack_status(path.clone(), true);
+                    self.clone().list_security_providers(path.clone());
+                    self.clone().query_device_features(path.clone(), true);
                 }
-                if let (Some(capabilities), Some(properties_changed)) = (capabilities, properties_changed) {
-                    let combined_properties = CombinedProperties { host: capabilities, ..Default::default() };
+                if let (Some(host_capabilities), Some(properties_changed)) = (host_capabilities, properties_changed) {
+                    let combined_properties = CombinedProperties { host: host_capabilities, ..Default::default() };
                     let status = ui_device.stack_status.clone().with_protocol((&combined_properties).into_ui());
                     spawn_local(Self::listen_connection_changed(
                         Rc::downgrade(&self),
@@ -358,13 +356,10 @@ impl App {
                         properties_changed,
                     ))
                     .expect_in_event_loop();
-                    self.clone().query_stack_status(path.clone(), true);
-                    self.clone().list_security_providers(path.clone());
                     ui_device.stack_status = status;
                     ui_device.geometry = (&geometry).into_ui();
                 }
                 ui_device.identity = (&*storage_device).into_ui();
-                ui_device.features = ui::DeviceFeatures { psid_supported, ssc: ssc.into_ui() };
                 ui_device
             })
             .on_error(move |mut ui_device, err| {
@@ -419,6 +414,57 @@ impl App {
             .on_error(|mut ui_device, _err| {
                 ui_device.stack_status.com_id.receptive = false;
                 ui_device.stack_status.com_id.status = "N/A".to_shared_string();
+                ui_device
+            })
+            .run();
+    }
+
+    #[instrument(skip(self, silent))]
+    fn query_device_features(self: Rc<Self>, path: PathBuf, silent: bool) {
+        // Get the status of the current connection.
+        self.command()
+            .success_message_if((!silent).then_some("Device features retrieved"))
+            .error_message_if((!silent).then_some("Could not retrieve device features"))
+            .on_session(path.clone(), async |device: &Device, session: &mut Session| {
+                let com_id_state = device.query_com_id_state().await?;
+                let psid_supported = if matches!(com_id_state, ComIdState::Issued | ComIdState::Associated)
+                    && let Ok(session) = session.start_setup_session(device).await
+                {
+                    session.is_psid_supported().await.unwrap_or(false)
+                } else {
+                    false
+                };
+                Ok(psid_supported)
+            })
+            .on_success(move |mut ui_device, spec, psid_supported| {
+                if let Some(spec) = spec {
+                    let ssc = spec.ssc();
+
+                    let media_encryption_supported =
+                        spec.locking_desc.as_ref().map(|desc| desc.media_encryption).unwrap_or(false);
+
+                    let secondary_sp_name = match ssc {
+                        Ssc::KeyPerIO => "Key per I/O".to_shared_string(),
+                        Ssc::Enterprise
+                        | Ssc::OpalV1
+                        | Ssc::OpalV2
+                        | Ssc::Opalite
+                        | Ssc::PyriteV1
+                        | Ssc::PyriteV2
+                        | Ssc::Ruby => "Locking".to_shared_string(),
+                    };
+
+                    ui_device.features = ui::DeviceFeatures {
+                        activate_supported: ssc.activate_supported(),
+                        kpio_supported: ssc == Ssc::KeyPerIO,
+                        locking_supported: spec.locking_desc.is_some(),
+                        media_encryption_supported,
+                        psid_supported,
+                        revert_by_sid_supported: ssc.revert_by_sid_supported(),
+                        secondary_sp_name,
+                        ssc: ssc.into_ui(),
+                    };
+                }
                 ui_device
             })
             .run();
