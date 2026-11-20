@@ -514,13 +514,13 @@ impl FromBackend<&Discovery> for (ui::DeviceConfig, ui::Discovery) {
             .filter(|desc| !desc.is_ssc())
             .map(ui::DiscoveryFeature::from_backend);
 
-        let mut config = ui::DeviceConfig { sid_msid_pin_differ: true, locking_enabled: false };
-        if let Some(locking) = value.get::<LockingDescriptor>() {
-            config.locking_enabled = locking.locking_enabled;
-        }
-        if let Some(block_sid_auth) = value.get::<BlockSIDAuthDescriptor>() {
-            config.sid_msid_pin_differ = block_sid_auth.sid_msid_pin_differ;
-        }
+        let config = ui::DeviceConfig {
+            sid_msid_pin_differ: value
+                .get::<BlockSIDAuthDescriptor>()
+                .map(|desc| desc.sid_msid_pin_differ)
+                .unwrap_or(true),
+            secondary_sp_enabled: value.is_secondary_sp_enabled().unwrap_or(false),
+        };
 
         let discovery = ui::Discovery {
             common_features: Rc::from(VecModel::from(common_features.collect::<Vec<_>>())).into(),

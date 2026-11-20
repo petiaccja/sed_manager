@@ -8,6 +8,7 @@ import { IconButton, TextPlacement } from "../widgets/icon_button.slint";
 import { Icons, Colors } from "../resources/lib.slint";
 import { PaletteExtra } from "../widgets/lib.slint";
 import { DeviceConfig, CommandStatus } from "../data/lib.slint";
+import { Ssc, DeviceFeatures } from "../data/device.slint";
 
 export enum DeviceActivity {
     discovery,
@@ -22,6 +23,7 @@ export enum DeviceActivity {
 
 
 export component DeviceActivityBar {
+    in property <DeviceFeatures> features;
     in property <DeviceConfig> config;
     in property <CommandStatus> command-status;
     out property <DeviceActivity> selected-activity: discovery;
@@ -77,9 +79,9 @@ export component DeviceActivityBar {
                 }
             }
 
-            if !config.locking-enabled: IconButton {
-                text: "Activate locking";
-                accessible-id: "activity-activate-locking";
+            if !config.secondary-sp-enabled && features.activate-supported: IconButton {
+                text: @tr("Activate {}", features.secondary-sp-name);
+                accessible-id: "activity-activate";
                 icon: Icons.activate-locking;
                 preferred-height: button-height;
                 icon-color: Colors.activate-locking;
@@ -107,7 +109,7 @@ export component DeviceActivityBar {
                 }
             }
 
-            if config.locking-enabled: IconButton {
+            if config.secondary-sp-enabled && features.locking-supported: IconButton {
                 text: "Configure locking";
                 accessible-id: "activity-configure-locking";
                 icon: Icons.configure-locking;
@@ -126,7 +128,7 @@ export component DeviceActivityBar {
                 height: 0.2rem;
             }
 
-            IconButton {
+            if features.psid-supported || features.revert-by-sid-supported: IconButton {
                 text: "Revert device";
                 accessible-id: "activity-revert-device";
                 icon: Icons.revert-device;

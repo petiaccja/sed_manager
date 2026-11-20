@@ -21,6 +21,7 @@ export global PaletteExtra {
     out property <color> accented-foreground: make-accented(accent, Palette.foreground, Palette.background);
     out property <color> accented-control-background: make-accented(accent, reduced-control-background, Palette.control-foreground);
     out property <color> accented-control-foreground: make-accented(accent, Palette.control-foreground, reduced-control-background);
+    out property <color> reduced-control-background: reduce-alpha(Palette.control-background);
 
     out property <color> success-foreground: make-accented(BaseColors.success, Palette.foreground, Palette.background);
     out property <color> info-foreground: make-accented(BaseColors.info, Palette.foreground, Palette.background);
@@ -31,7 +32,6 @@ export global PaletteExtra {
     out property <color> warning-background: make-accented(BaseColors.warning, Palette.background, Palette.foreground).mix(Palette.background, 0.1);
     out property <color> error-background: make-accented(BaseColors.error, Palette.background, Palette.foreground).mix(Palette.background, 0.1);
 
-    private property <color> reduced-control-background: reduce-alpha(Palette.control-background);
     private property <float> min-saturation: 0.4;
     private property <float> min-value: 0.25;
     private property <float> sv-slope: -(1 - min-saturation) / (1 - min-value);

@@ -8,17 +8,21 @@ import { Palette, ScrollView } from "std-widgets.slint";
 import { PaletteExtra, IconButton, Island } from "../widgets/lib.slint";
 import { Icons } from "../resources/lib.slint";
 import { IslandButton } from "../widgets/island_button.slint";
+import { SscLib, DeviceFeatures, Ssc } from "../data/device.slint";
 
 component DeviceSideBarItem inherits IslandButton {
     has-background: true;
     has-idle-background: false;
+    accent: SscLib.accent-color(ssc);
     accessible-role: button;
     accessible-label: !identity.name.is-empty ? identity.name : identity.path;
     accessible-action-default => {
         root.clicked();
     }
 
+    in property <Ssc> ssc;
     in property <Identity> identity;
+    private property <brush> ssc-foreground: PaletteExtra.make-accented(SscLib.accent-color(ssc), Palette.control-foreground, PaletteExtra.reduced-control-background);
 
     callback close-device(path: string);
 
@@ -37,23 +41,27 @@ component DeviceSideBarItem inherits IslandButton {
                 font-size: 1.6rem;
                 font-weight: 600;
                 overflow: elide;
-                color: root.is-selected ? PaletteExtra.accented-control-foreground : root.foreground;
+                color: !root.is-selected ? ssc-foreground : ssc-foreground.mix(Palette.control-foreground, 0.70);
             }
 
             Text {
                 text: !identity.serial.is-empty ? identity.serial : "---";
                 overflow: elide;
-                color: root.foreground;
+                font-weight: 600;
+                color: !root.is-selected ? ssc-foreground : ssc-foreground.mix(Palette.control-foreground, 0.70);
             }
         }
 
-        IconButton {
-            horizontal-stretch: 0.0;
-            icon-size: 1.6rem;
-            icon: Icons.close;
+        VerticalLayout {
+            alignment: center;
+            IconButton {
+                horizontal-stretch: 0.0;
+                icon-size: 1.6rem;
+                icon: Icons.close;
 
-            clicked => {
-                close-device(identity.path)
+                clicked => {
+                    close-device(identity.path)
+                }
             }
         }
     }
@@ -102,6 +110,7 @@ export component DeviceSideBar {
 
                 for device in devices: DeviceSideBarItem {
                     is-selected: device.identity.path == selected;
+                    ssc: device.features.ssc;
                     identity: device.identity;
                     accessible-id: "device-side-bar-" + device.identity.path;
 

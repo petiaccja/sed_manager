@@ -149,7 +149,7 @@ component Properties {
 }
 
 component Header inherits Island {
-    in property <Device> device;
+    in property <Identity> identity;
 
     HorizontalLayout {
         spacing: 0.6rem;
@@ -168,23 +168,23 @@ component Header inherits Island {
             alignment: start;
 
             name-serial-block := NameAndSerial {
-                identity: device.identity;
+                identity: identity;
             }
 
-            if device.identity.status.outcome == Outcome.success: Properties {
-                identity: device.identity;
+            if identity.status.outcome == Outcome.success: Properties {
+                identity: identity;
             }
 
-            if device.identity.status.outcome == Outcome.error: ToastCard {
+            if identity.status.outcome == Outcome.error: ToastCard {
                 toast: {
                     level: ToastLevel.error,
                     title: "Could not open device",
-                    message: device.identity.status.message,
+                    message: identity.status.message,
                 };
                 has-icon: true;
             }
 
-            if device.identity.status.outcome == Outcome.pending: HorizontalLayout {
+            if identity.status.outcome == Outcome.pending: HorizontalLayout {
                 alignment: start;
                 Spinner {
                     indeterminate: true;
@@ -221,7 +221,7 @@ export component DeviceView {
         spacing: 1.6rem;
 
         header := Header {
-            device: device;
+            identity: device.identity;
         }
 
         if device.discovery.status.outcome == Outcome.success: HorizontalLayout {
@@ -230,6 +230,7 @@ export component DeviceView {
 
             activity-bar := DeviceActivityBar {
                 command-status: device.command-status;
+                features: device.features;
                 config: device.config;
                 horizontal-stretch: 0.0;
 
@@ -242,13 +243,13 @@ export component DeviceView {
                         if device.admin-sp.authorities.length == 0 {
                             root.list-admin-authorities(true)
                         }
-                        if device.locking-sp.authorities.length == 0 && device.config.locking-enabled {
+                        if device.locking-sp.authorities.length == 0 && device.config.secondary-sp-enabled {
                             root.list-locking-authorities(true)
                         }
                     }
                     if self.selected-activity == DeviceActivity.configure-locking
                         && device.locking-sp.authorities.length == 0
-                        && device.config.locking-enabled
+                        && device.config.secondary-sp-enabled
                         && !device.command-status.secondary-session-active {
                         root.list-locking-authorities(true)
                     }
@@ -303,7 +304,7 @@ export component DeviceView {
                         }
                         list-authorities => {
                             list-admin-authorities(false);
-                            if device.config.locking-enabled {
+                            if device.config.secondary-sp-enabled {
                                 list-locking-authorities(false);
                             }
                         }
@@ -315,6 +316,7 @@ export component DeviceView {
                 preferred-width: 16rem;
                 command-status: device.command-status;
                 locking-sp <=> device.locking-sp;
+                features: device.features;
                 geometry: device.geometry;
                 alignment: device.alignment;
 
@@ -357,6 +359,7 @@ export component DeviceView {
                     alignment: center;
 
                     RevertDeviceView {
+                        features: device.features;
                         command-status: device.command-status;
                         preferred-width: 16rem;
                         revert-device(scope, authority, password) => {

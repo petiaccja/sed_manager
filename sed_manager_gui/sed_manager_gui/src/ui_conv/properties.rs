@@ -11,7 +11,7 @@ use slint::{ToSharedString, VecModel};
 use crate::ui_conv::{FromBackend, IntoUi};
 
 macro_rules! display_property {
-    ($name:ident, $host:expr, $device:expr, $connection:expr) => {
+    ($name:ident, $host:expr, $device:expr, $outbound:expr, $inbound:expr) => {
         ui::ProtocolProperty {
             name: property_name!($name).to_shared_string(),
             host: (&$host.$name).into_ui(),
@@ -19,47 +19,59 @@ macro_rules! display_property {
                 Some(device) => (&device.$name).into_ui(),
                 None => "-".to_shared_string(),
             },
-            connection: match $connection {
-                Some(connection) => (&connection.$name).into_ui(),
+            outbound: match $outbound {
+                Some(outbound) => (&outbound.$name).into_ui(),
+                None => "-".to_shared_string(),
+            },
+            inbound: match $inbound {
+                Some(inbound) => (&inbound.$name).into_ui(),
                 None => "-".to_shared_string(),
             },
         }
     };
 }
 
+#[derive(Debug, Default)]
 pub struct CombinedProperties {
     pub host: Properties,
     pub device: Option<Properties>,
-    pub connection: Option<Properties>,
+    pub outbound: Option<Properties>,
+    pub inbound: Option<Properties>,
 }
 
 impl FromBackend<&CombinedProperties> for VecModel<ui::ProtocolProperty> {
     fn from_backend(value: &CombinedProperties) -> Self {
         let properties = vec![
-            display_property!(max_methods, &value.host, &value.device, &value.connection),
-            display_property!(max_methods, &value.host, &value.device, &value.connection),
-            display_property!(max_subpackets, &value.host, &value.device, &value.connection),
-            display_property!(max_gross_packet_size, &value.host, &value.device, &value.connection),
-            display_property!(max_packets, &value.host, &value.device, &value.connection),
-            display_property!(max_gross_compacket_size, &value.host, &value.device, &value.connection),
-            display_property!(max_gross_compacket_response_size, &value.host, &value.device, &value.connection),
-            display_property!(max_sessions, &value.host, &value.device, &value.connection),
-            display_property!(max_read_sessions, &value.host, &value.device, &value.connection),
-            display_property!(max_ind_token_size, &value.host, &value.device, &value.connection),
-            display_property!(max_agg_token_size, &value.host, &value.device, &value.connection),
-            display_property!(max_authentications, &value.host, &value.device, &value.connection),
-            display_property!(max_transaction_limit, &value.host, &value.device, &value.connection),
-            display_property!(def_session_timeout, &value.host, &value.device, &value.connection),
-            display_property!(max_session_timeout, &value.host, &value.device, &value.connection),
-            display_property!(min_session_timeout, &value.host, &value.device, &value.connection),
-            display_property!(def_trans_timeout, &value.host, &value.device, &value.connection),
-            display_property!(max_trans_timeout, &value.host, &value.device, &value.connection),
-            display_property!(min_trans_timeout, &value.host, &value.device, &value.connection),
-            display_property!(max_com_id_time, &value.host, &value.device, &value.connection),
-            display_property!(continued_tokens, &value.host, &value.device, &value.connection),
-            display_property!(seq_numbers, &value.host, &value.device, &value.connection),
-            display_property!(ack_nak, &value.host, &value.device, &value.connection),
-            display_property!(asynchronous, &value.host, &value.device, &value.connection),
+            display_property!(max_methods, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_methods, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_subpackets, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_gross_packet_size, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_packets, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_gross_compacket_size, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(
+                max_gross_compacket_response_size,
+                &value.host,
+                &value.device,
+                &value.outbound,
+                &value.inbound
+            ),
+            display_property!(max_sessions, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_read_sessions, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_ind_token_size, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_agg_token_size, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_authentications, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_transaction_limit, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(def_session_timeout, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_session_timeout, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(min_session_timeout, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(def_trans_timeout, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_trans_timeout, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(min_trans_timeout, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(max_com_id_time, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(continued_tokens, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(seq_numbers, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(ack_nak, &value.host, &value.device, &value.outbound, &value.inbound),
+            display_property!(asynchronous, &value.host, &value.device, &value.outbound, &value.inbound),
         ];
         VecModel::from(properties)
     }

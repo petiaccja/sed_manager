@@ -64,11 +64,11 @@ pub async fn take_ownership(ui: &Driver<ui::MainWindow>) {
 
 pub async fn activate_locking(ui: &Driver<ui::MainWindow>) {
     // Switch to the "Activate locking" activity and submit the owner password.
-    ui.single_click("activity-activate-locking", Left).await.unwrap();
+    ui.single_click("activity-activate", Left).await.unwrap();
     ui.enter_text("activate-locking-password", TEST_PASSWORD).await.unwrap();
     ui.check_enabled("activate-locking-submit").await.unwrap();
     ui.invoke_default_action("activate-locking-submit").unwrap();
-    ui.check_appearance_toast("Locking activated").await.unwrap();
+    ui.check_appearance_toast("Device activated").await.unwrap();
     ui.check_disappearance("activate-locking-password").await.unwrap();
 }
 
@@ -77,11 +77,15 @@ pub async fn revert_admin_sp(ui: Driver<ui::MainWindow>) {
     // revert the whole device back to its factory state.
     ui.single_click("activity-revert-device", Left).await.unwrap();
     ui.single_click("revert-scope", Left).await.unwrap();
-    ui.select_combo_box_item("revert-scope", "Everything").unwrap();
+    ui.select_combo_box_item("revert-scope", "Entire device").unwrap();
     ui.enter_text("revert-password", TEST_PASSWORD).await.unwrap();
     ui.check_enabled("revert-submit").await.unwrap();
     ui.invoke_default_action("revert-submit").unwrap();
+    // Reverting asks for confirmation in a popup before going ahead.
+    ui.check_enabled("confirm-popup-submit").await.unwrap();
+    ui.invoke_default_action("confirm-popup-submit").unwrap();
     ui.check_appearance_toast("Reverted device successfully").await.unwrap();
+    ui.check_disappearance("confirm-popup-submit").await.unwrap();
     // Reverting the whole device restores the factory MSID password, so "Take ownership" reappears.
     ui.check_appearance("activity-take-ownership").await.unwrap();
 }
@@ -89,11 +93,17 @@ pub async fn revert_admin_sp(ui: Driver<ui::MainWindow>) {
 pub async fn revert_locking_sp(ui: &Driver<ui::MainWindow>) {
     // Switch to the "Revert device" activity and revert just the locking SP.
     ui.single_click("activity-revert-device", Left).await.unwrap();
+    ui.single_click("revert-scope", Left).await.unwrap();
+    ui.select_combo_box_item("revert-scope", "Locking configuration").unwrap();
     ui.enter_text("revert-password", TEST_PASSWORD).await.unwrap();
     ui.check_enabled("revert-submit").await.unwrap();
     ui.invoke_default_action("revert-submit").unwrap();
+    // Reverting asks for confirmation in a popup before going ahead.
+    ui.check_enabled("confirm-popup-submit").await.unwrap();
+    ui.invoke_default_action("confirm-popup-submit").unwrap();
     ui.check_appearance_toast("Reverted device successfully").await.unwrap();
+    ui.check_disappearance("confirm-popup-submit").await.unwrap();
     ui.check_disappearance("revert-password").await.unwrap();
     // Reverting the locking SP disables locking again, so "Activate locking" reappears.
-    ui.check_appearance("activity-activate-locking").await.unwrap();
+    ui.check_appearance("activity-activate").await.unwrap();
 }

@@ -3,12 +3,33 @@
 //L Please refer to the full license distributed with this software.
 //L-----------------------------------------------------------------------------
 
+import { Ssc } from "device.slint";
 export enum RevertScope {
-    locking,
+    secondary,
     everything,
 }
 
 export enum RevertAuthority {
     sid,
     psid,
+}
+
+export global RevertScopeLib {
+    public pure function to-string(scope: RevertScope, secondary-sp-name: string) -> string {
+        if scope == secondary {
+            @tr("{} configuration", secondary-sp-name)
+        } else {
+            @tr("Entire device")
+        }
+    }
+}
+
+export global RevertAuthorityLib {
+    public pure function to-string(authority: RevertAuthority) -> string {
+        if authority == sid {
+            @tr("Owner (SID)")
+        } else {
+            @tr("Physical owner (PSID)")
+        }
+    }
 }
